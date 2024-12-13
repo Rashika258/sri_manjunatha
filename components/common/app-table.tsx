@@ -50,7 +50,7 @@ const AppTable = ({data}:{data: DataItem[]}) => {
 
 
   return (
-    <div>
+    <div className="py-4">
       <Table className="w-full">
         <TableHead>
           <TableRow>

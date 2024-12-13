@@ -1,8 +1,9 @@
 "use client";
+import AppFilter from "@/components/common/app-filter";
 import AppTable from "@/components/common/app-table";
-import { Button } from "@/components/ui/button";
-import { DateRangePicker } from "@/components/ui/date-range-picker";
-import React from "react";
+import { addDays } from "date-fns";
+import React, { useState } from "react";
+import { DateRange } from "react-day-picker";
 
 type DataItem = {
   id: number;
@@ -22,19 +23,19 @@ const mockData: DataItem[] = [
 ];
 
 const ListingScreen = () => {
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [date, setDate] = React.useState<DateRange | undefined>({
+    from: new Date(2022, 0, 20),
+    to: addDays(new Date(2022, 0, 20), 20),
+  })
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <div className="p-4">
-      <div className="flex gap-4 mb-4">
-        <div className="flex gap-2">
-          <DateRangePicker
-          // value={dateRange[0]}
-          // onChange={(date) => setDateRange([date, dateRange[1]])}
-          // placeholder="Start Date"
-          />
-        </div>
-        <Button onClick={() => {}}>Reset Filters</Button>
-      </div>
-
+      <AppFilter searchQuery={searchQuery} handleSearch={handleSearch} date={date} setDate={setDate} />
       <AppTable data={mockData} />
     </div>
   );

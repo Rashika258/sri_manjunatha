@@ -1,12 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Input } from "../ui/input";
 
-const AppSearch = () => {
-  const [searchQuery, setSearchQuery] = useState<string>("");
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
+const AppSearch = ({searchQuery, handleSearch} :{
+  searchQuery: string;
+  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void
+}) => {
 
   return (
     <Input
