@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ListingScreen = () => {
+const EcommercePage = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const ListingScreen = () => {
   );
 }
 
-export default ListingScreen;
+export default EcommercePage;

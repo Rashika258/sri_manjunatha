@@ -1,11 +1,11 @@
 import React from "react";
 
-const BillsLayout = ({
+const DailyBillsLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  return <>{children}</>;
+  return { children };
 };
 
-export default BillsLayout;
+export default DailyBillsLayout;

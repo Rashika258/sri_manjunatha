@@ -1,6 +1,6 @@
 import React from "react";
 
-const BillsLayout = ({
+const AttendanceLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -8,4 +8,4 @@ const BillsLayout = ({
   return <>{children}</>;
 };
 
-export default BillsLayout;
+export default AttendanceLayout;

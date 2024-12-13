@@ -3,8 +3,19 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter);
+  
 }
+
+.caveat--font {
+  font-family: var(--font-caveat-brush);
+}
+
+
+.inter__font {
+  font-family: var(--font-inter);
+}
+
 
 @layer utilities {
   .text-balance {
@@ -16,6 +27,8 @@ body {
 
 @layer base {
   :root {
+    --font-inter: 'Inter', sans-serif;
+    --font-caveat-brush: 'Caveat Brush', cursive;
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
@@ -76,7 +89,7 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --sidebar-background: 240 5.9% 10%;
+    --sidebar-background: 224, 71%, 4%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;

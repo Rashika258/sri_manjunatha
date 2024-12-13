@@ -1,6 +1,6 @@
 import React from 'react';
 
-const BillPage = () => {
+const CustomersPage = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const BillPage = () => {
   );
 }
 
-export default BillPage;
+export default CustomersPage;
