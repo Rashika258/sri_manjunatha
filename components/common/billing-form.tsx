@@ -34,6 +34,7 @@ import { toast } from "@/hooks/use-toast";
 import { SheetFooter } from "../ui/sheet";
 import { ArrowLeftIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ScrollArea } from "../ui/scroll-area";
 
 type Item = {
   item: string;
@@ -160,7 +161,7 @@ const BillingForm = () => {
   const router = useRouter();
   return (
     
-      <div className="flex flex-col grow">
+      <div className="flex flex-col grow w-full overflow-hidden ">
       <div className="flex justify-between items-center pb-4">
         <h3 className="text-2xl text-foreground">Monthly Bills</h3>
         <Button onClick={() => router.back()} variant="link">
@@ -169,10 +170,10 @@ const BillingForm = () => {
         </Button>
       </div>
       <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} >
-
-      <div className="flex flex-col grow space-y-4">
-          <FormField
+      <form  onSubmit={handleSubmit(onSubmit)} >
+      <div className="flex flex-col grow justify-between space-y-4 mb-16">
+        <div className="grid grid-cols-2 gap-4">
+        <FormField
             control={form.control}
             name="billNo"
             render={({ field }) => (
@@ -203,6 +204,8 @@ const BillingForm = () => {
               </FormItem>
             )}
           />
+        </div>
+     
 
           <FormField
             control={form.control}
@@ -245,10 +248,11 @@ const BillingForm = () => {
               <PlusIcon />
             </Button>
           </div>
+          <div className="overflow-auto w-full rounded-md border max-h-[200px]">
 
-          <Table className="w-full">
+          <Table >
             <TableHeader>
-              <TableRow>
+              <TableRow className="w-full flex">
                 <TableCell>Item</TableCell>
                 <TableCell>Quantity</TableCell>
                 <TableCell>Bags</TableCell>
@@ -344,7 +348,9 @@ const BillingForm = () => {
               ))}
             </TableBody>
           </Table>
-
+          </div>
+          </div>
+          
           {/* Total Amount */}
           <div className="mt-4">
             <h3 className="font-bold">Total Amount: {calculateTotalBill()}</h3>
@@ -357,7 +363,6 @@ const BillingForm = () => {
             <Button type="submit">Submit</Button>
           </div>
      
-      </div>
       </form>
       </Form>
       </div>

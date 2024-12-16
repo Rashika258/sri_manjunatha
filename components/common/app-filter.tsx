@@ -25,7 +25,7 @@ const AppFilter = ({
       <div className="flex gap-2">
         <DateRangePicker date={date} setDate={setDate} />
         <Button
-          variant={"link"}
+          variant={"default"}
           onClick={() => router.push("/monthly-bills/add-bill")}
         >
           Add

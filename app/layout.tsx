@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { Caveat_Brush, Inter } from "@next/font/google";
+import { Caveat_Brush, Inter } from "next/font/google";
 import type { Metadata } from "next";
 import React from "react";
 import Appbar from "../components/common/app-navbar";
@@ -34,12 +34,11 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <SidebarProvider>
             <AppSidebar />
-            <main className="w-[calc(100vw-16rem)] h-100vh flex flex-col overflow-auto">
+            <main
+              className={`h-screen w-screen flex flex-col overflow-auto`}
+            >
               <Appbar />
-              <div className="p-8 mt-[60px] h-full w-full">
               {children}
-              </div>
-             
             </main>
           </SidebarProvider>
         </ThemeProvider>

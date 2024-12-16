@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { useSidebar } from "../ui/sidebar";
 interface ItemDetails {
   name: string;
   quantity: number;
@@ -16,7 +17,7 @@ interface DataItem {
   bill_no: string;
   company_name: string;
   date: string;
-  items: ItemDetails[];
+  items: string;
   price: number;
   qty: number;
   total: number;
@@ -141,9 +142,9 @@ const AppTable = ({ data }: { data: DataItem[] }) => {
   if (!mounted) return <></>;
 
   return (
-    <div className="flex items-center flex-col">
-      <ScrollArea className=" w-full rounded-md border py-4">
-        <Table className="">
+    <>
+      <ScrollArea className="overflow-x-auto w-full rounded-md border my-4">
+        <Table>
           <TableHead>
             <TableRow>
               {columnDetails.map((col) => (
@@ -167,9 +168,7 @@ const AppTable = ({ data }: { data: DataItem[] }) => {
             {paginatedData.map((item) => (
               <TableRow key={item.id}>
                 {columnDetails.map((col) => (
-                  <TableCell className="" key={col.key}>
-                    {col.render(item)}
-                  </TableCell>
+                  <TableCell key={col.key}>{col.render(item)}</TableCell>
                 ))}
               </TableRow>
             ))}
@@ -177,10 +176,11 @@ const AppTable = ({ data }: { data: DataItem[] }) => {
         </Table>
       </ScrollArea>
       {/* Pagination */}
-      <div className="mt-4 flex justify-between items-center">
+      <div className="pt-4 w-full flex justify-between items-center">
         <Button
           onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
           disabled={currentPage === 1}
+          variant={"secondary"}
         >
           Previous
         </Button>
@@ -192,11 +192,12 @@ const AppTable = ({ data }: { data: DataItem[] }) => {
             setCurrentPage((page) => Math.min(page + 1, totalPages))
           }
           disabled={currentPage === totalPages}
+          variant={"secondary"}
         >
           Next
         </Button>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -1,4 +1,3 @@
-"use client";
 import { HomeCards } from "@/components/common/home-cards";
 import React from "react";
 

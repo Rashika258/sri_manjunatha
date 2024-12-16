@@ -6,16 +6,16 @@ import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import React from "react";
 
 const AppNavbar = () => {
-  const navigationItems = [
-    {
-      label: "Item One",
-      links: ["Link 1", "Link 2", "Link 3"],
-    },
-    {
-      label: "Item Two",
-      links: ["Submenu 1", "Submenu 2"],
-    },
-  ];
+  // const navigationItems = [
+  //   {
+  //     label: "Item One",
+  //     links: ["Link 1", "Link 2", "Link 3"],
+  //   },
+  //   {
+  //     label: "Item Two",
+  //     links: ["Submenu 1", "Submenu 2"],
+  //   },
+  // ];
 
   const { isMobile, open } = useSidebar();
 
@@ -33,11 +33,11 @@ const AppNavbar = () => {
       </div>
 
       <div className="flex  items-center">
-        {navigationItems.map((item, index) => (
+        {/* {navigationItems.map((item, index) => (
           <p className="inter__font text-base" key={index}>
             {item.label}
           </p>
-        ))}
+        ))} */}
 
         <ModeToggle />
 

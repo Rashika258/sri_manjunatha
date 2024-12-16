@@ -129,7 +129,7 @@ const ListingScreen = () => {
   };
 
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col w-full h-full ">
       <AppFilter searchQuery={searchQuery} handleSearch={handleSearch} date={date} setDate={setDate} />
       <AppTable data={mockData} />
     </div>
