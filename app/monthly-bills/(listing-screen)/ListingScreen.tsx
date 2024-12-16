@@ -5,8 +5,6 @@ import { addDays } from "date-fns";
 import React, { useState } from "react";
 import { DateRange } from "react-day-picker";
 
-
-
 const mockData = [
   {
     id: 1,
@@ -116,13 +114,12 @@ const mockData = [
   // More data can be generated as needed for testing
 ];
 
-
 const ListingScreen = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [date, setDate] = React.useState<DateRange | undefined>({
     from: new Date(2022, 0, 20),
     to: addDays(new Date(2022, 0, 20), 20),
-  })
+  });
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -130,7 +127,12 @@ const ListingScreen = () => {
 
   return (
     <div className="flex flex-col w-full h-full ">
-      <AppFilter searchQuery={searchQuery} handleSearch={handleSearch} date={date} setDate={setDate} />
+      <AppFilter
+        searchQuery={searchQuery}
+        handleSearch={handleSearch}
+        date={date}
+        setDate={setDate}
+      />
       <AppTable data={mockData} />
     </div>
   );

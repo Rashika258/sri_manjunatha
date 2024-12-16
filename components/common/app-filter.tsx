@@ -17,9 +17,8 @@ const AppFilter = ({
   setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
 }) => {
   const router = useRouter();
-  
-  return (
 
+  return (
     <div className="flex justify-between">
       <AppSearch searchQuery={searchQuery} handleSearch={handleSearch} />
       <div className="flex gap-2">

@@ -16,7 +16,16 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { BriefcaseBusinessIcon, CalendarClockIcon, HandCoinsIcon, HandshakeIcon, Home, ReceiptIndianRupeeIcon, ReceiptTextIcon, UsersIcon } from "lucide-react";
+import {
+  BriefcaseBusinessIcon,
+  CalendarClockIcon,
+  HandCoinsIcon,
+  HandshakeIcon,
+  Home,
+  ReceiptIndianRupeeIcon,
+  ReceiptTextIcon,
+  UsersIcon,
+} from "lucide-react";
 
 // Menu items.
 const items = [
@@ -68,9 +77,7 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
-        <SidebarHeader>
-            Sri Manujanatha
-        </SidebarHeader>
+        <SidebarHeader>Sri Manujanatha</SidebarHeader>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -78,14 +85,15 @@ export function AppSidebar() {
                 <Collapsible key={item.url}>
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
-                    <SidebarMenuButton 
-                    // className={`${item.disabled ? "pointer-events-none opacity-60" : ""}`} 
-                    asChild>
-                      <a href={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </a>
-                    </SidebarMenuButton>
+                      <SidebarMenuButton
+                        // className={`${item.disabled ? "pointer-events-none opacity-60" : ""}`}
+                        asChild
+                      >
+                        <a href={item.url}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </a>
+                      </SidebarMenuButton>
                     </CollapsibleTrigger>
 
                     {item.children && (

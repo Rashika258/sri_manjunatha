@@ -4,25 +4,20 @@
 
 body {
   font-family: var(--font-inter);
-  
 }
 
 .caveat__font {
   font-family: var(--font-caveat-brush);
 }
 
-
 .inter__font {
   font-family: var(--font-inter);
 }
 
 .success__btn {
-  background-color: #006A67;
+  background-color: #006a67;
   color: #fff;
-
-  
 }
-
 
 /* Styling for the entire scrollbar */
 ::-webkit-scrollbar {
@@ -52,19 +47,16 @@ body {
   background-color: #f1f1f1;
 }
 
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 }
 
-
-
 @layer base {
   :root {
-    --font-inter: 'Inter', sans-serif;
-    --font-caveat-brush: 'Caveat Brush', cursive;
+    --font-inter: "Inter", sans-serif;
+    --font-caveat-brush: "Caveat Brush", cursive;
     --background: 0 0% 100%;
     --foreground: 224 71.4% 4.1%;
     --card: 0 0% 100%;
@@ -135,8 +127,6 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
-
-
 
 @layer base {
   * {

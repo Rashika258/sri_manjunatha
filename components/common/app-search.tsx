@@ -1,11 +1,13 @@
 import React from "react";
 import { Input } from "../ui/input";
 
-const AppSearch = ({searchQuery, handleSearch} :{
+const AppSearch = ({
+  searchQuery,
+  handleSearch,
+}: {
   searchQuery: string;
-  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void
+  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
-
   return (
     <Input
       placeholder="Search by name"

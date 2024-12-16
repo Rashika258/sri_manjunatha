@@ -8,13 +8,17 @@ const BillsLayout = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const {isMobile, open} = useSidebar();
+  const { isMobile, open } = useSidebar();
 
-  return <div 
-  className={`${
-    isMobile || !open ? "w-full" : "w-[calc(100vw-16rem)]"
-  } p-8 mt-[60px] h-full flex`}
- >{children}</div>;
+  return (
+    <div
+      className={`${
+        isMobile || !open ? "w-full" : "w-[calc(100vw-16rem)]"
+      } p-8 mt-[60px] h-full flex`}
+    >
+      {children}
+    </div>
+  );
 };
 
 export default BillsLayout;
