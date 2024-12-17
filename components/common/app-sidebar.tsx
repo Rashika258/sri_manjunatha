@@ -2,7 +2,6 @@
 
 import {
   Collapsible,
-  CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import {
@@ -14,18 +13,17 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import {
   BriefcaseBusinessIcon,
   CalendarClockIcon,
-  HandCoinsIcon,
   HandshakeIcon,
   Home,
   ReceiptIndianRupeeIcon,
   ReceiptTextIcon,
   UsersIcon,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 // Menu items.
 const items = [
@@ -35,22 +33,32 @@ const items = [
     icon: Home,
   },
   {
-    title: "Bills",
-    icon: HandCoinsIcon,
-    disabled: true,
-    children: [
-      {
-        title: "Monthly Bills",
-        url: "/monthly-bills",
-        icon: ReceiptTextIcon,
-      },
-      {
-        title: "Daily Bills",
-        url: "/daily-bills",
-        icon: ReceiptIndianRupeeIcon,
-      },
-    ],
+    title: "Monthly Bills",
+    url: "/monthly-bills",
+    icon: ReceiptTextIcon,
   },
+  {
+    title: "Daily Bills",
+    url: "/daily-bills",
+    icon: ReceiptIndianRupeeIcon,
+  },
+  // {
+  //   title: "Bills",
+  //   icon: HandCoinsIcon,
+  //   disabled: true,
+  //   children: [
+  //     {
+  //       title: "Monthly Bills",
+  //       url: "/monthly-bills",
+  //       icon: ReceiptTextIcon,
+  //     },
+  //     {
+  //       title: "Daily Bills",
+  //       url: "/daily-bills",
+  //       icon: ReceiptIndianRupeeIcon,
+  //     },
+  //   ],
+  // },
   {
     title: "Attendance",
     url: "/attendance",
@@ -74,6 +82,7 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const pathname = usePathname(); 
   return (
     <Sidebar>
       <SidebarContent>
@@ -86,6 +95,8 @@ export function AppSidebar() {
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton
+                      variant={pathname === item.url ? "default" : null}
+                       isActive={pathname === item.url} 
                         // className={`${item.disabled ? "pointer-events-none opacity-60" : ""}`}
                         asChild
                       >
@@ -96,7 +107,7 @@ export function AppSidebar() {
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
 
-                    {item.children && (
+                    {/* {item.children && (
                       <CollapsibleContent>
                         {item.children.map((child) => (
                           <SidebarMenuItem key={child.url}>
@@ -110,7 +121,7 @@ export function AppSidebar() {
                           </SidebarMenuItem>
                         ))}
                       </CollapsibleContent>
-                    )}
+                    )} */}
                   </SidebarMenuItem>
                 </Collapsible>
               ))}
