@@ -6,12 +6,15 @@ import { DateRange } from "react-day-picker";
 import AppFilter from "@/components/common/app-filter";
 import { ColumnDef } from "@tanstack/react-table";
 import { AppDataTable } from "@/components/common/app-datatable";
+import { AppActionCell } from "@/components/common/app-action-cell";
+import AppTooltip from "@/components/common/app-tooltip";
+import AppPaymentStatus from "@/components/common/app-payment-status";
 
 // Function to generate mock data for a given date range
 const generateMockData = (startDate: Date, days: number) => {
   const companyNames = ["Company A", "Company B", "Company C", "Company D", "Company E"];
   const items = ["Item A", "Item B", "Item C", "Item D", "Item E"];
-  const paymentStatuses = ["Paid", "Unpaid"];
+  const paymentStatuses = ["PAID", "UNPAID", "INPROGRESS"];
   
   const generateRandomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
   
@@ -77,16 +80,50 @@ const ListingScreen = () => {
 
   // Table columns definition
   const columns: ColumnDef<typeof mockData[0]>[] = [
-    { accessorKey: "bill_no", header: "Bill No" },
-    { accessorKey: "company_name", header: "Company Name" },
-    { accessorKey: "date", header: "Date" },
-    { accessorKey: "items", header: "Items" },
-    { accessorKey: "price", header: "Price", cell: (info) => `$${info.getValue()}` },
-    { accessorKey: "qty", header: "Quantity" },
-    { accessorKey: "total", header: "Total", cell: (info) => `$${info.getValue()}` },
+    { 
+      accessorKey: "bill_no", 
+      header: "Bill No", 
+      cell: (info) => <AppTooltip text={info?.getValue()?.toString() || ''}   />
+    },
+    { 
+      accessorKey: "company_name", 
+      header: "Company Name", 
+      cell: (info) => <AppTooltip text={info?.getValue()?.toString() || ''}/>
+    },
+    { 
+      accessorKey: "date", 
+      header: "Date", 
+      cell: (info) => <AppTooltip text={info?.getValue()?.toString() || ''} />
+    },
+    { 
+      accessorKey: "items", 
+      header: "Items", 
+      cell: (info) => <AppTooltip text={info?.getValue()?.toString() || ''}/>
+    },
+    { 
+      accessorKey: "price", 
+      header: "Price", 
+      cell: (info) => <AppTooltip text={info?.getValue()?.toString() || ''} />
+    },
+    { 
+      accessorKey: "qty", 
+      header: "Quantity", 
+      cell: (info) => <AppTooltip text={info?.getValue()?.toString() || ''} />
+    },
+    { 
+      accessorKey: "total", 
+      header: "Total", 
+      cell: (info) => <AppTooltip text={info?.getValue()?.toString() || ''} />
+    },
+    { 
+      accessorKey: "payment_status", 
+      header: "Payment Status", 
+      cell: (info) =>  <AppPaymentStatus payment_status={info.getValue() as "PAID" | "UNPAID" | "INPROGRESS"} />
+
+    },
     { accessorKey: "payment_status", header: "Payment Status" },
-    { accessorKey: "tax", header: "Tax", cell: (info) => `$${info.getValue()}` },
-    { accessorKey: "gst_no", header: "GST No" },
+    {accessorKey: "action", header:"Action", cell: (info) => <AppActionCell id={info.row.original.id} />},
+
   ];
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
