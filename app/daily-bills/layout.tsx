@@ -1,3 +1,6 @@
+"use client";
+
+import { useSidebar } from "@/components/ui/sidebar";
 import React from "react";
 
 const DailyBillsLayout = ({
@@ -5,7 +8,17 @@ const DailyBillsLayout = ({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  return <>{children}</>;
+  const { isMobile, open } = useSidebar();
+
+  return (
+    <div
+      className={`${
+        isMobile || !open ? "w-full" : "w-[calc(100vw-16rem)]"
+      } p-8 mt-[60px] h-full flex`}
+    >
+      {children}
+    </div>
+  );
 };
 
 export default DailyBillsLayout;

@@ -34,6 +34,7 @@ const AppTable = ({ data }: { data: DataItem[] }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [mounted, setMounted] = useState(false);
 
+
   const itemsPerPage = 5;
 
   // Columns configuration
@@ -141,8 +142,10 @@ const AppTable = ({ data }: { data: DataItem[] }) => {
 
   if (!mounted) return <></>;
 
+
+
   return (
-    <>
+<>
       <ScrollArea className="overflow-x-auto w-full rounded-md border my-4">
         <Table>
           <TableHead>
@@ -168,7 +171,9 @@ const AppTable = ({ data }: { data: DataItem[] }) => {
             {paginatedData.map((item) => (
               <TableRow key={item.id}>
                 {columnDetails.map((col) => (
-                  <TableCell key={col.key}>{col.render(item)}</TableCell>
+                  <TableCell  key={col.key}>
+                    {col.render(item)}
+                  </TableCell>
                 ))}
               </TableRow>
             ))}

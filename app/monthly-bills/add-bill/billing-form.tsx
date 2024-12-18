@@ -1,40 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 "use client";
-import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
+import { useForm, useFieldArray, SubmitHandler, Form } from "react-hook-form";
 import { useState } from "react";
-import { Input } from "../ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import { Button } from "../ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../ui/form";
+
+
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "@/hooks/use-toast";
-import { SheetFooter } from "../ui/sheet";
-import { ArrowLeftIcon, PlusIcon, Trash2Icon } from "lucide-react";
+import { ArrowLeftIcon, PlusIcon, Table, Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { ScrollArea } from "../ui/scroll-area";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { TableHeader, TableRow, TableCell, TableBody } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 
 type Item = {
   item: string;

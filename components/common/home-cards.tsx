@@ -40,7 +40,7 @@ export function HomeCards() {
         cardDetails?.length > 0 &&
         cardDetails?.map((item, idx) => {
           return (
-            <Card key={idx + item?.id} className="w-[350px]">
+            <Card key={idx + item?.id} className="w-[300px] h-[250px]">
               <CardHeader>
                 <CardTitle>{item?.title}</CardTitle>
                 <CardDescription></CardDescription>

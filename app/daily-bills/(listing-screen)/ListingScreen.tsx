@@ -1,42 +1,110 @@
 "use client";
-import AppFilter from "@/components/common/app-filter";
-import AppTable from "@/components/common/app-table";
-import { addDays } from "date-fns";
-import React, { useState } from "react";
-import { DateRange } from "react-day-picker";
 
-type DataItem = {
-  id: number;
-  name: string;
-  date: string;
+import { useState, useMemo } from "react";
+import { addDays, isWithinInterval, format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import AppFilter from "@/components/common/app-filter";
+import { ColumnDef } from "@tanstack/react-table";
+import { AppDataTable } from "@/components/common/app-datatable";
+
+// Function to generate mock data for a given date range
+const generateMockData = (startDate: Date, days: number) => {
+  const companyNames = ["Company A", "Company B", "Company C", "Company D", "Company E"];
+  const items = ["Item A", "Item B", "Item C", "Item D", "Item E"];
+  const paymentStatuses = ["Paid", "Unpaid"];
+  
+  const generateRandomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
+  
+  const mockData = [];
+  
+  for (let i = 0; i < days; i++) {
+    const currentDate = addDays(startDate, i);
+    const randomCompany = companyNames[generateRandomInt(0, companyNames.length - 1)];
+    const randomItems = items.slice(generateRandomInt(0, items.length - 2), generateRandomInt(1, items.length)).join(", ");
+    const randomPrice = generateRandomInt(50, 500);
+    const randomQty = generateRandomInt(1, 5);
+    const randomTotal = randomPrice * randomQty;
+    const randomPaymentStatus = paymentStatuses[generateRandomInt(0, paymentStatuses.length - 1)];
+    const randomTax = generateRandomInt(10, 50);
+    const randomGstNo = `GST${generateRandomInt(1000000000, 9999999999)}`;
+    const billNo = `BILL${(i + 1).toString().padStart(3, "0")}`;
+    
+    mockData.push({
+      id: i + 1,
+      bill_no: billNo,
+      company_name: randomCompany,
+      date: format(currentDate, "yyyy-MM-dd"),
+      items: randomItems,
+      price: randomPrice,
+      qty: randomQty,
+      total: randomTotal,
+      payment_status: randomPaymentStatus,
+      tax: randomTax,
+      gst_no: randomGstNo,
+    });
+  }
+  
+  return mockData;
 };
 
-const mockData: DataItem[] = [
-  { id: 1, name: "Item 1", date: "2024-12-01" },
-  { id: 2, name: "Item 2", date: "2024-12-05" },
-  { id: 3, name: "Item 3", date: "2024-12-10" },
-  { id: 4, name: "Item 4", date: "2024-12-15" },
-  { id: 5, name: "Item 5", date: "2024-12-20" },
-  { id: 6, name: "Item 6", date: "2024-12-25" },
-  { id: 7, name: "Item 7", date: "2024-12-30" },
-  // Add more items for pagination effect
-];
+// Generate mock data for December 2024
+const startDate = new Date(2024, 11, 1); // December 1st, 2024
+const mockData = generateMockData(startDate, 31); // 31 days for December
 
 const ListingScreen = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
-  })
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(2024, 11, 1),
+    to: addDays(new Date(2024, 11, 1), 30),
+  });
+
+  // Filtered data based on search and date range
+  const filteredData = useMemo(() => {
+    return mockData.filter((row) => {
+      const matchesSearch =
+        row.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        row.bill_no.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        row.gst_no.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const dateWithinRange =
+        date?.from && date?.to
+          ? isWithinInterval(new Date(row.date), { start: date.from, end: date.to })
+          : true;
+
+      return matchesSearch && dateWithinRange;
+    });
+  }, [searchQuery, date]);
+
+  // Table columns definition
+  const columns: ColumnDef<typeof mockData[0]>[] = [
+    { accessorKey: "bill_no", header: "Bill No" },
+    { accessorKey: "company_name", header: "Company Name" },
+    { accessorKey: "date", header: "Date" },
+    { accessorKey: "items", header: "Items" },
+    { accessorKey: "price", header: "Price", cell: (info) => `$${info.getValue()}` },
+    { accessorKey: "qty", header: "Quantity" },
+    { accessorKey: "total", header: "Total", cell: (info) => `$${info.getValue()}` },
+    { accessorKey: "payment_status", header: "Payment Status" },
+    { accessorKey: "tax", header: "Tax", cell: (info) => `$${info.getValue()}` },
+    { accessorKey: "gst_no", header: "GST No" },
+  ];
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
   return (
-    <div className="p-4">
-      <AppFilter searchQuery={searchQuery} handleSearch={handleSearch} date={date} setDate={setDate} />
-      <AppTable data={mockData} />
+    <div className="flex flex-col w-full h-full space-y-4">
+      {/* Filter Section */}
+      <AppFilter
+        searchQuery={searchQuery}
+        handleSearch={handleSearch}
+        date={date}
+        setDate={setDate}
+      />
+
+      {/* DataTable */}
+      <AppDataTable columns={columns} data={filteredData} />
     </div>
   );
 };

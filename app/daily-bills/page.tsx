@@ -1,11 +1,12 @@
 import React from 'react';
+import ListingScreen from './(listing-screen)/ListingScreen';
 
-const DailyBillsPage = () => {
+const BillPage = () => {
   return (
-    <div>
-      
+    <div className={`w-full h-full flex items-center flex-col `}>
+      <ListingScreen />
     </div>
   );
-}
+};
 
-export default DailyBillsPage;
+export default BillPage;

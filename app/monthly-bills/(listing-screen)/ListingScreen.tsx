@@ -1,10 +1,13 @@
 "use client";
-import AppFilter from "@/components/common/app-filter";
-import AppTable from "@/components/common/app-table";
-import { addDays } from "date-fns";
-import React, { useState } from "react";
-import { DateRange } from "react-day-picker";
 
+import { useState, useMemo } from "react";
+import { addDays, isWithinInterval, parseISO } from "date-fns";
+import { DateRange } from "react-day-picker";
+import AppFilter from "@/components/common/app-filter";
+import { ColumnDef } from "@tanstack/react-table";
+import { AppDataTable } from "@/components/common/app-datatable";
+
+// Mock Data
 const mockData = [
   {
     id: 1,
@@ -17,9 +20,7 @@ const mockData = [
     total: 200,
     payment_status: "Paid",
     tax: 18,
-    e_way_bill_no: "EWB123",
     gst_no: "1234567890A",
-    hsn_code: "HSN1234",
   },
   {
     id: 2,
@@ -32,9 +33,7 @@ const mockData = [
     total: 150,
     payment_status: "Unpaid",
     tax: 27,
-    e_way_bill_no: "EWB124",
     gst_no: "0987654321B",
-    hsn_code: "HSN1235",
   },
   {
     id: 3,
@@ -47,93 +46,65 @@ const mockData = [
     total: 600,
     payment_status: "Paid",
     tax: 36,
-    e_way_bill_no: "EWB125",
     gst_no: "1122334455C",
-    hsn_code: "HSN1236",
   },
-  {
-    id: 4,
-    bill_no: "BILL004",
-    company_name: "Company D",
-    date: "2024-12-15",
-    items: "Item G, Item H",
-    price: 120,
-    qty: 4,
-    total: 480,
-    payment_status: "Pending",
-    tax: 21,
-    e_way_bill_no: "EWB126",
-    gst_no: "5566778899D",
-    hsn_code: "HSN1237",
-  },
-  {
-    id: 5,
-    bill_no: "BILL005",
-    company_name: "Company E",
-    date: "2024-12-20",
-    items: "Item I, Item J",
-    price: 180,
-    qty: 2,
-    total: 360,
-    payment_status: "Paid",
-    tax: 32.4,
-    e_way_bill_no: "EWB127",
-    gst_no: "6677889900E",
-    hsn_code: "HSN1238",
-  },
-  {
-    id: 6,
-    bill_no: "BILL006",
-    company_name: "Company F",
-    date: "2024-12-25",
-    items: "Item K, Item L",
-    price: 250,
-    qty: 5,
-    total: 1250,
-    payment_status: "Unpaid",
-    tax: 45,
-    e_way_bill_no: "EWB128",
-    gst_no: "7788990011F",
-    hsn_code: "HSN1239",
-  },
-  {
-    id: 7,
-    bill_no: "BILL007",
-    company_name: "Company G",
-    date: "2024-12-30",
-    items: "Item M, Item N",
-    price: 200,
-    qty: 6,
-    total: 1200,
-    payment_status: "Paid",
-    tax: 36,
-    e_way_bill_no: "EWB129",
-    gst_no: "8899001122G",
-    hsn_code: "HSN1240",
-  },
-  // More data can be generated as needed for testing
+  // Add more mock data if needed
 ];
 
 const ListingScreen = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: new Date(2024, 11, 1),
+    to: addDays(new Date(2024, 11, 1), 30),
   });
+
+  // Filtered data based on search and date range
+  const filteredData = useMemo(() => {
+    return mockData.filter((row) => {
+      const matchesSearch =
+        row.company_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        row.bill_no.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        row.gst_no.toLowerCase().includes(searchQuery.toLowerCase());
+
+      const dateWithinRange =
+        date?.from && date?.to
+          ? isWithinInterval(parseISO(row.date), { start: date.from, end: date.to })
+          : true;
+
+      return matchesSearch && dateWithinRange;
+    });
+  }, [searchQuery, date]);
+
+  // Table columns definition
+  const columns: ColumnDef<(typeof mockData)[0]>[] = [
+    { accessorKey: "bill_no", header: "Bill No" },
+    { accessorKey: "company_name", header: "Company Name" },
+    { accessorKey: "date", header: "Date" },
+    { accessorKey: "items", header: "Items" },
+    { accessorKey: "price", header: "Price" },
+    { accessorKey: "qty", header: "Quantity" },
+    { accessorKey: "total", header: "Total" },
+    { accessorKey: "payment_status", header: "Payment Status" },
+    { accessorKey: "tax", header: "Tax" },
+    { accessorKey: "gst_no", header: "GST No" },
+  ];
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
   return (
-    <div className="flex flex-col w-full h-full ">
+    <div className="flex flex-col w-full h-full space-y-4">
+      {/* Filter Section */}
       <AppFilter
         searchQuery={searchQuery}
         handleSearch={handleSearch}
         date={date}
         setDate={setDate}
       />
-      <AppTable data={mockData} />
+
+      {/* DataTable */}
+      <AppDataTable columns={columns} data={filteredData} />
     </div>
   );
 };
