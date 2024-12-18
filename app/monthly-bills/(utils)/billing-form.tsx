@@ -1,35 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 "use client";
-import { useForm, useFieldArray, SubmitHandler, Form } from "react-hook-form";
+import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeftIcon, PlusIcon, Table, Trash2Icon } from "lucide-react";
+import { ArrowLeftIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  TableHeader,
-  TableRow,
-  TableCell,
-  TableBody,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from "@/components/ui/form";
+import { SheetFooter } from "@/components/ui/sheet";
+import { TableHeader, TableRow, TableCell, TableBody, Table } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 type Item = {
   item: string;
@@ -261,7 +245,7 @@ const BillingForm = () => {
                       <TableCell>
                         <FormField
                           control={form.control}
-                          name="company_name"
+                          name={`items.${index}.item`}
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
@@ -276,7 +260,7 @@ const BillingForm = () => {
                                     {itemsList.map((item) => (
                                       <SelectItem
                                         key={item.id}
-                                        value={item?.name}
+                                        value={item.name}
                                       >
                                         {item.name}
                                       </SelectItem>
@@ -284,9 +268,6 @@ const BillingForm = () => {
                                   </SelectContent>
                                 </Select>
                               </FormControl>
-                              <FormMessage>
-                                {formState.errors.company_name?.message}
-                              </FormMessage>
                             </FormItem>
                           )}
                         />
@@ -297,11 +278,7 @@ const BillingForm = () => {
                           {...register(`items.${index}.quantity`)}
                           defaultValue={field.quantity}
                           onChange={(e) =>
-                            handleItemChange(
-                              index,
-                              "quantity",
-                              Number(e.target.value)
-                            )
+                            handleItemChange(index, "quantity", Number(e.target.value))
                           }
                         />
                       </TableCell>
@@ -311,11 +288,7 @@ const BillingForm = () => {
                           {...register(`items.${index}.bags`)}
                           defaultValue={field.bags}
                           onChange={(e) =>
-                            handleItemChange(
-                              index,
-                              "bags",
-                              Number(e.target.value)
-                            )
+                            handleItemChange(index, "bags", Number(e.target.value))
                           }
                         />
                       </TableCell>
@@ -325,11 +298,7 @@ const BillingForm = () => {
                           {...register(`items.${index}.price`)}
                           defaultValue={field.price}
                           onChange={(e) =>
-                            handleItemChange(
-                              index,
-                              "price",
-                              Number(e.target.value)
-                            )
+                            handleItemChange(index, "price", Number(e.target.value))
                           }
                         />
                       </TableCell>
@@ -342,11 +311,11 @@ const BillingForm = () => {
                       </TableCell>
                       <TableCell>
                         <Button
+                          type="button"
                           variant="destructive"
-                          size={"icon"}
                           onClick={() => remove(index)}
                         >
-                          <Trash2Icon />
+                          <Trash2Icon className="h-4 w-4" />
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -355,20 +324,21 @@ const BillingForm = () => {
               </Table>
             </div>
           </div>
-
-          {/* Total Amount */}
-          <div className="mt-4">
-            <h3 className="font-bold">Total Amount: {calculateTotalBill()}</h3>
-          </div>
-
-          {/* Submit Button */}
-
-          <div className="flex justify-between  pt-4 bottom-8  fixed">
-            <Button className="mr-8" variant="secondary">
-              Reset
-            </Button>
-            <Button type="submit">Submit</Button>
-          </div>
+          <SheetFooter className="px-4 py-4 flex items-center justify-between space-x-4">
+            <div>
+              <span>Total Bill: ₹ {calculateTotalBill()}</span>
+            </div>
+            <div className="flex space-x-4">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => form.reset()}
+              >
+                Reset
+              </Button>
+              <Button type="submit">Submit</Button>
+            </div>
+          </SheetFooter>
         </form>
       </Form>
     </div>

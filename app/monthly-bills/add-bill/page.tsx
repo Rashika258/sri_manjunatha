@@ -1,5 +1,5 @@
 import React from "react";
-import BillingForm from "./billing-form";
+import BillingForm from "../(utils)/billing-form";
 
 const AddBillingForm = () => {
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import ListingScreen from "./(listing-screen)/ListingScreen";
+import ListingScreen from "./(utils)/ListingScreen";
 
 const BillPage = () => {
   return (

@@ -1,0 +1,220 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model attendance {
+  attendance_id Int                @id @default(autoincrement())
+  employee_id   Int
+  date          DateTime           @db.Date
+  hours_worked  Decimal            @db.Decimal(5, 2)
+  status        attendance_status? @default(Present)
+  created_at    DateTime?          @default(now()) @db.Timestamp(0)
+  employees     employees          @relation(fields: [employee_id], references: [employee_id], onDelete: NoAction, onUpdate: NoAction, map: "attendance_ibfk_1")
+
+  @@index([employee_id], map: "employee_id")
+}
+
+model customers {
+  customer_id      Int                @id @default(autoincrement())
+  name             String             @db.VarChar(255)
+  email            String?            @unique(map: "email") @db.VarChar(255)
+  phone            String?            @db.VarChar(20)
+  address          String?            @db.Text
+  gstin            String?            @unique(map: "gstin") @db.VarChar(15)
+  created_at       DateTime?          @default(now()) @db.Timestamp(0)
+  ecommerce_orders ecommerce_orders[]
+  invoices         invoices[]
+}
+
+model ecommerce_order_items {
+  order_item_id    Int              @id @default(autoincrement())
+  order_id         Int
+  product_id       Int
+  quantity         Int
+  unit_price       Decimal          @db.Decimal(10, 2)
+  total_price      Decimal          @db.Decimal(12, 2)
+  ecommerce_orders ecommerce_orders @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "ecommerce_order_items_ibfk_1")
+  products         products         @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "ecommerce_order_items_ibfk_2")
+
+  @@index([order_id], map: "order_id")
+  @@index([product_id], map: "product_id")
+}
+
+model ecommerce_orders {
+  order_id              Int                      @id @default(autoincrement())
+  customer_id           Int?
+  order_date            DateTime                 @db.Date
+  total_amount          Decimal                  @db.Decimal(12, 2)
+  status                ecommerce_orders_status? @default(Pending)
+  created_at            DateTime?                @default(now()) @db.Timestamp(0)
+  ecommerce_order_items ecommerce_order_items[]
+  customers             customers?               @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "ecommerce_orders_ibfk_1")
+
+  @@index([customer_id], map: "customer_id")
+}
+
+model employees {
+  employee_id     Int               @id @default(autoincrement())
+  first_name      String            @db.VarChar(255)
+  last_name       String            @db.VarChar(255)
+  email           String?           @unique(map: "email") @db.VarChar(255)
+  phone_number    String?           @db.VarChar(15)
+  designation     String?           @db.VarChar(255)
+  date_of_joining DateTime?         @db.Date
+  status          employees_status? @default(Active)
+  created_at      DateTime?         @default(now()) @db.Timestamp(0)
+  attendance      attendance[]
+  leaves          leaves[]
+  login_logout    login_logout[]
+}
+
+model invoice_items {
+  invoice_item_id Int      @id @default(autoincrement())
+  invoice_id      Int
+  product_id      Int
+  quantity        Int
+  unit_price      Decimal  @db.Decimal(10, 2)
+  total_price     Decimal  @db.Decimal(12, 2)
+  invoices        invoices @relation(fields: [invoice_id], references: [invoice_id], onDelete: NoAction, onUpdate: NoAction, map: "invoice_items_ibfk_1")
+  products        products @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "invoice_items_ibfk_2")
+
+  @@index([invoice_id], map: "invoice_id")
+  @@index([product_id], map: "product_id")
+}
+
+model invoices {
+  invoice_id     Int                      @id @default(autoincrement())
+  invoice_number String                   @unique(map: "invoice_number") @db.VarChar(50)
+  customer_id    Int
+  invoice_date   DateTime                 @db.Date
+  due_date       DateTime?                @db.Date
+  total_amount   Decimal                  @db.Decimal(12, 2)
+  tax_amount     Decimal                  @db.Decimal(12, 2)
+  grand_total    Decimal                  @db.Decimal(12, 2)
+  is_gst_bill    Boolean?                 @default(true)
+  payment_status invoices_payment_status? @default(Pending)
+  created_at     DateTime?                @default(now()) @db.Timestamp(0)
+  invoice_items  invoice_items[]
+  customers      customers                @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "invoices_ibfk_1")
+  payments       payments[]
+
+  @@index([customer_id], map: "customer_id")
+}
+
+model leaves {
+  leave_id         Int                  @id @default(autoincrement())
+  employee_id      Int
+  leave_type       leaves_leave_type
+  leave_start_date DateTime             @db.Date
+  leave_end_date   DateTime             @db.Date
+  leave_status     leaves_leave_status? @default(Pending)
+  employees        employees            @relation(fields: [employee_id], references: [employee_id], onDelete: NoAction, onUpdate: NoAction, map: "leaves_ibfk_1")
+
+  @@index([employee_id], map: "employee_id")
+}
+
+model login_logout {
+  log_id      Int                  @id @default(autoincrement())
+  employee_id Int
+  login_time  DateTime             @db.Timestamp(0)
+  logout_time DateTime?            @db.Timestamp(0)
+  status      login_logout_status? @default(LoggedIn)
+  date        DateTime             @db.Date
+  created_at  DateTime?            @default(now()) @db.Timestamp(0)
+  employees   employees            @relation(fields: [employee_id], references: [employee_id], onDelete: NoAction, onUpdate: NoAction, map: "login_logout_ibfk_1")
+
+  @@index([employee_id], map: "employee_id")
+}
+
+model payments {
+  payment_id   Int                   @id @default(autoincrement())
+  invoice_id   Int
+  payment_date DateTime              @db.Date
+  payment_mode payments_payment_mode
+  amount       Decimal               @db.Decimal(12, 2)
+  created_at   DateTime?             @default(now()) @db.Timestamp(0)
+  invoices     invoices              @relation(fields: [invoice_id], references: [invoice_id], onDelete: NoAction, onUpdate: NoAction, map: "payments_ibfk_1")
+
+  @@index([invoice_id], map: "invoice_id")
+}
+
+model products {
+  product_id            Int                     @id @default(autoincrement())
+  name                  String                  @db.VarChar(255)
+  hsn_code              String?                 @db.VarChar(10)
+  price                 Decimal                 @db.Decimal(10, 2)
+  gst_rate              Decimal?                @default(0.00) @db.Decimal(5, 2)
+  is_gst_applicable     Boolean?                @default(true)
+  stock_quantity        Int?                    @default(0)
+  created_at            DateTime?               @default(now()) @db.Timestamp(0)
+  ecommerce_order_items ecommerce_order_items[]
+  invoice_items         invoice_items[]
+}
+
+model taxes {
+  tax_id     Int       @id @default(autoincrement())
+  tax_name   String    @db.VarChar(50)
+  tax_rate   Decimal   @db.Decimal(5, 2)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model working_hours_config {
+  id                    Int     @id
+  daily_expected_hours  Decimal @db.Decimal(5, 2)
+  weekly_expected_hours Decimal @db.Decimal(5, 2)
+}
+
+enum leaves_leave_type {
+  Sick
+  Casual
+  Paid
+}
+
+enum payments_payment_mode {
+  Cash
+  Card
+  Online
+  Cheque
+}
+
+enum attendance_status {
+  Present
+  Absent
+  Leave
+  Holiday
+}
+
+enum login_logout_status {
+  LoggedIn
+  LoggedOut
+}
+
+enum ecommerce_orders_status {
+  Pending
+  Shipped
+  Delivered
+  Cancelled
+}
+
+enum leaves_leave_status {
+  Approved
+  Pending
+  Rejected
+}
+
+enum employees_status {
+  Active
+  Inactive
+  Leave
+}
+
+enum invoices_payment_status {
+  Pending
+  Paid
+  Overdue
+}
