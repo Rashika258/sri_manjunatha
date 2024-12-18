@@ -8,19 +8,39 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeftIcon, PlusIcon, Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from "@/components/ui/form";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Form,
+} from "@/components/ui/form";
 import { SheetFooter } from "@/components/ui/sheet";
-import { TableHeader, TableRow, TableCell, TableBody, Table } from "@/components/ui/table";
+import {
+  TableHeader,
+  TableRow,
+  TableCell,
+  TableBody,
+  Table,
+} from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
-type Item = {
-  item: string;
+type InvoiceItem = {
+  product_name: string;
   quantity: number;
+  hsn?: number;
   bags: number;
-  price: number;
-  total: number;
+  unit_price: number;
+  total_price: number;
 };
 
 type Company = {
@@ -30,10 +50,19 @@ type Company = {
 };
 
 type FormData = {
-  billNo: string;
+  invoice_number: string;
   gstin: string;
-  company_name: string;
-  items: Item[];
+  customer_name: string;
+  customer_id: number;
+  customer_address: string;
+  customer_email: string;
+  customer_phone: string;
+  invoice_date: Date;
+  total_amount: number;
+  is_gst_bill: boolean;
+  tax_amount: number;
+  payment_status: 'Pending' | 'Paid' | 'Overdue';
+  invoice_items: InvoiceItem[];
 };
 
 const itemsList = [
@@ -52,11 +81,20 @@ const BillingForm = () => {
 
   // Define schema for form validation
   const FormSchema = z.object({
-    billNo: z
+    invoice_number: z
       .string({
         required_error: "Please enter the bill number to display.",
       })
       .min(1, { message: "Bill number is required." }),
+
+    customer_id: z
+      .number({
+        required_error: "Please enter the bill number to display.",
+      })
+      .min(1, { message: "Bill number is required." }),
+    invoice_date: z.date({
+      required_error: "Please enter the bill number to display.",
+    }),
 
     gstin: z
       .string({
@@ -64,24 +102,32 @@ const BillingForm = () => {
       })
       .min(1, { message: "GST Number is required." }),
 
-    company_name: z.string({
+    customer_name: z.string({
       required_error: "Please select a company name to display.",
     }),
+    total_amount: z.number({
+      required_error: "Please enter the total amount to display.",
+    }),
+    payment_status: z.string({
+      required_error: "Please select a payment status to display.",
+    }),
 
-    items: z
+    invoice_items: z
       .array(
         z.object({
-          item: z.string().min(1, { message: "Item name is required." }),
+          product_id: z.number().min(1, { message: "Product ID is required." }),
+          product_name: z.string().min(1, { message: "Item name is required." }),
+
           quantity: z
             .number()
             .min(1, { message: "Quantity must be greater than 0." }),
           bags: z
             .number()
             .min(0, { message: "Bags must be greater than or equal to 0." }),
-          price: z
+          unit_price: z
             .number()
             .min(1, { message: "Price must be greater than 0." }),
-          total: z
+          total_price: z
             .number()
             .min(0, { message: "Total must be greater than or equal to 0." }),
         })
@@ -93,31 +139,40 @@ const BillingForm = () => {
     useForm<FormData>({
       resolver: zodResolver(FormSchema),
       defaultValues: {
-        billNo: Date.now().toString(),
+        invoice_number: Date.now().toString(),
+        customer_id: Math.random(),
         gstin: "",
-        company_name: "",
-        items: [{ item: "", quantity: 0, bags: 0, price: 0, total: 0 }],
-      },
+        customer_address: "",
+        customer_email: "",
+        customer_name: "",
+        customer_phone:"",
+        is_gst_bill: false,
+        payment_status: "Pending",
+        tax_amount: 0,
+        total_amount: 0,
+        invoice_date: new Date(),
+        invoice_items: [],
+   },
     });
 
   const { fields, append, remove, update } = useFieldArray({
     control,
-    name: "items",
+    name: "invoice_items",
   });
 
-  const watchItems = watch("items");
+  const watchItems = watch("invoice_items");
 
   const calculateTotalBill = () =>
-    watchItems.reduce((acc, item) => acc + Number(item.total || 0), 0);
+    watchItems.reduce((acc, item) => acc + Number(item.total_price || 0), 0);
 
   const handleItemChange = (
     index: number,
-    field: keyof Item,
+    field: keyof InvoiceItem,
     value: number | string
   ) => {
     const item = { ...fields[index], [field]: value };
-    if (field === "quantity" || field === "bags" || field === "price") {
-      item.total = item.quantity * item.price; // Update total whenever any of these fields change
+    if (field === "quantity" || field === "bags" || field === "unit_price") {
+      item.total_price = item.quantity * item.unit_price; // Update total whenever any of these fields change
     }
     update(index, item);
   };
@@ -153,7 +208,7 @@ const BillingForm = () => {
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="billNo"
+                name="invoice_number"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Bill Number</FormLabel>
@@ -161,7 +216,7 @@ const BillingForm = () => {
                       <Input placeholder="Bill Number" {...field} />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.billNo?.message}
+                      {formState.errors.invoice_number?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -188,10 +243,10 @@ const BillingForm = () => {
 
             <FormField
               control={form.control}
-              name="company_name"
+              name="customer_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company</FormLabel>
+                  <FormLabel>Customer</FormLabel>
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
@@ -210,7 +265,7 @@ const BillingForm = () => {
                     </Select>
                   </FormControl>
                   <FormMessage>
-                    {formState.errors.company_name?.message}
+                    {formState.errors.customer_name?.message}
                   </FormMessage>
                 </FormItem>
               )}
@@ -220,7 +275,7 @@ const BillingForm = () => {
               <h3 className="font-bold text-lg">Items</h3>
               <Button
                 onClick={() =>
-                  append({ item: "", quantity: 0, bags: 0, price: 0, total: 0 })
+                  append({ product_name: "", quantity: 0, bags: 0, unit_price: 0, total_price: 0 })
                 }
                 size={"icon"}
               >
@@ -245,7 +300,7 @@ const BillingForm = () => {
                       <TableCell>
                         <FormField
                           control={form.control}
-                          name={`items.${index}.item`}
+                          name={`invoice_items.${index}.product_name`}
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
@@ -275,38 +330,51 @@ const BillingForm = () => {
                       <TableCell>
                         <Input
                           type="number"
-                          {...register(`items.${index}.quantity`)}
+
+                          {...register(`invoice_items.${index}.quantity`)}
                           defaultValue={field.quantity}
                           onChange={(e) =>
-                            handleItemChange(index, "quantity", Number(e.target.value))
+                            handleItemChange(
+                              index,
+                              "quantity",
+                              Number(e.target.value)
+                            )
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           type="number"
-                          {...register(`items.${index}.bags`)}
+                          {...register(`invoice_items.${index}.bags`)}
                           defaultValue={field.bags}
                           onChange={(e) =>
-                            handleItemChange(index, "bags", Number(e.target.value))
+                            handleItemChange(
+                              index,
+                              "bags",
+                              Number(e.target.value)
+                            )
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           type="number"
-                          {...register(`items.${index}.price`)}
-                          defaultValue={field.price}
+                          {...register(`invoice_items.${index}.unit_price`)}
+                          defaultValue={field.unit_price}
                           onChange={(e) =>
-                            handleItemChange(index, "price", Number(e.target.value))
+                            handleItemChange(
+                              index,
+                              "unit_price",
+                              Number(e.target.value)
+                            )
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           disabled
-                          {...register(`items.${index}.total`)}
-                          value={field.total || 0}
+                          {...register(`invoice_items.${index}.total_price`)}
+                          value={field.total_price || 0}
                         />
                       </TableCell>
                       <TableCell>

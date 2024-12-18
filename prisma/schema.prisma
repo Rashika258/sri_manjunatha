@@ -78,6 +78,7 @@ model invoice_items {
   invoice_id      Int
   product_id      Int
   quantity        Int
+  bags  Int
   unit_price      Decimal  @db.Decimal(10, 2)
   total_price     Decimal  @db.Decimal(12, 2)
   invoices        invoices @relation(fields: [invoice_id], references: [invoice_id], onDelete: NoAction, onUpdate: NoAction, map: "invoice_items_ibfk_1")
