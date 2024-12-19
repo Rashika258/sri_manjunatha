@@ -4,7 +4,6 @@ import { DateRangePicker } from "../ui/date-range-picker";
 import { Button } from "../ui/button";
 import { DateRange } from "react-day-picker";
 import { useRouter } from "next/navigation";
-import { Input } from "../ui/input";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -14,8 +13,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { Table as ReactTable } from "@tanstack/react-table";
 
-
-const AppFilter =<T,> ({
+const AppFilter = <T,>({
   searchQuery,
   handleSearch,
   date,
@@ -34,16 +32,10 @@ const AppFilter =<T,> ({
 
   return (
     <div className="flex justify-between">
-      <AppSearch searchQuery={searchQuery} handleSearch={handleSearch} />
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filter..."
-          value={(table?.getColumn("email")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table?.getColumn("email")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+      <div className="flex items-center gap-2 py-4">
+        <AppSearch searchQuery={searchQuery} handleSearch={handleSearch} />
+        <DateRangePicker date={date} setDate={setDate} />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -59,9 +51,7 @@ const AppFilter =<T,> ({
                   key={column.id}
                   className="capitalize"
                   checked={column.getIsVisible()}
-                  onCheckedChange={(value) =>
-                    column.toggleVisibility(!!value)
-                  }
+                  onCheckedChange={(value) => column.toggleVisibility(!!value)}
                 >
                   {column.id}
                 </DropdownMenuCheckboxItem>
@@ -69,8 +59,7 @@ const AppFilter =<T,> ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex gap-2">
-        <DateRangePicker date={date} setDate={setDate} />
+      <div className="flex items-center gap-2">
         <Button variant="default" onClick={() => router.push(redirectPath)}>
           Add
         </Button>
@@ -80,5 +69,3 @@ const AppFilter =<T,> ({
 };
 
 export default AppFilter;
-
-

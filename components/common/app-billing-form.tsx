@@ -46,8 +46,8 @@ import {
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Company, FormData, InvoiceItem, PaymentStatus } from "@/types";
-
-
+import AppDropdown from "./app-dropdown";
+import AppDateInput from "./app-date-input";
 
 const itemsList = [
   { id: 1, name: "Item A", price: 100 },
@@ -66,7 +66,7 @@ const paymentStatusOptions: PaymentStatus[] = [
   { id: "0987654321B", payment_status: "Pending" },
 ];
 
-const AppBillingForm = ({headerText}: {headerText : string}) => {
+const AppBillingForm = ({ headerText }: { headerText: string }) => {
   const router = useRouter();
 
   const [companyDetails, setCompanyDetails] = useState<Company | null>(null);
@@ -81,7 +81,7 @@ const AppBillingForm = ({headerText}: {headerText : string}) => {
     customer_email: z.string(),
     customer_phone: z.string(),
     is_gst_bill: z.boolean(),
-
+    due_date: z.date(),
     customer_id: z
       .number({
         required_error: "Please enter the bill number to display.",
@@ -146,8 +146,18 @@ const AppBillingForm = ({headerText}: {headerText : string}) => {
         payment_status: "Pending",
         tax_amount: 0,
         total_amount: 0,
+        due_date: new Date(),
         invoice_date: new Date(),
-        invoice_items: [],
+        invoice_items: [
+          {
+            product_id: "",
+            product_name: "",
+            quantity: 0,
+            bags: 0,
+            unit_price: 0,
+            total_price: 0,
+          },
+        ],
       },
     });
 
@@ -200,7 +210,7 @@ const AppBillingForm = ({headerText}: {headerText : string}) => {
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col grow justify-between space-y-4 ">
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               <FormField
                 control={form.control}
                 name="invoice_number"
@@ -242,24 +252,16 @@ const AppBillingForm = ({headerText}: {headerText : string}) => {
                   <FormItem>
                     <FormLabel>Payment Status</FormLabel>
                     <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a payment status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {paymentStatusOptions.map((payment_status) => (
-                            <SelectItem
-                              key={payment_status.id}
-                              value={payment_status.payment_status}
-                            >
-                              {payment_status.payment_status}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <AppDropdown
+                        options={paymentStatusOptions}
+                        field={{
+                          value: field.value,
+                          onChange: field.onChange,
+                        }}
+                        placeholder="Select a payment status"
+                        getOptionLabel={(option) => option.payment_status}
+                        getOptionValue={(option) => option.payment_status}
+                      />
                     </FormControl>
                     <FormMessage>
                       {formState.errors.payment_status?.message}
@@ -267,9 +269,7 @@ const AppBillingForm = ({headerText}: {headerText : string}) => {
                   </FormItem>
                 )}
               />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
+       
               <FormField
                 control={form.control}
                 name="customer_name"
@@ -277,24 +277,16 @@ const AppBillingForm = ({headerText}: {headerText : string}) => {
                   <FormItem>
                     <FormLabel>Customer</FormLabel>
                     <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a company" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {companies.map((company) => (
-                            <SelectItem
-                              key={company.gstin}
-                              value={company.gstin}
-                            >
-                              {company.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <AppDropdown
+                        options={companies}
+                        field={{
+                          value: field.value,
+                          onChange: field.onChange,
+                        }}
+                        placeholder="Select a company"
+                        getOptionLabel={(option) => option.name}
+                        getOptionValue={(option) => option.gstin}
+                      />
                     </FormControl>
                     <FormMessage>
                       {formState.errors.customer_name?.message}
@@ -309,45 +301,35 @@ const AppBillingForm = ({headerText}: {headerText : string}) => {
                 render={({ field }) => (
                   <FormItem className="flex flex-col justify-end">
                     <FormLabel>Invoice Date</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              " pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <AppDateInput
+                      field={field}
+                      formatValue={(value) =>
+                        value ? format(value, "PPP") : ""
+                      } // Custom date format
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="due_date"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col justify-end">
+                    <FormLabel>Due Date</FormLabel>
+                    <AppDateInput
+                      field={field}
+                      formatValue={(value) =>
+                        value ? format(value, "PPP") : ""
+                      } // Custom date format
+                    />
 
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
+            
               <FormField
                 control={form.control}
                 name="customer_address"

@@ -153,7 +153,7 @@ const BillPage = () => {
 
 
       {/* DataTable */}
-      <AppDataTable columns={columns} data={filteredData} />
+      <AppDataTable redirectPath={"/daily-bills/add-bill"} columns={columns} data={filteredData} />
     </div>
     </div>
   );

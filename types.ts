@@ -28,6 +28,7 @@ type InvoiceItem = {
     customer_email: string;
     customer_phone: string;
     invoice_date: Date;
+    due_date?: Date;
     total_amount: number;
     is_gst_bill: boolean;
     tax_amount: number;

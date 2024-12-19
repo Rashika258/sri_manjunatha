@@ -31,11 +31,13 @@ export type TableData = {
 interface DataTableProps<T extends TableData> {
   columns: ColumnDef<T>[];
   data: T[];
+  redirectPath: string
 }
 
 export function AppDataTable<T extends TableData>({
   columns,
   data,
+  redirectPath
 }: DataTableProps<T>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -76,8 +78,8 @@ export function AppDataTable<T extends TableData>({
         handleSearch={(e) => table.setGlobalFilter(e.target.value)}
         date={undefined}
         setDate={() => {}}
-        redirectPath="/add-new"
-        table={table} // Pass the table instance here
+        redirectPath={redirectPath}
+        table={table} 
       />
 
       {/* Table */}

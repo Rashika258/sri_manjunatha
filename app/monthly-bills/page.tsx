@@ -96,7 +96,7 @@ const BillPage = () => {
     <div className={`w-full h-full flex items-center flex-col `}>
       <div className="flex flex-col w-full h-full space-y-4 p-8">
         {/* DataTable */}
-        <AppDataTable columns={columns} data={filteredData} />
+        <AppDataTable redirectPath={"/monthly-bills/add-bill"} columns={columns} data={filteredData} />
       </div>
     </div>
   );
