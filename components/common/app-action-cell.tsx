@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
@@ -11,7 +9,6 @@ import {
   Download,
   Pencil,
   Settings,
-  Settings2Icon,
   Share2,
   Trash,
 } from "lucide-react";

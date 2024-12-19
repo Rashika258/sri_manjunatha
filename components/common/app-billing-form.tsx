@@ -45,43 +45,9 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Company, FormData, InvoiceItem, PaymentStatus } from "@/types";
 
-type InvoiceItem = {
-  product_id: string;
-  product_name: string;
-  quantity: number;
-  hsn?: number;
-  bags: number;
-  unit_price: number;
-  total_price: number;
-};
 
-type Company = {
-  gstin: string;
-  name: string;
-  address: string;
-};
-
-type PaymentStatus = {
-  payment_status: "Pending" | "Paid" | "Overdue";
-  id: string;
-};
-
-type FormData = {
-  invoice_number: string;
-  gstin: string;
-  customer_name: string;
-  customer_id: number;
-  customer_address: string;
-  customer_email: string;
-  customer_phone: string;
-  invoice_date: Date;
-  total_amount: number;
-  is_gst_bill: boolean;
-  tax_amount: number;
-  payment_status: "Pending" | "Paid" | "Overdue";
-  invoice_items: InvoiceItem[];
-};
 
 const itemsList = [
   { id: 1, name: "Item A", price: 100 },
@@ -100,7 +66,7 @@ const paymentStatusOptions: PaymentStatus[] = [
   { id: "0987654321B", payment_status: "Pending" },
 ];
 
-const BillingForm = () => {
+const AppBillingForm = ({headerText}: {headerText : string}) => {
   const router = useRouter();
 
   const [companyDetails, setCompanyDetails] = useState<Company | null>(null);
@@ -225,7 +191,7 @@ const BillingForm = () => {
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto ">
       <div className="flex justify-between items-center pb-4">
-        <h3 className="text-2xl text-foreground">Monthly Bills</h3>
+        <h3 className="text-2xl text-foreground">{headerText}</h3>
         <Button onClick={() => router.back()} variant="link">
           <ArrowLeftIcon className="mr-1 h-4 w-4" />
           Go back
@@ -597,4 +563,4 @@ const BillingForm = () => {
   );
 };
 
-export default BillingForm;
+export default AppBillingForm;

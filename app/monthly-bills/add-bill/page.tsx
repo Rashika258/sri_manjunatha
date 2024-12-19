@@ -1,10 +1,10 @@
 import React from "react";
-import BillingForm from "../(utils)/BillingForm";
+import AppBillingForm from "@/components/common/app-billing-form";
 
 const AddBillingForm = () => {
   return (
     <div className={`w-full h-full flex items-center flex-col `}>
-      <BillingForm  />
+      <AppBillingForm headerText="Monthly Bill"  />
     </div>
   );
 };
