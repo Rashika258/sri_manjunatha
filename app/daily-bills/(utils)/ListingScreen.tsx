@@ -153,7 +153,7 @@ const ListingScreen = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-full space-y-4">
+    <div className="flex flex-col w-full h-full space-y-4 p-8">
       {/* Filter Section */}
       <AppFilter
         searchQuery={searchQuery}

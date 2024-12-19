@@ -13,8 +13,8 @@ const DailyBillsLayout = ({
   return (
     <div
       className={`${
-        isMobile || !open ? "w-full" : "w-[calc(100vw-16rem)]"
-      } p-8 mt-[60px] h-full flex `}
+        isMobile || !open ? "w-screen" : "w-[calc(100vw-16rem)]"
+      }  mt-[60px]  flex h-full overflow-hidden `}
     >
       {children}
     </div>

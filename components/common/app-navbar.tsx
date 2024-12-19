@@ -22,7 +22,7 @@ const AppNavbar = () => {
   return (
     <nav
       className={`${
-        isMobile || !open ? "w-full" : "w-[calc(100vw-16rem)]"
+        isMobile || !open ? "w-screen" : "w-[calc(100vw-16rem)]"
       } flex items-center justify-between py-4 px-8 fixed top-0 bg-navbar-background h-[60px]`}
     >
       <div className="flex items-center">
