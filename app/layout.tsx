@@ -34,7 +34,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           <SidebarProvider>
             <AppSidebar />
-            <main className={`h-screen w-screen flex flex-col overflow-auto`}>
+            <main className={`h-screen w-screen flex flex-col overflow-hidden`}>
               <Appbar />
               {children}
             </main>

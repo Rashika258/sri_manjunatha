@@ -160,6 +160,7 @@ const ListingScreen = () => {
         handleSearch={handleSearch}
         date={date}
         setDate={setDate}
+        redirectPath={"/daily-bills/add-bill"}
       />
 
       {/* DataTable */}

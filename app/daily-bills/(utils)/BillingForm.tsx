@@ -33,8 +33,11 @@ import {
   Table,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { AppDatePicker } from "@/components/common/app-datepicker";
 
 type InvoiceItem = {
+  product_id: string;
   product_name: string;
   quantity: number;
   hsn?: number;
@@ -49,6 +52,11 @@ type Company = {
   address: string;
 };
 
+type PaymentStatus = {
+  payment_status: "Pending" | "Paid" | "Overdue";
+  id: string;
+};
+
 type FormData = {
   invoice_number: string;
   gstin: string;
@@ -61,7 +69,7 @@ type FormData = {
   total_amount: number;
   is_gst_bill: boolean;
   tax_amount: number;
-  payment_status: 'Pending' | 'Paid' | 'Overdue';
+  payment_status: "Pending" | "Paid" | "Overdue";
   invoice_items: InvoiceItem[];
 };
 
@@ -76,16 +84,27 @@ const companies: Company[] = [
   { gstin: "0987654321B", name: "Company B", address: "456 Avenue, City B" },
 ];
 
+const paymentStatusOptions: PaymentStatus[] = [
+  { id: "1234567890A", payment_status: "Paid" },
+  { id: "0987654321B", payment_status: "Overdue" },
+  { id: "0987654321B", payment_status: "Pending" },
+];
+
 const BillingForm = () => {
+  const router = useRouter();
+
   const [companyDetails, setCompanyDetails] = useState<Company | null>(null);
 
-  // Define schema for form validation
   const FormSchema = z.object({
     invoice_number: z
       .string({
         required_error: "Please enter the bill number to display.",
       })
       .min(1, { message: "Bill number is required." }),
+    customer_address: z.string(),
+    customer_email: z.string(),
+    customer_phone: z.string(),
+    is_gst_bill: z.boolean(),
 
     customer_id: z
       .number({
@@ -105,9 +124,8 @@ const BillingForm = () => {
     customer_name: z.string({
       required_error: "Please select a company name to display.",
     }),
-    total_amount: z.number({
-      required_error: "Please enter the total amount to display.",
-    }),
+    tax_amount: z.number(),
+    total_amount: z.number(),
     payment_status: z.string({
       required_error: "Please select a payment status to display.",
     }),
@@ -116,7 +134,9 @@ const BillingForm = () => {
       .array(
         z.object({
           product_id: z.number().min(1, { message: "Product ID is required." }),
-          product_name: z.string().min(1, { message: "Item name is required." }),
+          product_name: z
+            .string()
+            .min(1, { message: "Item name is required." }),
 
           quantity: z
             .number()
@@ -145,14 +165,14 @@ const BillingForm = () => {
         customer_address: "",
         customer_email: "",
         customer_name: "",
-        customer_phone:"",
+        customer_phone: "",
         is_gst_bill: false,
         payment_status: "Pending",
         tax_amount: 0,
         total_amount: 0,
         invoice_date: new Date(),
         invoice_items: [],
-   },
+      },
     });
 
   const { fields, append, remove, update } = useFieldArray({
@@ -192,7 +212,6 @@ const BillingForm = () => {
     resolver: zodResolver(FormSchema),
   });
 
-  const router = useRouter();
   return (
     <div className="flex flex-col grow w-full overflow-hidden ">
       <div className="flex justify-between items-center pb-4">
@@ -211,7 +230,7 @@ const BillingForm = () => {
                 name="invoice_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Bill Number</FormLabel>
+                    <FormLabel>Invoice Number</FormLabel>
                     <FormControl>
                       <Input placeholder="Bill Number" {...field} />
                     </FormControl>
@@ -240,6 +259,72 @@ const BillingForm = () => {
                 )}
               />
             </div>
+            <FormField
+              control={form.control}
+              name="customer_address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Customer Address</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Customer Address"
+                      {...field}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="customer_phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Customer Phone</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Customer Phone"
+                      {...field}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="customer_email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Customer Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Customer Email"
+                      {...field}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="invoice_date"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Invoice Date</FormLabel>
+                  <FormControl>
+                    <AppDatePicker />
+                  </FormControl>
+                  <FormMessage>
+                    {formState.errors.invoice_date?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
 
             <FormField
               control={form.control}
@@ -271,11 +356,51 @@ const BillingForm = () => {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="payment_status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment Status</FormLabel>
+                  <FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a payment status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {paymentStatusOptions.map((payment_status) => (
+                          <SelectItem
+                            key={payment_status.id}
+                            value={payment_status.payment_status}
+                          >
+                            {payment_status.payment_status}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage>
+                    {formState.errors.payment_status?.message}
+                  </FormMessage>
+                </FormItem>
+              )}
+            />
+
             <div className="flex items-center justify-between ">
-              <h3 className="font-bold text-lg">Items</h3>
+              <h3 className="font-bold text-lg">Invoice Items</h3>
               <Button
                 onClick={() =>
-                  append({ product_name: "", quantity: 0, bags: 0, unit_price: 0, total_price: 0 })
+                  append({
+                    product_id: "",
+                    product_name: "",
+                    quantity: 0,
+                    bags: 0,
+                    unit_price: 0,
+                    total_price: 0,
+                  })
                 }
                 size={"icon"}
               >
@@ -286,7 +411,7 @@ const BillingForm = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="w-full flex">
-                    <TableCell>Item</TableCell>
+                    <TableCell>Product</TableCell>
                     <TableCell>Quantity</TableCell>
                     <TableCell>Bags</TableCell>
                     <TableCell>Price</TableCell>
@@ -330,7 +455,6 @@ const BillingForm = () => {
                       <TableCell>
                         <Input
                           type="number"
-
                           {...register(`invoice_items.${index}.quantity`)}
                           defaultValue={field.quantity}
                           onChange={(e) =>
@@ -400,7 +524,22 @@ const BillingForm = () => {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => form.reset()}
+                onClick={() =>
+                  form.reset({
+                    invoice_number: Date.now().toString(),
+                    customer_id: Math.random(),
+                    gstin: "",
+                    customer_name: "",
+                    customer_email: "",
+                    customer_phone: "",
+                    is_gst_bill: false,
+                    payment_status: "Pending",
+                    tax_amount: 0,
+                    total_amount: 0,
+                    invoice_date: new Date(),
+                    invoice_items: [],
+                  })
+                }
               >
                 Reset
               </Button>

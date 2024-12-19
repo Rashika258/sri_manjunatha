@@ -10,11 +10,13 @@ const AppFilter = ({
   handleSearch,
   date,
   setDate,
+  redirectPath
 }: {
   searchQuery: string;
   handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   date: DateRange | undefined;
   setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  redirectPath: string;
 }) => {
   const router = useRouter();
 
@@ -25,7 +27,7 @@ const AppFilter = ({
         <DateRangePicker date={date} setDate={setDate} />
         <Button
           variant={"default"}
-          onClick={() => router.push("/monthly-bills/add-bill")}
+          onClick={() => router.push(redirectPath)}
         >
           Add
         </Button>
