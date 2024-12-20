@@ -2,7 +2,7 @@
 import { useSidebar } from '@/components/ui/sidebar';
 import React from 'react';
 
-const InventoryLayout =  ({
+const ProductLayout =  ({
     children,
   }: Readonly<{
     children: React.ReactNode;
@@ -20,4 +20,4 @@ const InventoryLayout =  ({
     );
 }
 
-export default InventoryLayout;
+export default ProductLayout;
