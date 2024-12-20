@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 "use client";
 import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
@@ -8,7 +7,6 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeftIcon,
-  CalendarIcon,
   PlusIcon,
   Trash2Icon,
 } from "lucide-react";
@@ -37,17 +35,11 @@ import {
   Table,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils";
 import { Company, FormData, InvoiceItem, PaymentStatus } from "@/types";
 import AppDropdown from "./app-dropdown";
 import AppDateInput from "./app-date-input";
+import AppFormHeader from "./app-form-header";
 
 const itemsList = [
   { id: 1, name: "Item A", price: 100 },
@@ -66,72 +58,71 @@ const paymentStatusOptions: PaymentStatus[] = [
   { id: "0987654321B", payment_status: "Pending" },
 ];
 
+const FormSchema = z.object({
+  invoice_number: z
+    .string({
+      required_error: "Please enter the bill number to display.",
+    })
+    .min(1, { message: "Bill number is required." }),
+  customer_address: z.string(),
+  customer_email: z.string(),
+  customer_phone: z.string(),
+  is_gst_bill: z.boolean(),
+  due_date: z.date(),
+  customer_id: z
+    .number({
+      required_error: "Please enter the bill number to display.",
+    })
+    .min(1, { message: "Bill number is required." }),
+  invoice_date: z.date({
+    required_error: "Please enter the bill number to display.",
+  }),
+
+  gstin: z
+    .string({
+      required_error: "Please enter the GST Number to display.",
+    })
+    .min(1, { message: "GST Number is required." }),
+
+  customer_name: z.string({
+    required_error: "Please select a company name to display.",
+  }),
+  tax_amount: z.number(),
+  total_amount: z.number(),
+  payment_status: z.string({
+    required_error: "Please select a payment status to display.",
+  }),
+
+  invoice_items: z
+    .array(
+      z.object({
+        product_id: z.number().min(1, { message: "Product ID is required." }),
+        product_name: z
+          .string()
+          .min(1, { message: "Item name is required." }),
+
+        quantity: z
+          .number()
+          .min(1, { message: "Quantity must be greater than 0." }),
+        bags: z
+          .number()
+          .min(0, { message: "Bags must be greater than or equal to 0." }),
+        unit_price: z
+          .number()
+          .min(1, { message: "Price must be greater than 0." }),
+        total_price: z
+          .number()
+          .min(0, { message: "Total must be greater than or equal to 0." }),
+      })
+    )
+    .min(1, { message: "At least one item is required." }),
+});
+
 const AppBillingForm = ({ headerText }: { headerText: string }) => {
   const router = useRouter();
-
   const [companyDetails, setCompanyDetails] = useState<Company | null>(null);
 
-  const FormSchema = z.object({
-    invoice_number: z
-      .string({
-        required_error: "Please enter the bill number to display.",
-      })
-      .min(1, { message: "Bill number is required." }),
-    customer_address: z.string(),
-    customer_email: z.string(),
-    customer_phone: z.string(),
-    is_gst_bill: z.boolean(),
-    due_date: z.date(),
-    customer_id: z
-      .number({
-        required_error: "Please enter the bill number to display.",
-      })
-      .min(1, { message: "Bill number is required." }),
-    invoice_date: z.date({
-      required_error: "Please enter the bill number to display.",
-    }),
-
-    gstin: z
-      .string({
-        required_error: "Please enter the GST Number to display.",
-      })
-      .min(1, { message: "GST Number is required." }),
-
-    customer_name: z.string({
-      required_error: "Please select a company name to display.",
-    }),
-    tax_amount: z.number(),
-    total_amount: z.number(),
-    payment_status: z.string({
-      required_error: "Please select a payment status to display.",
-    }),
-
-    invoice_items: z
-      .array(
-        z.object({
-          product_id: z.number().min(1, { message: "Product ID is required." }),
-          product_name: z
-            .string()
-            .min(1, { message: "Item name is required." }),
-
-          quantity: z
-            .number()
-            .min(1, { message: "Quantity must be greater than 0." }),
-          bags: z
-            .number()
-            .min(0, { message: "Bags must be greater than or equal to 0." }),
-          unit_price: z
-            .number()
-            .min(1, { message: "Price must be greater than 0." }),
-          total_price: z
-            .number()
-            .min(0, { message: "Total must be greater than or equal to 0." }),
-        })
-      )
-      .min(1, { message: "At least one item is required." }),
-  });
-
-  const { register, control, handleSubmit, setValue, watch, formState } =
+  const { register, control, handleSubmit, watch, formState } =
     useForm<FormData>({
       resolver: zodResolver(FormSchema),
       defaultValues: {
@@ -200,13 +191,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
 
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto ">
-      <div className="flex justify-between items-center pb-4">
-        <h3 className="text-2xl text-foreground">{headerText}</h3>
-        <Button onClick={() => router.back()} variant="link">
-          <ArrowLeftIcon className="mr-1 h-4 w-4" />
-          Go back
-        </Button>
-      </div>
+      <AppFormHeader  headerText={headerText} />
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col grow justify-between space-y-4 ">

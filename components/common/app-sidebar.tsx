@@ -19,6 +19,7 @@ import {
   CalendarClockIcon,
   HandshakeIcon,
   Home,
+  Package2,
   ReceiptIndianRupeeIcon,
   ReceiptTextIcon,
   UsersIcon,
@@ -42,23 +43,11 @@ const items = [
     url: "/daily-bills",
     icon: ReceiptIndianRupeeIcon,
   },
-  // {
-  //   title: "Bills",
-  //   icon: HandCoinsIcon,
-  //   disabled: true,
-  //   children: [
-  //     {
-  //       title: "Monthly Bills",
-  //       url: "/monthly-bills",
-  //       icon: ReceiptTextIcon,
-  //     },
-  //     {
-  //       title: "Daily Bills",
-  //       url: "/daily-bills",
-  //       icon: ReceiptIndianRupeeIcon,
-  //     },
-  //   ],
-  // },
+  {
+    title: "Products",
+    url: "/products",
+    icon: Package2,
+  },
   {
     title: "Attendance",
     url: "/attendance",

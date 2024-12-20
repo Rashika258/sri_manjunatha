@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import { AppDataTable } from "@/components/common/app-datatable";
 import { ColumnDef } from "@tanstack/react-table";
@@ -95,7 +96,6 @@ const BillPage = () => {
   return (
     <div className={`w-full h-full flex items-center flex-col `}>
       <div className="flex flex-col w-full h-full space-y-4 p-8">
-        {/* DataTable */}
         <AppDataTable redirectPath={"/monthly-bills/add-bill"} columns={columns} data={filteredData} />
       </div>
     </div>
