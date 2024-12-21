@@ -3,18 +3,18 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { AppFormHeader } from "@/components/common/index";
 import {
+  Checkbox,
   FormField,
   FormItem,
   FormLabel,
   FormControl,
   FormMessage,
   Form,
-} from "@/components/ui/form";
-import AppFormHeader from "@/components/common/app-form-header";
-import  { Checkbox } from "@/components/ui/checkbox";
+  Button,
+  Input,
+} from "@/components/ui/index";
 
 // Define validation schema using Zod
 const productSchema = z.object({

@@ -1,19 +1,23 @@
 import React from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { FormControl } from "../ui/form";
-import { Button } from "../ui/button";
 import { CalendarIcon } from "lucide-react";
-import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils"; // Adjust the import path based on your project structure
+import { cn } from "@/lib/utils";
+import {
+  Button,
+  FormControl,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Calendar,
+} from "@/components/ui/index";
 
 interface AppDateInputProps<T extends Date | undefined> {
   field: {
     value: T;
     onChange: (value: T) => void;
   };
-  formatValue?: (value: T) => string; // Custom formatting for the value
-  disabledDates?: (date: Date) => boolean; // Optional custom disabled dates logic
+  formatValue?: (value: T) => string;
+  disabledDates?: (date: Date) => boolean;
 }
 
 const AppDateInput = <T extends Date | undefined>({
@@ -22,10 +26,10 @@ const AppDateInput = <T extends Date | undefined>({
   disabledDates,
 }: AppDateInputProps<T>) => {
   const formattedValue = formatValue
-    ? formatValue(field.value) // If a custom format function is provided, use it
+    ? formatValue(field.value)
     : field.value instanceof Date
-    ? format(field.value, "PPP") // Default date formatting if it's a Date
-    : ""; // If it's undefined, show nothing
+    ? format(field.value, "PPP")
+    : "";
 
   return (
     <Popover>

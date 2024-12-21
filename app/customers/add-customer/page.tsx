@@ -3,8 +3,7 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+
 import {
   FormField,
   FormItem,
@@ -12,10 +11,9 @@ import {
   FormControl,
   FormMessage,
   Form,
-} from "@/components/ui/form";
-import AppFormHeader from "@/components/common/app-form-header";
-import { Checkbox } from "@/components/ui/checkbox";
-import AppDateInput from "@/components/common/app-date-input";
+  Input, Button
+} from "@/components/ui/index";
+import {AppDateInput, AppFormHeader} from "@/components/common/index";
 import { format } from "date-fns";
 
 // Define validation schema using Zod

@@ -2,12 +2,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { AppDataTable } from "@/components/common/app-datatable";
 import { ColumnDef } from "@tanstack/react-table";
-import { AppActionCell } from "@/components/common/app-action-cell";
-import { format } from "date-fns"; // Using date-fns to format the date
+import { AppActionCell, AppDataTable } from "@/components/common/index";
+import { format } from "date-fns"; 
 
-// Mock customer data
 const mockCustomers = [
   {
     customer_id: 1,

@@ -1,15 +1,16 @@
 import React from "react";
 import AppSearch from "./app-search";
-import { DateRangePicker } from "../ui/date-range-picker";
-import { Button } from "../ui/button";
 import { DateRange } from "react-day-picker";
 import { useRouter } from "next/navigation";
+
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+  Button,
+  DateRangePicker,
+} from "@/components/ui/index";
 import { ChevronDown } from "lucide-react";
 import { Table as ReactTable } from "@tanstack/react-table";
 
@@ -19,14 +20,14 @@ const AppFilter = <T,>({
   date,
   setDate,
   redirectPath,
-  table, // Accept the table instance
+  table,
 }: {
   searchQuery: string;
   handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
   date: DateRange | undefined;
   setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   redirectPath: string;
-  table: ReactTable<T>; // Specify the type for the table instance
+  table: ReactTable<T>;
 }) => {
   const router = useRouter();
 

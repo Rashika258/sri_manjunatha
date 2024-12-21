@@ -1,13 +1,8 @@
 "use client";
 import React from "react";
-import { AppDataTable } from "@/components/common/app-datatable";
-import { AppActionCell } from "@/components/common/app-action-cell";
-import AppTooltip from "@/components/common/app-tooltip";
 import { ColumnDef } from "@tanstack/react-table";
-import AppPaymentStatus from "@/components/common/app-payment-status";
 import { useDailyBills } from "./(api-utils)";
-import AppTableSkeleton from "@/components/common/app-table-skeleton";
-import AppTableError from "@/components/common/app-table-error";
+import {AppTableError, AppTableSkeleton, AppActionCell, AppDataTable, AppPaymentStatus, AppTooltip} from "@/components/common/index";
 import { DailyBill } from "@/types";
 
 

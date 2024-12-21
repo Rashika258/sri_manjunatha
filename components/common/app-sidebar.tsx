@@ -1,10 +1,6 @@
 "use client";
 
 import {
-  Collapsible,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
@@ -13,7 +9,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components/ui/index";
+
 import {
   BriefcaseBusinessIcon,
   CalendarClockIcon,
@@ -71,7 +68,7 @@ const items = [
 ];
 
 export function AppSidebar() {
-  const pathname = usePathname(); 
+  const pathname = usePathname();
   return (
     <Sidebar>
       <SidebarContent>
@@ -80,39 +77,18 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <Collapsible key={item.url}>
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton
-                      variant={pathname === item.url ? "default" : null}
-                       isActive={pathname === item.url} 
-                        // className={`${item.disabled ? "pointer-events-none opacity-60" : ""}`}
-                        asChild
-                      >
-                        <a href={item.url}>
-                          <item.icon />
-                          <span>{item.title}</span>
-                        </a>
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-
-                    {/* {item.children && (
-                      <CollapsibleContent>
-                        {item.children.map((child) => (
-                          <SidebarMenuItem key={child.url}>
-                            <SidebarMenuButton asChild>
-                              <a href={child.url}>
-                                <child.icon />
-                                <span>{child.title}</span>
-                              </a>
-                            </SidebarMenuButton>
-                            <SidebarSeparator />
-                          </SidebarMenuItem>
-                        ))}
-                      </CollapsibleContent>
-                    )} */}
-                  </SidebarMenuItem>
-                </Collapsible>
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    variant={pathname === item.url ? "default" : null}
+                    isActive={pathname === item.url}
+                    asChild
+                  >
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               ))}
             </SidebarMenu>
           </SidebarGroupContent>

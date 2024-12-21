@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { AppDataTable } from "@/components/common/app-datatable";
+import { AppDataTable } from "@/components/common/index";
 import { ColumnDef } from "@tanstack/react-table";
 import { addDays, isWithinInterval, parseISO } from "date-fns";
 import React, { useMemo, useState } from "react";

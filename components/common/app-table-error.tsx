@@ -1,6 +1,6 @@
 import React from 'react';
-import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
-import { AlertCircle, Terminal } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/index";
+import { AlertCircle } from 'lucide-react';
 
 const AppTableError = ({errorText}:{errorText?:string}) => {
   return (

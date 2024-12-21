@@ -4,20 +4,17 @@ import {
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "../ui/tooltip";
+} from "@/components/ui/index";
 
-const AppTooltip = ({
-  text,
-}: {
-  text: string;
-}) => {
+const AppTooltip = ({ text }: { text: string }) => {
   const textRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
 
-  // Check if the text overflows the container width
   useEffect(() => {
     if (textRef.current) {
-      setIsOverflowing(textRef.current.scrollWidth > textRef.current.clientWidth);
+      setIsOverflowing(
+        textRef.current.scrollWidth > textRef.current.clientWidth
+      );
     }
   }, [text]);
 
@@ -28,9 +25,9 @@ const AppTooltip = ({
           <div
             ref={textRef}
             style={{
-              whiteSpace: "nowrap", // Prevent wrapping of text
-              overflow: "hidden", // Hide overflowing text
-              textOverflow: isOverflowing ? "ellipsis" : "clip", // Add ellipsis if overflowing
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: isOverflowing ? "ellipsis" : "clip",
             }}
           >
             {text}

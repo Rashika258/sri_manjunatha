@@ -13,7 +13,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -21,7 +20,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+  Button
+} from "@/components/ui/index";
 import AppFilter from "./app-filter";
 
 export type TableData = {
@@ -34,11 +34,11 @@ interface DataTableProps<T extends TableData> {
   redirectPath: string
 }
 
-export function AppDataTable<T extends TableData>({
+const AppDataTable = <T extends TableData>({
   columns,
   data,
-  redirectPath
-}: DataTableProps<T>) {
+  redirectPath,
+}: DataTableProps<T>) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -160,4 +160,6 @@ export function AppDataTable<T extends TableData>({
     </div>
   );
 }
+
+export default AppDataTable
 

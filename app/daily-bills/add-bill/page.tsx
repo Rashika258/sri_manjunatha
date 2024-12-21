@@ -1,4 +1,4 @@
-import AppBillingForm from "@/components/common/app-billing-form";
+import {AppBillingForm} from "@/components/common/index";
 import React from "react";
 
 const AppBillPage = () => {

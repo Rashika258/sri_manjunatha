@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 "use client";
 import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
@@ -6,40 +7,33 @@ import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  ArrowLeftIcon,
   PlusIcon,
   Trash2Icon,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-  Form,
-} from "@/components/ui/form";
+
 import {
   TableHeader,
   TableRow,
   TableCell,
   TableBody,
   Table,
-} from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  Form,
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Input,
+} from "@/components/ui/index";
 import { format } from "date-fns";
 import { Company, FormData, InvoiceItem, PaymentStatus } from "@/types";
-import AppDropdown from "./app-dropdown";
-import AppDateInput from "./app-date-input";
-import AppFormHeader from "./app-form-header";
+import {AppDropdown, AppDateInput, AppFormHeader} from '@/components/common/index' 
 
 const itemsList = [
   { id: 1, name: "Item A", price: 100 },
@@ -119,7 +113,6 @@ const FormSchema = z.object({
 });
 
 const AppBillingForm = ({ headerText }: { headerText: string }) => {
-  const router = useRouter();
   const [companyDetails, setCompanyDetails] = useState<Company | null>(null);
 
   const { register, control, handleSubmit, watch, formState } =

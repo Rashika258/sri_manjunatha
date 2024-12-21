@@ -2,12 +2,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { AppDataTable } from "@/components/common/app-datatable";
+import { AppDataTable, AppActionCell } from "@/components/common/index";
 import { ColumnDef } from "@tanstack/react-table";
-import { AppActionCell } from "@/components/common/app-action-cell";
-import { format } from "date-fns"; // Using date-fns to format the date
+import { format } from "date-fns"; 
 
-// Mock employee data
 const mockEmployees = [
   {
     employee_id: 1,
@@ -66,7 +64,7 @@ const EmployeeTable = () => {
       <AppDataTable
         columns={columns}
         data={data}
-        redirectPath={"/employees/add-employee"} // Redirect path for adding a new employee
+        redirectPath={"/employees/add-employee"} 
       />
     </div>
   );

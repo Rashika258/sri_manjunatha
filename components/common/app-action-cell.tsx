@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
+  Button
+} from "@/components/ui/index";
 import {
   Download,
   Pencil,
@@ -36,7 +36,7 @@ const actions = [
   },
 ];
 
-export function AppActionCell({ id }: { id: number }) {
+const AppActionCell = ({ id }: { id: number }) =>{
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -60,3 +60,5 @@ export function AppActionCell({ id }: { id: number }) {
     </Popover>
   );
 }
+
+export default AppActionCell 
