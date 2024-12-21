@@ -122,7 +122,7 @@ export function AppDataTable<T extends TableData>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center flex items-center justify-center"
                 >
                   No results.
                 </TableCell>

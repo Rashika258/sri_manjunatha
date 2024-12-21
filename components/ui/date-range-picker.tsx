@@ -26,51 +26,47 @@ export function DateRangePicker({
 
 
   return (
-    <div className={cn("grid gap-2", className)}>
-      <Popover>
-        <PopoverTrigger asChild>
-          <>
-          <Button
-            id="date"
-            variant={"outline"}
-            className={cn(
-              "w-[300px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
-                </>
-              ) : (
-                format(date.from, "LLL dd, y")
-              )
-            ) : (
-              <span>Pick a date</span>
-            )}
-            
-          </Button>
-          
-          </>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <>
-          <Calendar
-            initialFocus
-            mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
-            numberOfMonths={2}
-          />
-          {/* <Button  variant={"outline"} onClick={() => setDate(undefined)}>Clear</Button>
-          <Button onClick={() => setDate(undefined)}>Apply</Button> */}
-          </>
-        </PopoverContent>
-      </Popover>
-    </div>
+    <Popover>
+    <PopoverTrigger asChild>
+      <Button
+        id="date"
+        variant={"outline"}
+        className={cn(
+          "w-[300px] justify-start text-left font-normal",
+          !date && "text-muted-foreground"
+        )}
+      >
+        <CalendarIcon className="mr-2 h-4 w-4" />
+        {date?.from ? (
+          date.to ? (
+            <>
+              {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
+            </>
+          ) : (
+            format(date.from, "LLL dd, y")
+          )
+        ) : (
+          <span>Pick a date</span>
+        )}
+      </Button>
+    </PopoverTrigger>
+    <PopoverContent className="w-auto p-0" align="start">
+      <Calendar
+        initialFocus
+        mode="range"
+        defaultMonth={date?.from}
+        selected={date}
+        onSelect={setDate}
+        numberOfMonths={2}
+      />
+      <div className="flex justify-end gap-2 mt-2">
+        <Button variant="outline" onClick={() => setDate(undefined)}>
+          Clear
+        </Button>
+        <Button onClick={() => console.log("Apply clicked")}>Apply</Button>
+      </div>
+    </PopoverContent>
+  </Popover>
+  
   )
 }

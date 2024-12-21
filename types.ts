@@ -36,5 +36,18 @@ type InvoiceItem = {
     invoice_items: InvoiceItem[];
   };
 
+  type DailyBill = {
+    id: number;
+    bill_no: string;
+    company_name: string;
+    date: Date;  
+    items: string;
+    price: number;
+    qty: number;
+    total: number;
+    payment_status: "PAID" | "UNPAID" | "INPROGRESS";
+  };
+  
 
-  export type { InvoiceItem, Company, PaymentStatus, FormData };
+
+  export type { InvoiceItem, Company, PaymentStatus, FormData , DailyBill};
