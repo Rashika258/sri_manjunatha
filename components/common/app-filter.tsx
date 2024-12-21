@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import AppSearch from "./app-search";
 import { DateRange } from "react-day-picker";
