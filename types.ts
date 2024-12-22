@@ -49,5 +49,15 @@ type InvoiceItem = {
   };
   
 
+ type ProductData = {
+    name: string;
+    hsn_code?: number;
+    price: number;
+    monthly_bill_percentage?: number;
+    monthly_bill_price?: number;
+    adinath_price?: number;
+    stock_quantity?: number;
+  }
 
-  export type { InvoiceItem, Company, PaymentStatus, FormData , DailyBill};
+
+  export type { InvoiceItem, Company, PaymentStatus, FormData , DailyBill, ProductData};

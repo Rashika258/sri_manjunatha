@@ -39,7 +39,7 @@ model ecommerce_order_items {
   unit_price       Decimal          @db.Decimal(10, 2)
   total_price      Decimal          @db.Decimal(12, 2)
   ecommerce_orders ecommerce_orders @relation(fields: [order_id], references: [order_id], onDelete: NoAction, onUpdate: NoAction, map: "ecommerce_order_items_ibfk_1")
-  products         products         @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "ecommerce_order_items_ibfk_2")
+  // products         products         @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "ecommerce_order_items_ibfk_2")
 
   @@index([order_id], map: "order_id")
   @@index([product_id], map: "product_id")
@@ -74,15 +74,15 @@ model employees {
 }
 
 model invoice_items {
-  invoice_item_id Int      @id @default(autoincrement())
+  invoice_item_id Int     @id @default(autoincrement())
   invoice_id      Int
   product_id      Int
   quantity        Int
-  bags  Int
-  unit_price      Decimal  @db.Decimal(10, 2)
-  total_price     Decimal  @db.Decimal(12, 2)
-  invoices        invoices @relation(fields: [invoice_id], references: [invoice_id], onDelete: NoAction, onUpdate: NoAction, map: "invoice_items_ibfk_1")
-  products        products @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "invoice_items_ibfk_2")
+  bags            Int
+  unit_price      Decimal @db.Decimal(10, 2)
+  total_price     Decimal @db.Decimal(12, 2)
+  // invoices        invoices @relation(fields: [invoice_id], references: [invoice_id], onDelete: NoAction, onUpdate: NoAction, map: "invoice_items_ibfk_1")
+  // products        products @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction, map: "invoice_items_ibfk_2")
 
   @@index([invoice_id], map: "invoice_id")
   @@index([product_id], map: "product_id")
@@ -100,7 +100,7 @@ model invoices {
   is_gst_bill    Boolean?                 @default(true)
   payment_status invoices_payment_status? @default(Pending)
   created_at     DateTime?                @default(now()) @db.Timestamp(0)
-  invoice_items  invoice_items[]
+  // invoice_items  invoice_items[]
   customers      customers                @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "invoices_ibfk_1")
   payments       payments[]
 
@@ -145,16 +145,19 @@ model payments {
 }
 
 model products {
-  product_id            Int                     @id @default(autoincrement())
-  name                  String                  @db.VarChar(255)
-  hsn_code              String?                 @db.VarChar(10)
-  price                 Decimal                 @db.Decimal(10, 2)
-  gst_rate              Decimal?                @default(0.00) @db.Decimal(5, 2)
-  is_gst_applicable     Boolean?                @default(true)
-  stock_quantity        Int?                    @default(0)
-  created_at            DateTime?               @default(now()) @db.Timestamp(0)
-  ecommerce_order_items ecommerce_order_items[]
-  invoice_items         invoice_items[]
+  product_id              Int       @id @default(autoincrement())
+  name                    String    @db.VarChar(255)
+  hsn_code                Int?      @default(7308) @db.Int()
+  price                   Decimal   @db.Decimal(10, 2)
+  gst_rate                Decimal?  @default(0.00) @db.Decimal(5, 2)
+  // is_gst_applicable       Boolean?  @default(true)
+  stock_quantity          Int?      @default(1000)
+  created_at              DateTime? @default(now()) @db.Timestamp(0)
+  adinath_price           Decimal   @db.Decimal(10, 2)
+  monthly_bill_price      Decimal   @db.Decimal(10, 2)
+  monthly_bill_percentage Decimal?  @default(0.00) @db.Decimal(5, 2)
+  // ecommerce_order_items ecommerce_order_items[]
+  // invoice_items         invoice_items[]
 }
 
 model taxes {
