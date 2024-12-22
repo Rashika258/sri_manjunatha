@@ -67,6 +67,15 @@ type Customer = {
   created_at?: Date;
 };
 
+
+type ActionItem= {
+  label: string;
+  icon: React.ReactNode; 
+  handler: (value: string) => void;
+  isEnabled: boolean;
+  buttonVariant?: "destructive" | "default" | "secondary" | "ghost";
+}
+
 export type {
   InvoiceItem,
   Company,
@@ -74,5 +83,6 @@ export type {
   FormData,
   DailyBill,
   ProductData,
-  Customer
+  Customer,
+  ActionItem
 };

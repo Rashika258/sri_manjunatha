@@ -1,64 +1,27 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Button
-} from "@/components/ui/index";
-import {
-  Download,
-  Pencil,
-  Settings,
-  Share2,
-  Trash,
-} from "lucide-react";
+import { Button } from "@/components/ui/index";
+import { ActionItem } from "@/types";
 
-const actions = [
-  {
-    label: "Edit",
-    icon: <Pencil />,
-    handler: () => console.log("Edit clicked"),
-  },
-  {
-    label: "Delete",
-    icon: <Trash />,
-    handler: () => console.log("Delete clicked"),
-  },
-  {
-    label: "Download",
-    icon: <Download />,
-    handler: () => console.log("Download clicked"),
-  },
-  {
-    label: "Share",
-    icon: <Share2 />,
-    handler: () => console.log("Share clicked"),
-  },
-];
 
-const AppActionCell = ({ id }: { id: number }) =>{
+
+
+
+const AppActionCell = ({ id, actions }: { id: string , actions: ActionItem[]}) => {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button size={"icon"} variant="secondary">
-          <Settings />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[180px] ">
-        <div className="grid gap-2">
-          {actions.map((action, index) => (
-            <div key={index} className="flex justify-between items-center gap-4">
-                
-              <Button className="w-full items-center justify-between" variant="ghost" onClick={action.handler}>
-              <p> {action.label}</p>
-                {action.icon}
-              </Button>
-            </div>
-          ))}
+    <div className="grid gap-2 grid-flow-col">
+      {actions.map((action, index) => (
+        <div key={index} className="flex justify-between  items-center gap-4">
+          <Button
+            variant={action.buttonVariant ? action.buttonVariant : "ghost"}
+            size={"icon"}
+            onClick={() =>action.handler(id)}
+          >
+            {action.icon}
+          </Button>
         </div>
-      </PopoverContent>
-    </Popover>
+      ))}
+    </div>
   );
-}
+};
 
-export default AppActionCell 
+export default AppActionCell;

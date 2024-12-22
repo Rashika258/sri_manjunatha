@@ -139,6 +139,17 @@ import {
   useSidebar,
 } from "./sidebar";
 import { toast, Toaster } from "sonner";
+import {  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel} from './alert-dialog'
 
 
 export {
@@ -266,5 +277,16 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
   toast,
-  Toaster
+  Toaster,
+  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
 };

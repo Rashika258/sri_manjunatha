@@ -41,7 +41,7 @@ export default function RootLayout({
               >
                 <AppNavbar />
                 {children}
-                <Toaster />
+                <Toaster position="bottom-right" />
               </main>
             </SidebarProvider>
           </ReactQueryClientProvider>

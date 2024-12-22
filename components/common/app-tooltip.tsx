@@ -7,6 +7,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/index";
+import { CircleAlert } from "lucide-react";
 
 const AppTooltip = ({ text }: { text: string }) => {
   const textRef = useRef<HTMLDivElement>(null);
@@ -20,6 +21,9 @@ const AppTooltip = ({ text }: { text: string }) => {
     }
   }, [text]);
 
+  console.log("text======", text);
+  
+
   return (
     <TooltipProvider>
       <Tooltip>
@@ -32,7 +36,7 @@ const AppTooltip = ({ text }: { text: string }) => {
               textOverflow: isOverflowing ? "ellipsis" : "clip",
             }}
           >
-            {text}
+            {text ? text : <NoData />}
           </div>
         </TooltipTrigger>
         {isOverflowing && (
@@ -43,6 +47,12 @@ const AppTooltip = ({ text }: { text: string }) => {
       </Tooltip>
     </TooltipProvider>
   );
+};
+
+const NoData = () => {
+  return (<div className="flex items-center gap-2">
+    <CircleAlert /> <p className="font-light text-sm">No Data</p>
+  </div>);
 };
 
 export default AppTooltip;

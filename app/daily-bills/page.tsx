@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useDailyBills } from "./(api-utils)";
 import {AppTableError, AppTableSkeleton, AppActionCell, AppDataTable, AppPaymentStatus, AppTooltip} from "@/components/common/index";
 import { DailyBill } from "@/types";
+import { Download, Pencil, Share2, Trash } from "lucide-react";
 
 
 const BillPage = () => {
@@ -62,6 +63,29 @@ const BillPage = () => {
       accessorKey: "action",
       header: "Action",
       cell: (info) => <AppActionCell id={info.row.original.id} />,
+    },
+  ];
+
+  const actions = [
+    {
+      label: "Edit",
+      icon: <Pencil />,
+      handler: () => console.log("Edit clicked"),
+    },
+    {
+      label: "Delete",
+      icon: <Trash />,
+      handler: () => console.log("Delete clicked"),
+    },
+    {
+      label: "Download",
+      icon: <Download />,
+      handler: () => console.log("Download clicked"),
+    },
+    {
+      label: "Share",
+      icon: <Share2 />,
+      handler: () => console.log("Share clicked"),
     },
   ];
   return (

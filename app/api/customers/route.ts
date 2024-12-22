@@ -120,6 +120,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    debugger
     const customerId = parseInt(params.id);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

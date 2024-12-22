@@ -1,6 +1,5 @@
 import { Customer } from "@/types";
-import { useQuery } from "@tanstack/react-query";
-const API_BASE_URL = "/api/customers";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const addCustomer = async (customer: Customer): Promise<void> => {
     const response = await fetch("/api/customers", {
@@ -22,7 +21,6 @@ const addCustomer = async (customer: Customer): Promise<void> => {
 
 const getCustomers = async () => {
   try {
-    // debugger
     const response = await fetch('/api/customers', {
       method: "GET",
     });
@@ -40,7 +38,7 @@ const getCustomers = async () => {
 
 const updateCustomer = async (customerId: string, customerData: Customer) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/${customerId}`, {
+    const response = await fetch(`/api/customers/${customerId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -61,7 +59,7 @@ const updateCustomer = async (customerId: string, customerData: Customer) => {
 
 const deleteCustomer = async (customerId: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/${customerId}`, {
+    const response = await fetch(`/api/customers/${customerId}`, {
       method: "DELETE",
     });
 
@@ -82,5 +80,8 @@ const useCustomers = () => {
     queryFn: getCustomers, 
   });
 };
+
+
+
 
 export { addCustomer, getCustomers, updateCustomer, deleteCustomer, useCustomers };
