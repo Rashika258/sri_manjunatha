@@ -1,63 +1,78 @@
 type InvoiceItem = {
-    product_id: string;
-    product_name: string;
-    quantity: number;
-    hsn?: number;
-    bags: number;
-    unit_price: number;
-    total_price: number;
-  };
-  
-  type Company = {
-    gstin: string;
-    name: string;
-    address: string;
-  };
-  
-  type PaymentStatus = {
-    payment_status: "Pending" | "Paid" | "Overdue";
-    id: string;
-  };
-  
-  type FormData = {
-    invoice_number: string;
-    gstin: string;
-    customer_name: string;
-    customer_id: number;
-    customer_address: string;
-    customer_email: string;
-    customer_phone: string;
-    invoice_date: Date;
-    due_date?: Date;
-    total_amount: number;
-    is_gst_bill: boolean;
-    tax_amount: number;
-    payment_status: "Pending" | "Paid" | "Overdue";
-    invoice_items: InvoiceItem[];
-  };
+  product_id: string;
+  product_name: string;
+  quantity: number;
+  hsn?: number;
+  bags: number;
+  unit_price: number;
+  total_price: number;
+};
 
-  type DailyBill = {
-    id: number;
-    bill_no: string;
-    company_name: string;
-    date: Date;  
-    items: string;
-    price: number;
-    qty: number;
-    total: number;
-    payment_status: "PAID" | "UNPAID" | "INPROGRESS";
-  };
-  
+type Company = {
+  gstin: string;
+  name: string;
+  address: string;
+};
 
- type ProductData = {
-    name: string;
-    hsn_code?: number;
-    price: number;
-    monthly_bill_percentage?: number;
-    monthly_bill_price?: number;
-    adinath_price?: number;
-    stock_quantity?: number;
-  }
+type PaymentStatus = {
+  payment_status: "Pending" | "Paid" | "Overdue";
+  id: string;
+};
 
+type FormData = {
+  invoice_number: string;
+  gstin: string;
+  customer_name: string;
+  customer_id: number;
+  customer_address: string;
+  customer_email: string;
+  customer_phone: string;
+  invoice_date: Date;
+  due_date?: Date;
+  total_amount: number;
+  is_gst_bill: boolean;
+  tax_amount: number;
+  payment_status: "Pending" | "Paid" | "Overdue";
+  invoice_items: InvoiceItem[];
+};
 
-  export type { InvoiceItem, Company, PaymentStatus, FormData , DailyBill, ProductData};
+type DailyBill = {
+  id: number;
+  bill_no: string;
+  company_name: string;
+  date: Date;
+  items: string;
+  price: number;
+  qty: number;
+  total: number;
+  payment_status: "PAID" | "UNPAID" | "INPROGRESS";
+};
+
+type ProductData = {
+  name: string;
+  hsn_code?: number;
+  price: number;
+  monthly_bill_percentage?: number;
+  monthly_bill_price?: number;
+  adinath_price?: number;
+  stock_quantity?: number;
+};
+
+type Customer = {
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  gstin?: string;
+  created_at?: Date;
+};
+
+export type {
+  InvoiceItem,
+  Company,
+  PaymentStatus,
+  FormData,
+  DailyBill,
+  ProductData,
+  Customer
+};

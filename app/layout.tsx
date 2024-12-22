@@ -1,12 +1,12 @@
 import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider } from "@/components/ui/index";
+import { SidebarProvider, Toaster } from "@/components/ui/index";
 import { Caveat_Brush, Inter } from "next/font/google";
 import type { Metadata } from "next";
 import React from "react";
 import { AppNavbar, AppSidebar } from "@/components/common/index";
-
-import "./globals.css";
 import { ReactQueryClientProvider } from "@/components/react-query-client-provider";
+import "./globals.css";
+
 
 export const metadata: Metadata = {
   title: "Sri Manjunatha",
@@ -41,6 +41,7 @@ export default function RootLayout({
               >
                 <AppNavbar />
                 {children}
+                <Toaster />
               </main>
             </SidebarProvider>
           </ReactQueryClientProvider>

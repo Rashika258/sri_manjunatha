@@ -1,36 +1,24 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { AppActionCell, AppDataTable } from "@/components/common/index";
-import { format } from "date-fns"; 
-
-const mockCustomers = [
-  {
-    customer_id: 1,
-    name: "John Doe",
-    email: "johndoe@example.com",
-    phone: "1234567890",
-    address: "123 Street, City, Country",
-    created_at: "2024-12-01T12:00:00Z",
-  },
-  {
-    customer_id: 2,
-    name: "Jane Smith",
-    email: "janesmith@example.com",
-    phone: "0987654321",
-    address: "456 Avenue, City, Country",
-    created_at: "2024-12-05T14:00:00Z",
-  },
-  // Add more mock data as needed
-];
+import {
+  AppActionCell,
+  AppDataTable,
+  AppTableError,
+  AppTableSkeleton,
+} from "@/components/common/index";
+import { format } from "date-fns";
+import { useCustomers } from "./(api-utils)/route";
+import { Customer } from "@/types";
 
 const CustomerTable = () => {
-  const [data, setData] = useState(mockCustomers);
+  const { data, isLoading, error } = useCustomers();
+  if (isLoading) return <AppTableSkeleton />;
+  if (error) return <AppTableError />;
+  type ColumnType = ColumnDef<Customer>[];
 
-  // Define columns for the table
-  const columns: ColumnDef<(typeof mockCustomers)[0]>[] = [
+  const columns: ColumnType = [
     { accessorKey: "customer_id", header: "Customer ID" },
     { accessorKey: "name", header: "Name" },
     { accessorKey: "email", header: "Email" },
@@ -40,14 +28,17 @@ const CustomerTable = () => {
       accessorKey: "created_at",
       header: "Created At",
       cell: ({ row }) => {
-        const formattedDate = format(new Date(row.original.created_at), 'dd MMM yyyy');
-        return formattedDate; // Format the created_at date
+        const formattedDate = format(
+          new Date(row.getValue("created_at")),
+          "dd MMM yyyy"
+        );
+        return formattedDate;
       },
     },
     {
       id: "actions",
       header: "Actions",
-      cell: ({ row }) => <AppActionCell id={row.original.customer_id} />,
+      cell: ({ row }) => <AppActionCell id={row.getValue("customer_id")} />,
     },
   ];
 
@@ -56,7 +47,7 @@ const CustomerTable = () => {
       <AppDataTable
         columns={columns}
         data={data}
-        redirectPath={"/customers/add-customer"} // Redirect path for adding a new customer
+        redirectPath={"/customers/add-customer"}
       />
     </div>
   );

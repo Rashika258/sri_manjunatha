@@ -27,8 +27,7 @@ model customers {
   address          String?            @db.Text
   gstin            String?            @unique(map: "gstin") @db.VarChar(15)
   created_at       DateTime?          @default(now()) @db.Timestamp(0)
-  ecommerce_orders ecommerce_orders[]
-  invoices         invoices[]
+
 }
 
 model ecommerce_order_items {
@@ -53,7 +52,6 @@ model ecommerce_orders {
   status                ecommerce_orders_status? @default(Pending)
   created_at            DateTime?                @default(now()) @db.Timestamp(0)
   ecommerce_order_items ecommerce_order_items[]
-  customers             customers?               @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "ecommerce_orders_ibfk_1")
 
   @@index([customer_id], map: "customer_id")
 }
@@ -101,7 +99,6 @@ model invoices {
   payment_status invoices_payment_status? @default(Pending)
   created_at     DateTime?                @default(now()) @db.Timestamp(0)
   // invoice_items  invoice_items[]
-  customers      customers                @relation(fields: [customer_id], references: [customer_id], onDelete: NoAction, onUpdate: NoAction, map: "invoices_ibfk_1")
   payments       payments[]
 
   @@index([customer_id], map: "customer_id")

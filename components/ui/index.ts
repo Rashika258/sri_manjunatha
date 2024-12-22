@@ -138,6 +138,8 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "./sidebar";
+import { toast, Toaster } from "sonner";
+
 
 export {
   Alert,
@@ -263,4 +265,6 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
+  toast,
+  Toaster
 };

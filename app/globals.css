@@ -22,6 +22,12 @@ body {
   color: #fff;
 }
 
+.button__with__loader{
+  svg{
+    stroke: #fff;
+  }
+}
+
 /* Styling for the entire scrollbar */
 ::-webkit-scrollbar {
   width: 6px; /* Width of the vertical scrollbar */

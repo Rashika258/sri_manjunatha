@@ -1,60 +1,87 @@
 "use client";
-import React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
+import { AppDateInput, AppFormHeader } from "@/components/common/index";
 import {
+  Button,
+  Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
-  Form,
-  Input, Button
+  Input,
+  toast,
 } from "@/components/ui/index";
-import {AppDateInput, AppFormHeader} from "@/components/common/index";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
-
-// Define validation schema using Zod
-const customerSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  email: z.string().email({ message: "Please enter a valid email" }).optional(),
-  phone: z
-    .string()
-    .min(10, { message: "Phone number must be at least 10 digits" })
-    .optional(),
-  address: z.string().optional(),
-  gstin: z
-    .string()
-    .length(15, { message: "GSTIN must be exactly 15 characters" })
-    .optional(),
-  created_at: z.date().optional(),
-});
-
-// Define TypeScript types for form data based on Zod schema
-type CustomerFormData = z.infer<typeof customerSchema>;
+import React from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { z } from "zod";
+import { addCustomer } from "../(api-utils)/route";
 
 const AddCustomerPage = () => {
+  const [isAddingData, setIsAddingData] = React.useState(false);
+  const customerSchema = z.object({
+    name: z.string().min(1, { message: "Name is required" }),
+    email: z
+      .string()
+      .email({ message: "Please enter a valid email" })
+      .optional(),
+    phone: z
+      .string()
+      .min(10, { message: "Phone number must be at least 10 digits" })
+      .optional()
+      .refine((val) => val === undefined || val.length >= 10, {
+        message: "Phone number must be at least 10 digits",
+      }),
+    address: z.string().optional(),
+    gstin: z
+      .string()
+      .length(15, { message: "GSTIN must be exactly 15 characters" })
+      .optional()
+      .refine((val) => val === undefined || val.length <= 10, {
+        message: "GSTIN must be exactly 15 characters",
+      }),
+    created_at: z.date().optional(),
+  });
+  type CustomerFormData = z.infer<typeof customerSchema>;
   const form = useForm<z.infer<typeof customerSchema>>({
     resolver: zodResolver(customerSchema),
   });
-  const { handleSubmit, formState, control, register } =
-    useForm<CustomerFormData>({
+  const { handleSubmit, formState, control, reset } = useForm<CustomerFormData>(
+    {
       resolver: zodResolver(customerSchema),
       defaultValues: {
         name: "",
-        email: "",
-        phone: "",
-        address: "",
-        gstin: "",
+        email: undefined,
+        phone: undefined,
+        address: undefined,
+        gstin: undefined,
         created_at: new Date(),
       },
-    });
+    }
+  );
+
+  const mutation = useMutation({
+    mutationFn: addCustomer,
+    onSuccess: () => {
+      toast.success("Customer added successfully!");
+      reset();
+    },
+    onMutate: () => {
+      setIsAddingData(true);
+    },
+    onSettled: () => {
+      setIsAddingData(false);
+    },
+    onError: (error: Error) => {
+      console.error("Error adding customer:", error);
+      toast("Failed to add customer. Please try again.");
+    },
+  });
 
   const onSubmit: SubmitHandler<CustomerFormData> = (data) => {
-    console.log("Customer Data:", data);
-    // Call API or perform actions to save the customer
+    mutation.mutate(data);
   };
 
   return (
@@ -173,7 +200,12 @@ const AddCustomerPage = () => {
             <Button type="reset" variant="secondary">
               Reset
             </Button>
-            <Button type="submit" variant="default">
+            <Button
+              className="button__with__loader"
+              loading={isAddingData}
+              type="submit"
+              variant="default"
+            >
               Submit
             </Button>
           </div>
