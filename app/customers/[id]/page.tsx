@@ -7,6 +7,7 @@ import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
 import { SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import { Customer } from "@/types";
+import { AppFormLoader } from "@/components/common";
 
 const CustomerEditPage = () => {
   const { id } = useParams();
@@ -51,7 +52,7 @@ const CustomerEditPage = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <AppFormLoader />;
   }
 
   if (error) {

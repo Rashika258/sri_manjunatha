@@ -49,7 +49,7 @@ const CustomerTable = () => {
         },
         isEnabled: true,
       },
-    ],[]);
+    ],[router]);
 
   const columns: ColumnType = React.useMemo(() => [
       { accessorKey: "customer_id", header: "Customer ID", cell: ({ row }) => <AppTooltip text={row.getValue("customer_id") || ""} /> },

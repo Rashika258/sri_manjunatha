@@ -1,23 +1,12 @@
 "use client";
-import { useSidebar } from '@/components/ui/index';
-import React from 'react';
+import React from "react";
 
-const EmployeeLayout =  ({
-    children,
-  }: Readonly<{
-    children: React.ReactNode;
-  }>) => {
-    const { isMobile, open } = useSidebar();
-  
-    return (
-      <div
-        className={`${
-          isMobile || !open ? "w-screen" : "w-[calc(100vw-16rem)]"
-        }  mt-[60px]  flex h-full overflow-hidden `}
-      >
-        {children}
-      </div>
-    );
-}
+const EmployeeLayout = ({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) => {
+  return <>{children}</>;
+};
 
 export default EmployeeLayout;

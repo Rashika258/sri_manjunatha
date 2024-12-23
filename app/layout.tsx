@@ -3,7 +3,7 @@ import { SidebarProvider, Toaster } from "@/components/ui/index";
 import { Caveat_Brush, Inter } from "next/font/google";
 import type { Metadata } from "next";
 import React from "react";
-import { AppNavbar, AppSidebar } from "@/components/common/index";
+import { AppNavbar, AppSidebar, AppWrapper } from "@/components/common/index";
 import { ReactQueryClientProvider } from "@/components/react-query-client-provider";
 import "./globals.css";
 
@@ -40,7 +40,7 @@ export default function RootLayout({
                 className={`h-screen w-screen flex flex-col overflow-hidden`}
               >
                 <AppNavbar />
-                {children}
+                <AppWrapper>{children}</AppWrapper>
                 <Toaster position="bottom-right" />
               </main>
             </SidebarProvider>

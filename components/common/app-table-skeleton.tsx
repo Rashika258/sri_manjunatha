@@ -7,28 +7,28 @@ const AppTableSkeleton = () => {
         <thead>
           <tr>
             <th className="py-3 px-4">
-              <Skeleton className="w-16 h-4" />
+              <Skeleton className="w-16 h-6" />
             </th>
             <th className="py-3 px-4">
-              <Skeleton className="w-32 h-4" />
+              <Skeleton className="w-32 h-6" />
             </th>
             <th className="py-3 px-4">
-              <Skeleton className="w-24 h-4" />
+              <Skeleton className="w-24 h-6" />
             </th>
             <th className="py-3 px-4">
-              <Skeleton className="w-48 h-4" />
+              <Skeleton className="w-48 h-6" />
             </th>
             <th className="py-3 px-4">
-              <Skeleton className="w-24 h-4" />
+              <Skeleton className="w-24 h-6" />
             </th>
             <th className="py-3 px-4">
-              <Skeleton className="w-16 h-4" />
+              <Skeleton className="w-16 h-6" />
             </th>
             <th className="py-3 px-4">
-              <Skeleton className="w-24 h-4" />
+              <Skeleton className="w-24 h-6" />
             </th>
             <th className="py-3 px-4">
-              <Skeleton className="w-24 h-4" />
+              <Skeleton className="w-24 h-6" />
             </th>
           </tr>
         </thead>
@@ -38,28 +38,28 @@ const AppTableSkeleton = () => {
             .map((_, idx) => (
               <tr key={idx}>
                 <td className="py-3 px-4">
-                  <Skeleton className="w-16 h-4" />
+                  <Skeleton className="w-16 h-6" />
                 </td>
                 <td className="py-3 px-4">
-                  <Skeleton className="w-32 h-4" />
+                  <Skeleton className="w-32 h-6" />
                 </td>
                 <td className="py-3 px-4">
-                  <Skeleton className="w-24 h-4" />
+                  <Skeleton className="w-24 h-6" />
                 </td>
                 <td className="py-3 px-4">
-                  <Skeleton className="w-48 h-4" />
+                  <Skeleton className="w-48 h-6" />
                 </td>
                 <td className="py-3 px-4">
-                  <Skeleton className="w-24 h-4" />
+                  <Skeleton className="w-24 h-6" />
                 </td>
                 <td className="py-3 px-4">
-                  <Skeleton className="w-16 h-4" />
+                  <Skeleton className="w-16 h-6" />
                 </td>
                 <td className="py-3 px-4">
-                  <Skeleton className="w-24 h-4" />
+                  <Skeleton className="w-24 h-6" />
                 </td>
                 <td className="py-3 px-4">
-                  <Skeleton className="w-24 h-4" />
+                  <Skeleton className="w-24 h-6" />
                 </td>
               </tr>
             ))}

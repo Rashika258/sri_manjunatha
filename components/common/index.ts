@@ -12,7 +12,9 @@ import AppTableError from "./app-table-error";
 import AppTableSkeleton from "./app-table-skeleton";
 import AppTooltip from "./app-tooltip";
 import { AppSidebar } from "./app-sidebar";
-import AppDeleteConfirmationPopup from './app-delete-confirmation-popup'
+import AppDeleteConfirmationPopup from './app-delete-confirmation-popup';
+import AppWrapper from "./app-wrapper";
+import AppFormLoader from "./app-form-loader";
 
 export {
     AppActionCell,
@@ -29,5 +31,7 @@ export {
     AppTableSkeleton,
     AppTooltip,
     AppSidebar,
-    AppDeleteConfirmationPopup
+    AppDeleteConfirmationPopup,
+    AppWrapper,
+    AppFormLoader
 };
