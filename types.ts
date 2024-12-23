@@ -76,6 +76,12 @@ type ActionItem= {
   buttonVariant?: "destructive" | "default" | "secondary" | "ghost";
 }
 
+type ProductCategory ={
+  name: string;
+  description?: string;
+  created_at?: Date;
+}
+
 export type {
   InvoiceItem,
   Company,
@@ -84,5 +90,6 @@ export type {
   DailyBill,
   ProductData,
   Customer,
-  ActionItem
+  ActionItem,
+  ProductCategory
 };

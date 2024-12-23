@@ -94,7 +94,6 @@ model invoices {
   is_gst_bill    Boolean?                 @default(true)
   payment_status invoices_payment_status? @default(Pending)
   created_at     DateTime?                @default(now()) @db.Timestamp(0)
-  // invoice_items  invoice_items[]
   payments       payments[]
 
   @@index([customer_id], map: "customer_id")
@@ -138,32 +137,29 @@ model payments {
 }
 
 model product_categories {
-  category_id   Int      @id @default(autoincrement())
-  name          String   @db.VarChar(255)
-  description   String?  @db.Text
-  created_at    DateTime @default(now()) @db.Timestamp(0)
-
-  // Relations
-  products      products[]
+  category_id Int        @id @default(autoincrement())
+  name        String     @db.VarChar(255)
+  description String?    @db.Text
+  created_at  DateTime   @default(now()) @db.Timestamp(0)
+  products    products[]
 }
 
 model products {
-  product_id              Int       @id @default(autoincrement())
-  name                    String    @db.VarChar(255)
-  hsn_code                Int?      @default(7308) @db.Int()
-  price                   Decimal   @db.Decimal(10, 2)
-  gst_rate                Decimal?  @default(0.00) @db.Decimal(5, 2)
-  stock_quantity          Int?      @default(1000)
-  created_at              DateTime? @default(now()) @db.Timestamp(0)
-  adinath_price           Decimal   @db.Decimal(10, 2)
-  monthly_bill_price      Decimal   @db.Decimal(10, 2)
-  monthly_bill_percentage Decimal?  @default(0.00) @db.Decimal(5, 2)
-
-  // Foreign Key
+  product_id              Int                @id @default(autoincrement())
+  name                    String             @db.VarChar(255)
+  hsn_code                Int?               @default(7308)
+  price                   Decimal            @db.Decimal(10, 2)
+  gst_rate                Decimal?           @default(0.00) @db.Decimal(5, 2)
+  stock_quantity          Int?               @default(1000)
+  created_at              DateTime?          @default(now()) @db.Timestamp(0)
+  adinath_price           Decimal            @db.Decimal(10, 2)
+  monthly_bill_price      Decimal            @db.Decimal(10, 2)
+  monthly_bill_percentage Decimal?           @default(0.00) @db.Decimal(5, 2)
   product_category_id     Int
   product_category        product_categories @relation(fields: [product_category_id], references: [category_id])
-}
 
+  @@index([product_category_id], map: "products_product_category_id_fkey")
+}
 
 model taxes {
   tax_id     Int       @id @default(autoincrement())

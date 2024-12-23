@@ -149,7 +149,8 @@ import {  AlertDialog,
   AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogAction,
-  AlertDialogCancel} from './alert-dialog'
+  AlertDialogCancel} from './alert-dialog';
+import { Textarea } from "./textarea";
 
 
 export {
@@ -289,4 +290,5 @@ export {
   AlertDialogDescription,
   AlertDialogAction,
   AlertDialogCancel,
+  Textarea
 };
