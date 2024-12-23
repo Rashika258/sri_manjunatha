@@ -155,6 +155,7 @@ model products {
   adinath_price           Decimal            @db.Decimal(10, 2)
   monthly_bill_price      Decimal            @db.Decimal(10, 2)
   monthly_bill_percentage Decimal?           @default(0.00) @db.Decimal(5, 2)
+  
   product_category_id     Int
   product_category        product_categories @relation(fields: [product_category_id], references: [category_id])
 

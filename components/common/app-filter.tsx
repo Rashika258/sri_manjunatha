@@ -51,12 +51,15 @@ const AppFilter = <T,>({
 
 
   return (
-    <div className="flex justify-between">
-      <div className="flex items-center gap-2 py-4">
-        <AppSearch searchQuery={localSearch} handleSearch={debounceSearch} />
+    <div className="flex justify-between flex-col sm:flex-row">
+      <div className="flex flex-col sm:flex-row sm:w-full w-full items-start gap-2 py-4">
+      <AppSearch searchQuery={localSearch} handleSearch={debounceSearch} />
         <DateRangePicker date={date} setDate={setDate} />
 
-        <DropdownMenu>
+  
+      </div>
+      <div className="flex items-center gap-2">
+      <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               Columns <ChevronDown />
@@ -78,8 +81,6 @@ const AppFilter = <T,>({
               ))}
           </DropdownMenuContent>
         </DropdownMenu>
-      </div>
-      <div className="flex items-center gap-2">
         <Button variant="default" onClick={() => router.push(redirectPath)}>
           Add
         </Button>

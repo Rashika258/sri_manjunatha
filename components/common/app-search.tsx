@@ -13,7 +13,7 @@ const AppSearch = ({
       placeholder="Search by name"
       value={searchQuery}
       onChange={handleSearch}
-      className="w-1/3"
+      className="w-full sm:w-full lg:w-1/3"
     />
   );
 };
