@@ -19,8 +19,6 @@ const AppFormLoader = () => {
         }
         radius="12.5"
         ariaLabel="mutating-dots-loading"
-        wrapperStyle={{}}
-        wrapperClass=""
       />
       <p>This may take a few seconds, Please do not close or refresh this page</p>
     </div>
