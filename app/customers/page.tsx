@@ -107,7 +107,7 @@ const CustomerTable = () => {
     <div className="w-full h-full p-4">
       <AppDataTable
         columns={columns}
-        data={data}
+        data={data!}
         redirectPath={"/customers/add-customer"}
       />
       <AppDeleteConfirmationPopup

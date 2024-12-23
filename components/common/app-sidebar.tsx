@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/index";
 
 import {
+  BoxesIcon,
   BriefcaseBusinessIcon,
   CalendarClockIcon,
   HandshakeIcon,
@@ -44,6 +45,11 @@ const items = [
     title: "Products",
     url: "/products",
     icon: Package2,
+  },
+  {
+    title: "Product Category",
+    url: "/product-category",
+    icon: BoxesIcon,
   },
   {
     title: "Attendance",

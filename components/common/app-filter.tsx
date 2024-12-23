@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import * as  React from "react";
 import AppSearch from "./app-search";
 import { DateRange } from "react-day-picker";
 import { useRouter } from "next/navigation";
@@ -24,18 +24,36 @@ const AppFilter = <T,>({
   table,
 }: {
   searchQuery: string;
-  handleSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSearch: (val: string) => void;
   date: DateRange | undefined;
   setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
   redirectPath: string;
   table: ReactTable<T>;
 }) => {
   const router = useRouter();
+  const [localSearch, setLocalSearch] = React.useState(searchQuery);
+
+  // Debounced search handling
+  const debounceSearch = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setLocalSearch(value);
+
+      // Debounce API call
+      const timeout = setTimeout(() => {
+        handleSearch(value);
+      }, 300); // 300ms debounce time
+
+      return () => clearTimeout(timeout);
+    },
+    [handleSearch]
+  );
+
 
   return (
     <div className="flex justify-between">
       <div className="flex items-center gap-2 py-4">
-        <AppSearch searchQuery={searchQuery} handleSearch={handleSearch} />
+        <AppSearch searchQuery={localSearch} handleSearch={debounceSearch} />
         <DateRangePicker date={date} setDate={setDate} />
 
         <DropdownMenu>

@@ -80,7 +80,7 @@ const AppDataTable = ({
       {/* Pass the table instance to AppFilter */}
       <AppFilter
         searchQuery=""
-        handleSearch={(e) => table.setGlobalFilter(e.target.value)}
+        handleSearch={(val) => table.setGlobalFilter(val)}
         date={undefined}
         setDate={() => {}}
         redirectPath={redirectPath}

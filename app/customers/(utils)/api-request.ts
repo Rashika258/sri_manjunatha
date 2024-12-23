@@ -1,5 +1,5 @@
 import { Customer } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 const addCustomer = async (customer: Customer): Promise<void> => {
   const response = await fetch("/api/customers", {
@@ -18,20 +18,33 @@ const addCustomer = async (customer: Customer): Promise<void> => {
   return response.json();
 };
 
-const getCustomers = async () => {
+type GetCustomersParams = {
+  search?: string;
+  startDate?: string; // ISO string
+  endDate?: string;   // ISO string
+};
+
+const getCustomers = async (params?: GetCustomersParams): Promise<Customer[]> => {
   try {
-    const response = await fetch("/api/customers", {
+    // Build query string from parameters
+    const query = new URLSearchParams(params as Record<string, string>).toString();
+    const url = `/api/customers${query ? `?${query}` : ""}`;
+
+    // Fetch data from the API
+    const response = await fetch(url, {
       method: "GET",
     });
 
+    // Handle non-OK responses
     if (!response.ok) {
-      throw new Error(`Failed to fetch customers: ${response.statusText}`);
+      throw new Error(`Failed to fetch customers: ${response.status} ${response.statusText}`);
     }
 
+    // Parse and return JSON data
     return await response.json();
   } catch (error) {
     console.error("Error fetching customers:", error);
-    throw error;
+    throw error; // Rethrow to handle it in the calling function
   }
 };
 
@@ -98,10 +111,14 @@ const fetchCustomerData = async (id: string): Promise<Customer> => {
 };
 
 
-const useCustomers = () => {
-  return useQuery({
-    queryKey: ["customers"],
-    queryFn: getCustomers,
+const useCustomers = (
+  params?: GetCustomersParams,
+  options?: UseQueryOptions<Customer[], Error>
+) => {
+  return useQuery<Customer[], Error>({
+    queryKey: ["customers", params],
+    queryFn: () => getCustomers(params),
+    ...options,
   });
 };
 

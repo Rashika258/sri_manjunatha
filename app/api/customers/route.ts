@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { parseISO, isValid } from "date-fns";
+
 
 export async function POST(request: NextRequest) {
   try {
@@ -45,16 +48,52 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+
+export async function GET(request: Request) {
   try {
-    const customers = await prisma.customers.findMany();
+    const { search, startDate, endDate } = Object.fromEntries(new URL(request.url).searchParams);
+
+    // Build the Prisma query conditions
+    const conditions: any = {};
+
+    // Add search filter
+    if (search) {
+      conditions.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+        { phone: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    // Add date filters
+    if (startDate) {
+      const start = parseISO(startDate);
+      if (isValid(start)) {
+        conditions.created_at = { ...(conditions.created_at || {}), gte: start };
+      }
+    }
+
+    if (endDate) {
+      const end = parseISO(endDate);
+      if (isValid(end)) {
+        conditions.created_at = { ...(conditions.created_at || {}), lte: end };
+      }
+    }
+
+    // Fetch filtered customers
+    const customers = await prisma.customers.findMany({
+      where: conditions,
+      orderBy: { created_at: "desc" }, // Sort by creation date
+    });
+
     return NextResponse.json(customers);
   } catch (error) {
     console.error("Error fetching customer(s):", error);
     return NextResponse.json(
-      { error: "Error fetching customer(s)" },
+      { error: "An unexpected error occurred while fetching customers" },
       { status: 500 }
     );
   }
 }
+
 
