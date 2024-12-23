@@ -13,7 +13,7 @@ import {
 toast
 } from "@/components/ui/index";
 import { format } from "date-fns";
-import { deleteCustomer, useCustomers } from "./(utils)/route";
+import { deleteCustomer, useCustomers } from "./(utils)/api-request";
 import { ActionItem, Customer } from "@/types";
 import { Pencil, Trash } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";

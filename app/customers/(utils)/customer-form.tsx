@@ -20,6 +20,7 @@ interface CustomerFormProps {
   onSubmit: SubmitHandler<Customer>;
   isSubmitBtnLoading: boolean;
   data?: Customer;
+  headerText: string
 }
 
 const customerSchema = z.object({
@@ -44,7 +45,7 @@ const customerSchema = z.object({
 });
 export type CustomerFormData = z.infer<typeof customerSchema>;
 
-const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data }: CustomerFormProps) => {
+const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: CustomerFormProps) => {
   const form = useForm<z.infer<typeof customerSchema>>({
     resolver: zodResolver(customerSchema),
   });
@@ -57,13 +58,14 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data }: CustomerFormProps)
       phone: data?.phone || undefined,
       address: data?.address || undefined,
       gstin: data?.gstin || undefined,
-      created_at: data?.created_at || new Date(),
+      created_at:data?.created_at? new Date(data?.created_at) :new Date(),
 
     },
   });
+
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto">
-      <AppFormHeader headerText={"Add Customer"} />
+      <AppFormHeader headerText={headerText} />
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col grow justify-between space-y-4">

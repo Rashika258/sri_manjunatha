@@ -4,9 +4,11 @@ import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { SubmitHandler } from "react-hook-form";
 import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
-import { addCustomer } from "../(utils)/route";
+import { addCustomer } from "../(utils)/api-request";
+import { useRouter } from "next/navigation";
 
 const AddCustomerPage = () => {
+  const router = useRouter();
   const [isAddingData, setIsAddingData] = React.useState(false);
 
   const mutation = useMutation({
@@ -14,7 +16,7 @@ const AddCustomerPage = () => {
     onSuccess: () => {
       toast.success("Customer added successfully!");
       mutation.reset();
-      // reset();
+      router.back();
     },
     onMutate: () => {
       setIsAddingData(true);
@@ -32,7 +34,7 @@ const AddCustomerPage = () => {
     mutation.mutate(data);
   };
 
-  return <CustomerForm onSubmit={onSubmit} isSubmitBtnLoading={isAddingData} />;
+  return <CustomerForm headerText="Add Customer" onSubmit={onSubmit} isSubmitBtnLoading={isAddingData} />;
 };
 
 export default AddCustomerPage;

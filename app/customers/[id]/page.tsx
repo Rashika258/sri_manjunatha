@@ -1,8 +1,8 @@
 "use client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
-import { fetchCustomerData, updateCustomer } from "../(utils)/route";
+import { fetchCustomerData, updateCustomer } from "../(utils)/api-request";
 import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
 import { SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import { Customer } from "@/types";
 
 const CustomerEditPage = () => {
   const { id } = useParams();
+  const router = useRouter();
   const customerId = Array.isArray(id) ? id[0] : id;
   const [isEditingData, setIsEditingData] = React.useState(false);
 
@@ -19,12 +20,15 @@ const CustomerEditPage = () => {
     enabled: !!customerId, 
   });
 
+
   const editMutation = useMutation({
     mutationFn: (data: Customer) => updateCustomer(customerId, data),
+
     onSuccess: () => {
       toast.success("Customer updated successfully!");
       setIsEditingData(false);
       editMutation.reset();
+      router.back();
     },
     onMutate: () => {
       setIsEditingData(true); 
@@ -37,6 +41,8 @@ const CustomerEditPage = () => {
       toast("Failed to update customer. Please try again.");
     },
   });
+
+
 
   const onSubmit: SubmitHandler<CustomerFormData> = (formData) => {
     if (id) {
@@ -61,6 +67,7 @@ const CustomerEditPage = () => {
       onSubmit={onSubmit}
       data ={data}
       isSubmitBtnLoading={isEditingData}
+      headerText={"Edit Customer"}
     />
   );
 };
