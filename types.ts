@@ -82,6 +82,19 @@ type ProductCategory ={
   created_at?: Date;
 }
 
+type Employee = {
+  employee_id?: number;
+  first_name: string;
+  last_name: string;
+  email?: string;
+  phone_number?: string;
+  designation?: string;
+  date_of_joining?: Date;
+  status?: "Active" | "Inactive";
+  created_at?: Date;
+};
+
+
 export type {
   InvoiceItem,
   Company,
@@ -91,5 +104,6 @@ export type {
   ProductData,
   Customer,
   ActionItem,
-  ProductCategory
+  ProductCategory,
+  Employee
 };

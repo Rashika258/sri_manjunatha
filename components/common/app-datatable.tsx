@@ -23,14 +23,14 @@ import {
   Button
 } from "@/components/ui/index";
 import AppFilter from "./app-filter";
-import { Customer } from "@/types";
+import { Customer, Employee } from "@/types";
 
 export type TableData = {
   [key: string]: string | number | boolean;
 };
 
-type ColumnType = ColumnDef<Customer>[];
-type Row= Customer[]
+type ColumnType = ColumnDef<Customer>[] | ColumnDef<Employee>[];
+type Row= Customer[] | Employee[]
 
 
 interface DataTableProps {
