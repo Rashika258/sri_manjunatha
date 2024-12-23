@@ -21,9 +21,11 @@ import { useMutation } from "@tanstack/react-query";
 const CustomerTable = () => {
   type ColumnType = ColumnDef<Customer>[];
   const { data, isLoading, error } = useCustomers();
-  const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
-    React.useState(false);
-  const [isDeletingCustomer, setIsDeletingCustomer] = React.useState(false);
+  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] = React.useState({
+    openDeleteConfirmationPopup: false,
+    isDeletingCustomer: false,
+    rowId: ""
+  })
 
   const actions: ActionItem[] = React.useMemo(() => [
       {
@@ -38,12 +40,12 @@ const CustomerTable = () => {
         label: "Delete",
         icon: <Trash />,
         buttonVariant: "destructive",
-        handler: () => {
-          setOpenDeleteConfirmationPopup(!openDeleteConfirmationPopup);
+        handler: (id: string) => {
+          setDeleteConfirmationPopupDetails((prev)=>({...prev, openDeleteConfirmationPopup: true, rowId: id}))
         },
         isEnabled: true,
       },
-    ],[openDeleteConfirmationPopup]);
+    ],[]);
 
   const columns: ColumnType = React.useMemo(() => [
       { accessorKey: "customer_id", header: "Customer ID", cell: ({ row }) => <AppTooltip text={row.getValue("customer_id") || ""} /> },
@@ -66,7 +68,7 @@ const CustomerTable = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <AppActionCell actions={actions} id={row.getValue("customer_id")} />
+          <AppActionCell  actions={actions} id={row.getValue("customer_id")} />
         ),
       },
     ],[actions]);
@@ -75,14 +77,13 @@ const CustomerTable = () => {
       mutationFn: (customerId: string )=>deleteCustomer(customerId),
       onSuccess: () => {
         toast.success("Customer deleted successfully!");
-        setOpenDeleteConfirmationPopup(!openDeleteConfirmationPopup);
-
+        setDeleteConfirmationPopupDetails((prev)=>({...prev, openDeleteConfirmationPopup: false}))
       },
       onMutate: () => {
-        setIsDeletingCustomer(true);
+        setDeleteConfirmationPopupDetails((prev)=>({...prev, isDeletingCustomer: true}))
       },
       onSettled: () => {
-        setIsDeletingCustomer(false);
+        setDeleteConfirmationPopupDetails((prev)=>({...prev, isDeletingCustomer: false}))
       },
       onError: (error: Error) => {
         console.error("Error adding customer:", error);
@@ -111,9 +112,12 @@ const CustomerTable = () => {
         onConfirm={(rowId : string) => {
           handleConfirm(rowId);
         }}
-        isOpen={openDeleteConfirmationPopup}
-        setIsOpen={setOpenDeleteConfirmationPopup}
-        isDeleting={isDeletingCustomer}
+        isOpen={deleteConfirmationPopupDetails?.openDeleteConfirmationPopup}
+        setIsOpen={
+          (value : boolean) => setDeleteConfirmationPopupDetails((prev)=>({...prev, openDeleteConfirmationPopup: value}))
+        }
+        isDeleting={deleteConfirmationPopupDetails?.isDeletingCustomer}
+        rowId={deleteConfirmationPopupDetails?.rowId}
       />
     </div>
   );

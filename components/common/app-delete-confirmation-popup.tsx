@@ -25,6 +25,7 @@ const AppDeleteConfirmationPopup: React.FC<AppDeleteConfirmationPopupProps> = ({
   isOpen,
   setIsOpen,
   onConfirm,
+  isDeleting,
   title = "Are you absolutely sure?",
   description = "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
 }) => {
@@ -43,7 +44,7 @@ const AppDeleteConfirmationPopup: React.FC<AppDeleteConfirmationPopupProps> = ({
           <AlertDialogCancel onClick={handleCloseDialog}>
             Cancel
           </AlertDialogCancel>
-        <AlertDialogAction onClick={()=>onConfirm(rowId)}>
+        <AlertDialogAction className="button__with__loader" disabled={isDeleting} loading={isDeleting}  onClick={()=>onConfirm(rowId)}>
             Continue
             </AlertDialogAction>
         </AlertDialogFooter>

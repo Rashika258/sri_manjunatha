@@ -5,6 +5,7 @@ import * as AlertDialogPrimitive from "@radix-ui/react-alert-dialog"
 
 import { cn } from "@/lib/utils"
 import { buttonVariants } from "@/components/ui/button"
+import { RotatingLines } from "react-loader-spinner"
 
 const AlertDialog = AlertDialogPrimitive.Root
 
@@ -98,17 +99,31 @@ const AlertDialogDescription = React.forwardRef<
 AlertDialogDescription.displayName =
   AlertDialogPrimitive.Description.displayName
 
-const AlertDialogAction = React.forwardRef<
+  const AlertDialogAction = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Action>,
-  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action> & {
+    loading?: boolean;
+    isDisabled?: boolean;
+  }
+>(({ className, loading, isDisabled, ...props }, ref) => (
   <AlertDialogPrimitive.Action
     ref={ref}
-    className={cn(buttonVariants(), className)}
+    className={cn(
+      buttonVariants(),
+      loading && "opacity-50 cursor-not-allowed",
+      isDisabled && "opacity-70",
+      className
+    )}
+    aria-disabled={isDisabled}
+    disabled={isDisabled}
     {...props}
-  />
-))
-AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName
+  >
+      {loading ? <><RotatingLines/> {"Confirm"}</> : "Confirm"}
+    {/* {loading ? "Loading..." : "Confirm"} */}
+  </AlertDialogPrimitive.Action>
+));
+AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName;
+
 
 const AlertDialogCancel = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Cancel>,
