@@ -105,7 +105,7 @@ const CustomerTable = () => {
 
   return (
     <div className="w-full h-full p-4">
-      <AppDataTable
+      <AppDataTable<Customer>
         columns={columns}
         data={data!}
         redirectPath={"/customers/add-customer"}
