@@ -13,13 +13,15 @@ import {
 toast
 } from "@/components/ui/index";
 import { format } from "date-fns";
-import { deleteCustomer, useCustomers } from "./(api-utils)/route";
+import { deleteCustomer, useCustomers } from "./(utils)/route";
 import { ActionItem, Customer } from "@/types";
 import { Pencil, Trash } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 
 const CustomerTable = () => {
   type ColumnType = ColumnDef<Customer>[];
+  const router = useRouter();
   const { data, isLoading, error } = useCustomers();
   const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] = React.useState({
     openDeleteConfirmationPopup: false,
@@ -31,7 +33,9 @@ const CustomerTable = () => {
       {
         label: "Edit",
         icon: <Pencil />,
-        handler: () => {},
+        handler: (rowId: string) => {
+          router.push(`/customers/${rowId}`);
+        },
         buttonVariant: "secondary",
 
         isEnabled: true,
@@ -93,9 +97,8 @@ const CustomerTable = () => {
 
   const handleConfirm = React.useCallback((rowId : string) => {
     deleteMutation.mutate(rowId);
-    
-    
-  }, []);
+  
+  }, [deleteMutation]);
 
   if (isLoading) return <AppTableSkeleton />;
   if (error) return <AppTableError />;

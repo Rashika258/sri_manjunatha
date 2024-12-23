@@ -23,22 +23,27 @@ import {
   Button
 } from "@/components/ui/index";
 import AppFilter from "./app-filter";
+import { Customer } from "@/types";
 
 export type TableData = {
   [key: string]: string | number | boolean;
 };
 
-interface DataTableProps<T extends TableData> {
-  columns: ColumnDef<T>[];
-  data: T[];
+type ColumnType = ColumnDef<Customer>[];
+type Row= Customer[]
+
+
+interface DataTableProps {
+  columns: ColumnType;
+  data: Row;
   redirectPath: string
 }
 
-const AppDataTable = <T extends TableData>({
+const AppDataTable = ({
   columns,
   data,
   redirectPath,
-}: DataTableProps<T>) => {
+}: DataTableProps) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});

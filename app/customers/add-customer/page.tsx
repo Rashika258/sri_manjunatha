@@ -1,72 +1,20 @@
 "use client";
-import { AppDateInput, AppFormHeader } from "@/components/common/index";
-import {
-  Button,
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  Input,
-  toast,
-} from "@/components/ui/index";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "@/components/ui/index";
 import { useMutation } from "@tanstack/react-query";
-import { format } from "date-fns";
 import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import { addCustomer } from "../(api-utils)/route";
+import { SubmitHandler } from "react-hook-form";
+import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
+import { addCustomer } from "../(utils)/route";
 
 const AddCustomerPage = () => {
   const [isAddingData, setIsAddingData] = React.useState(false);
-  const customerSchema = z.object({
-    name: z.string().min(1, { message: "Name is required" }),
-    email: z
-      .string()
-      .email({ message: "Please enter a valid email" })
-      .optional(),
-    phone: z
-      .string()
-      .min(10, { message: "Phone number must be at least 10 digits" })
-      .optional()
-      .refine((val) => val === undefined || val.length >= 10, {
-        message: "Phone number must be at least 10 digits",
-      }),
-    address: z.string().optional(),
-    gstin: z
-      .string()
-      .length(15, { message: "GSTIN must be exactly 15 characters" })
-      .optional()
-      .refine((val) => val === undefined || val.length <= 10, {
-        message: "GSTIN must be exactly 15 characters",
-      }),
-    created_at: z.date().optional(),
-  });
-  type CustomerFormData = z.infer<typeof customerSchema>;
-  const form = useForm<z.infer<typeof customerSchema>>({
-    resolver: zodResolver(customerSchema),
-  });
-  const { handleSubmit, formState, control, reset } = useForm<CustomerFormData>(
-    {
-      resolver: zodResolver(customerSchema),
-      defaultValues: {
-        name: "",
-        email: undefined,
-        phone: undefined,
-        address: undefined,
-        gstin: undefined,
-        created_at: new Date(),
-      },
-    }
-  );
 
   const mutation = useMutation({
     mutationFn: addCustomer,
     onSuccess: () => {
       toast.success("Customer added successfully!");
-      reset();
+      mutation.reset();
+      // reset();
     },
     onMutate: () => {
       setIsAddingData(true);
@@ -84,135 +32,7 @@ const AddCustomerPage = () => {
     mutation.mutate(data);
   };
 
-  return (
-    <div className="flex flex-col grow w-full h-full p-8 overflow-auto">
-      <AppFormHeader headerText={"Add Customer"} />
-      <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col grow justify-between space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-              {/* Customer Name */}
-              <FormField
-                control={control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Customer Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter customer name" {...field} />
-                    </FormControl>
-                    <FormMessage>{formState.errors.name?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              {/* Email */}
-              <FormField
-                control={control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="Enter email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage>{formState.errors.email?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              {/* Phone */}
-              <FormField
-                control={control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter phone number" {...field} />
-                    </FormControl>
-                    <FormMessage>{formState.errors.phone?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              {/* Address */}
-              <FormField
-                control={control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter address" {...field} />
-                    </FormControl>
-                    <FormMessage>
-                      {formState.errors.address?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              {/* GSTIN */}
-              <FormField
-                control={control}
-                name="gstin"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>GSTIN</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter GSTIN" {...field} />
-                    </FormControl>
-                    <FormMessage>{formState.errors.gstin?.message}</FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="created_at"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col justify-end">
-                    <FormLabel>Created At</FormLabel>
-                    <FormControl>
-                      <AppDateInput
-                        field={field}
-                        formatValue={(value) =>
-                          value ? format(value, "PPP") : ""
-                        } // Custom date format
-                      />
-                    </FormControl>
-                    <FormMessage>
-                      {formState.errors.created_at?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-
-          {/* Submit & Reset Buttons */}
-          <div className="px-4 py-4 flex w-full items-center justify-end space-x-4">
-            <Button type="reset" variant="secondary">
-              Reset
-            </Button>
-            <Button
-              className="button__with__loader"
-              loading={isAddingData}
-              type="submit"
-              variant="default"
-            >
-              Submit
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
-  );
+  return <CustomerForm onSubmit={onSubmit} isSubmitBtnLoading={isAddingData} />;
 };
 
 export default AddCustomerPage;
