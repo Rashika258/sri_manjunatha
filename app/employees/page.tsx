@@ -59,7 +59,6 @@ const EmployeeTable = () => {
   ], [router]);
 
   const columns: ColumnDef<Employee>[] = React.useMemo(() => [
-    { accessorKey: "employee_id", header: "Employee ID", cell: ({ row }) => <AppTooltip text={row.getValue("employee_id") || ""} /> },
     { accessorKey: "first_name", header: "First Name", cell: ({ row }) => <AppTooltip text={row.getValue("first_name") || ""} /> },
     { accessorKey: "last_name", header: "Last Name", cell: ({ row }) => <AppTooltip text={row.getValue("last_name") || ""} /> },
     { accessorKey: "email", header: "Email", cell: ({ row }) => <AppTooltip text={row.getValue("email") || ""} /> },

@@ -52,7 +52,6 @@ const CustomerTable = () => {
     ],[router]);
 
   const columns: ColumnType = React.useMemo(() => [
-      { accessorKey: "customer_id", header: "Customer ID", cell: ({ row }) => <AppTooltip text={row.getValue("customer_id") || ""} /> },
       { accessorKey: "name", header: "Name", cell: ({ row }) => <AppTooltip text={row.getValue("name") || ""} /> },
       { accessorKey: "email", header: "Email",  cell: ({ row }) => <AppTooltip text={row.getValue("email") || ""} /> },
       { accessorKey: "phone", header: "Phone", cell: ({ row }) => <AppTooltip text={row.getValue("phone") || ""} /> },
