@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import {
+  Badge,
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -16,25 +17,20 @@ const AppTooltip = ({ text }: { text: string }) => {
   useEffect(() => {
     if (textRef.current) {
       const element = textRef.current;
-      const isOverflowingNow = element.scrollWidth > element.clientWidth;
-  
-      // Fallback: Use getBoundingClientRect for an additional check
-      const rect = element.getBoundingClientRect();
-      const actualWidth = rect.width;
-      const isOverflowingWithRect = element.scrollWidth > actualWidth;
-  
-      console.log({
-        scrollWidth: element.scrollWidth,
-        clientWidth: element.clientWidth,
-        actualWidth,
-        isOverflowingNow,
-        isOverflowingWithRect,
-      });
-  
-      setIsOverflowing(isOverflowingNow || isOverflowingWithRect);
+
+      const tempSpan = document.createElement("span");
+      tempSpan.style.position = "absolute";
+      tempSpan.style.visibility = "hidden";
+      tempSpan.style.whiteSpace = "nowrap";
+      tempSpan.textContent = element.textContent;
+
+      document.body.appendChild(tempSpan);
+      const fullTextWidth = tempSpan.offsetWidth;
+      document.body.removeChild(tempSpan);
+
+      setIsOverflowing(fullTextWidth > element.clientWidth);
     }
   }, [text]);
-  
 
   return (
     <TooltipProvider>
@@ -42,20 +38,18 @@ const AppTooltip = ({ text }: { text: string }) => {
         <TooltipTrigger asChild>
           <div
             ref={textRef}
-            className="overflow-hidden flex w-full"
-            style={{
-              overflow: "hidden",
-              textOverflow: isOverflowing ? "ellipsis" : "clip",
-              maxWidth: "200px",
-            }}
+            className=" flex w-full items-center"
           >
-            <p className="overflow-hidden text-ellipsis">{text ? text : <NoData />}</p>
+            <p className="overflow-hidden text-ellipsis">
+              {text ? text : <NoData />}
+            </p>
           </div>
         </TooltipTrigger>
+        {isOverflowing && (
           <TooltipContent>
             <p>{text}</p>
           </TooltipContent>
-      
+        )}
       </Tooltip>
     </TooltipProvider>
   );
@@ -63,9 +57,12 @@ const AppTooltip = ({ text }: { text: string }) => {
 
 const NoData = () => {
   return (
-    <div className="flex items-center gap-2">
-      <CircleAlert /> <p className="font-light text-sm">No Data</p>
-    </div>
+    <Badge variant={"secondary"}>
+      <div className="flex items-center gap-2">
+        <CircleAlert size={12} />{" "}
+        <p className="font-light text-[12px]">No Data</p>
+      </div>
+    </Badge>
   );
 };
 
