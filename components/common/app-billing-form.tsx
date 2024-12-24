@@ -1,14 +1,10 @@
-
 "use client";
 import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import { useState } from "react";
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  PlusIcon,
-  Trash2Icon,
-} from "lucide-react";
+import { PlusIcon, Trash2Icon } from "lucide-react";
 
 import {
   TableHeader,
@@ -32,7 +28,11 @@ import {
 } from "@/components/ui/index";
 import { format } from "date-fns";
 import { Company, FormData, InvoiceItem, PaymentStatus } from "@/types";
-import {AppDropdown, AppDateInput, AppFormHeader} from '@/components/common/index' 
+import {
+  AppDropdown,
+  AppDateInput,
+  AppFormHeader,
+} from "@/components/common/index";
 
 const itemsList = [
   { id: 1, name: "Item A", price: 100 },
@@ -90,9 +90,7 @@ const FormSchema = z.object({
     .array(
       z.object({
         product_id: z.number().min(1, { message: "Product ID is required." }),
-        product_name: z
-          .string()
-          .min(1, { message: "Item name is required." }),
+        product_name: z.string().min(1, { message: "Item name is required." }),
 
         quantity: z
           .number()
@@ -114,36 +112,36 @@ const FormSchema = z.object({
 const AppBillingForm = ({ headerText }: { headerText: string }) => {
   const [companyDetails, setCompanyDetails] = useState<Company | null>(null);
 
-  const { register, control, handleSubmit, watch, formState } =
-    useForm<FormData>({
-      resolver: zodResolver(FormSchema),
-      defaultValues: {
-        invoice_number: Date.now().toString(),
-        customer_id: Math.random(),
-        gstin: "",
-        customer_address: "",
-        customer_email: "",
-        customer_name: "",
-        customer_phone: "",
-        is_gst_bill: false,
-        payment_status: "Pending",
-        tax_amount: 0,
-        total_amount: 0,
-        due_date: new Date(),
-        invoice_date: new Date(),
-        invoice_items: [
-          {
-            product_id: "",
-            product_name: "",
-            quantity: 0,
-            bags: 0,
-            unit_price: 0,
-            total_price: 0,
-          },
-        ],
-      },
-    });
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      invoice_number: Date.now().toString(),
+      customer_id: Math.random(),
+      gstin: "",
+      customer_address: "",
+      customer_email: "",
+      customer_name: "",
+      customer_phone: "",
+      is_gst_bill: false,
+      payment_status: "Pending",
+      tax_amount: 0,
+      total_amount: 0,
+      due_date: new Date(),
+      invoice_date: new Date(),
+      invoice_items: [
+        {
+          product_id: "",
+          product_name: "",
+          quantity: 0,
+          bags: 0,
+          unit_price: 0,
+          total_price: 0,
+        },
+      ],
+    },
+  });
 
+  const { register, control, handleSubmit, watch, formState } = form;
   const { fields, append, remove, update } = useFieldArray({
     control,
     name: "invoice_items",
@@ -177,13 +175,9 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
     console.log(data);
   };
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-  });
-
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto ">
-      <AppFormHeader  headerText={headerText} />
+      <AppFormHeader headerText={headerText} />
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col grow justify-between space-y-4 ">
@@ -246,7 +240,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                   </FormItem>
                 )}
               />
-       
+
               <FormField
                 control={form.control}
                 name="customer_name"
@@ -306,7 +300,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                   </FormItem>
                 )}
               />
-            
+
               <FormField
                 control={form.control}
                 name="customer_address"
