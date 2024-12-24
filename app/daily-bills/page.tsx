@@ -1,17 +1,48 @@
 "use client";
-import React from "react";
+import * as React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import { useDailyBills } from "./(api-utils)";
 import {AppTableError, AppTableSkeleton, AppActionCell, AppDataTable, AppPaymentStatus, AppTooltip} from "@/components/common/index";
-import { DailyBill } from "@/types";
+import { ActionItem, DailyBill } from "@/types";
 import { Download, Pencil, Share2, Trash } from "lucide-react";
 
 
 const BillPage = () => {
   const { data, isLoading, error } = useDailyBills();
-  if (isLoading) return <AppTableSkeleton />;
-  if (error) return  <AppTableError />;
+
   type ColumnType = ColumnDef<DailyBill>[];
+
+  const actions: ActionItem[] = React.useMemo(() => [
+    {
+      label: "Edit",
+      icon: <Pencil />,
+      handler: () => console.log("Edit clicked"),
+      isEnabled: true,
+      buttonVariant: "secondary",
+      
+    },
+    {
+      label: "Delete",
+      icon: <Trash />,
+      handler: () => console.log("Delete clicked"),
+      isEnabled: true,
+      buttonVariant: "destructive",
+    },
+    {
+      label: "Download",
+      icon: <Download />,
+      handler: () => console.log("Download clicked"),
+      isEnabled: true,
+      buttonVariant: "ghost",
+    },
+    {
+      label: "Share",
+      icon: <Share2 />,
+      handler: () => console.log("Share clicked"),
+      isEnabled: true,
+      buttonVariant: "default",
+    },
+  ],[])
 
 
   const columns: ColumnType = [
@@ -62,40 +93,22 @@ const BillPage = () => {
     {
       accessorKey: "action",
       header: "Action",
-      cell: (info) => <AppActionCell id={info.row.original.id} />,
+      cell: (info) => <AppActionCell actions={actions} id={info.row.original.id?.toString()} />,
     },
   ];
 
-  const actions = [
-    {
-      label: "Edit",
-      icon: <Pencil />,
-      handler: () => console.log("Edit clicked"),
-    },
-    {
-      label: "Delete",
-      icon: <Trash />,
-      handler: () => console.log("Delete clicked"),
-    },
-    {
-      label: "Download",
-      icon: <Download />,
-      handler: () => console.log("Download clicked"),
-    },
-    {
-      label: "Share",
-      icon: <Share2 />,
-      handler: () => console.log("Share clicked"),
-    },
-  ];
+  if (isLoading) return <AppTableSkeleton />;
+  if (error) return  <AppTableError />;
+
+
   return (
     <div className={`w-full h-full flex items-center flex-col `}>
       <div className="flex flex-col w-full h-full space-y-4 p-8">
         {/* DataTable */}
-        <AppDataTable
+        <AppDataTable<DailyBill>
           redirectPath={"/daily-bills/add-bill"}
           columns={columns}
-          data={data}
+          data={data!}
         />
       </div>
     </div>

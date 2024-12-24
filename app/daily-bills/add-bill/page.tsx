@@ -4,7 +4,7 @@ import React from "react";
 const AppBillPage = () => {
   return (
     <div className={`w-full h-full flex items-center flex-col `}>
-      <AppBillingForm headerText={"Daily Bill"} />
+      <AppBillingForm headerText={"Add Daily Bill"} />
     </div>
   );
 };

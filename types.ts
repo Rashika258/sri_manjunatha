@@ -41,7 +41,7 @@ type DailyBill = {
   bill_no: string;
   company_name: string;
   date: Date;
-  items: string;
+  items: InvoiceItem[];
   price: number;
   qty: number;
   total: number;
