@@ -46,11 +46,7 @@ const customerSchema = z.object({
 export type CustomerFormData = z.infer<typeof customerSchema>;
 
 const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: CustomerFormProps) => {
-  const form = useForm<z.infer<typeof customerSchema>>({
-    resolver: zodResolver(customerSchema),
-  });
-
-  const { handleSubmit, formState, control, reset } = useForm<CustomerFormData>({
+  const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
       name: data?.name || "",
@@ -67,12 +63,12 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto">
       <AppFormHeader headerText={headerText} />
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col grow justify-between space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {/* Customer Name */}
               <FormField
-                control={control}
+                control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
@@ -80,14 +76,14 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                     <FormControl>
                       <Input placeholder="Enter customer name" {...field} />
                     </FormControl>
-                    <FormMessage>{formState.errors.name?.message}</FormMessage>
+                    <FormMessage>{form.formState.errors.name?.message}</FormMessage>
                   </FormItem>
                 )}
               />
 
               {/* Email */}
               <FormField
-                control={control}
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
@@ -99,14 +95,14 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage>{formState.errors.email?.message}</FormMessage>
+                    <FormMessage>{form.formState.errors.email?.message}</FormMessage>
                   </FormItem>
                 )}
               />
 
               {/* Phone */}
               <FormField
-                control={control}
+                control={form.control}
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
@@ -114,14 +110,14 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                     <FormControl>
                       <Input placeholder="Enter phone number" {...field} />
                     </FormControl>
-                    <FormMessage>{formState.errors.phone?.message}</FormMessage>
+                    <FormMessage>{form.formState.errors.phone?.message}</FormMessage>
                   </FormItem>
                 )}
               />
 
               {/* Address */}
               <FormField
-                control={control}
+                control={form.control}
                 name="address"
                 render={({ field }) => (
                   <FormItem>
@@ -130,7 +126,7 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                       <Input placeholder="Enter address" {...field} />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.address?.message}
+                      {form.formState.errors.address?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -138,7 +134,7 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
 
               {/* GSTIN */}
               <FormField
-                control={control}
+                control={form.control}
                 name="gstin"
                 render={({ field }) => (
                   <FormItem>
@@ -146,13 +142,13 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                     <FormControl>
                       <Input placeholder="Enter GSTIN" {...field} />
                     </FormControl>
-                    <FormMessage>{formState.errors.gstin?.message}</FormMessage>
+                    <FormMessage>{form.formState.errors.gstin?.message}</FormMessage>
                   </FormItem>
                 )}
               />
 
               <FormField
-                control={control}
+                control={form.control}
                 name="created_at"
                 render={({ field }) => (
                   <FormItem className="flex flex-col justify-end">
@@ -166,7 +162,7 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                       />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.created_at?.message}
+                      {form.formState.errors.created_at?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -176,7 +172,7 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
 
           {/* Submit & Reset Buttons */}
           <div className="px-4 py-4 flex w-full items-center justify-end space-x-4">
-            <Button type="reset" variant="secondary" onClick={() => reset()}>
+            <Button type="reset" variant="secondary" onClick={() => form.reset()}>
               Reset
             </Button>
             <Button
