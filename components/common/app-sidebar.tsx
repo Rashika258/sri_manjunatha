@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 
-// Menu items.
 const items = [
   {
     title: "Home",
@@ -42,14 +41,26 @@ const items = [
     icon: ReceiptIndianRupeeIcon,
   },
   {
+    title: "Product Category",
+    url: "/product-category",
+    icon: BoxesIcon,
+  },
+
+  {
     title: "Products",
     url: "/products",
     icon: Package2,
   },
   {
-    title: "Product Category",
-    url: "/product-category",
-    icon: BoxesIcon,
+    title: "Customers",
+    url: "/customers",
+    icon: HandshakeIcon,
+  },
+
+  {
+    title: "Employees",
+    url: "/employees",
+    icon: UsersIcon,
   },
   {
     title: "Attendance",
@@ -57,20 +68,11 @@ const items = [
     icon: CalendarClockIcon,
   },
   {
-    title: "Employees",
-    url: "/employees",
-    icon: UsersIcon,
-  },
-  {
     title: "Ecommerce",
     url: "/ecommerce",
     icon: BriefcaseBusinessIcon,
   },
-  {
-    title: "Customers",
-    url: "/customers",
-    icon: HandshakeIcon,
-  },
+
 ];
 
 export function AppSidebar() {
