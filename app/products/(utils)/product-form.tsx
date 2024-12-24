@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { AppDateInput, AppFormHeader } from "@/components/common/index";
 import {
@@ -9,11 +10,20 @@ import {
   FormLabel,
   FormMessage,
   Input,
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/index";
 import { format } from "date-fns";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getProductCategories } from "@/app/product-category/(utils)/api-request";
+import { ProductCategory } from "@/types";
 
 interface ProductFormProps {
   onSubmit: SubmitHandler<ProductFormData>;
@@ -82,6 +92,14 @@ const ProductForm = ({
   data,
   headerText,
 }: ProductFormProps) => {
+  const [productCategoryOptionsData, setProductCategoryOptionsData] =
+    React.useState<{
+      options: { label: string; value: string }[];
+      isLoading: boolean;
+    }>({
+      options: [],
+      isLoading: true,
+    });
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -97,30 +115,66 @@ const ProductForm = ({
     },
   });
 
-  const { handleSubmit, formState, control, reset, setValue, watch } = form;
 
-   // Watch price and monthly_bill_percentage values
-   const price = watch("price");
-   const monthlyBillPercentage = watch("monthly_bill_percentage");
- 
-   // Effect to calculate monthly bill price whenever price or monthly_bill_percentage changes
-   React.useEffect(() => {
-     if (price && monthlyBillPercentage) {
-       const calculatedMonthlyBillPrice = price * (monthlyBillPercentage / 100);
-       setValue("monthly_bill_price", calculatedMonthlyBillPrice); // Set the calculated value for monthly_bill_price
-     }
-   }, [price, monthlyBillPercentage, setValue]);
+  const price = form.watch("price");
+  const monthlyBillPercentage = form.watch("monthly_bill_percentage");
+
+  React.useEffect(() => {
+    if (price && monthlyBillPercentage) {
+      const calculatedMonthlyBillPrice = price * (monthlyBillPercentage / 100);
+      form.setValue("monthly_bill_price", calculatedMonthlyBillPrice);
+    }
+  }, [price, monthlyBillPercentage]);
+
+  const fetchProductCategoryOptions = async () => {
+    setProductCategoryOptionsData((prev) => ({ ...prev, isLoading: true }));
+    try {
+      const response: ProductCategory[] = await getProductCategories();
+      console.log(response, "response");
+
+      if (response && response.length) {
+        const optionsData = response
+          .filter((category) => category.category_id !== undefined)
+          .map((category) => ({
+            label: category.name,
+            value: category.category_id,
+          }));
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        setProductCategoryOptionsData((prev: any) => ({
+          ...prev,
+          options: optionsData! || [],
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching product categories:", error);
+    } finally {
+      setProductCategoryOptionsData((prev) => ({ ...prev, isLoading: true }));
+    }
+  };
+
+  React.useEffect(() => {
+    fetchProductCategoryOptions();
+  }, []);
+
+  console.log(productCategoryOptionsData, "productCategoryOptionsData");
 
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto">
       <AppFormHeader headerText={headerText} />
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={(e)=>{
+e?.preventDefault();
+          console.log("aaa============", form.getValues());
+          form.handleSubmit(onSubmit)(e)
+          
+        }
+        }>
           <div className="flex flex-col grow justify-between space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {/* Product Name */}
               <FormField
-                control={control}
+                control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
@@ -128,14 +182,14 @@ const ProductForm = ({
                     <FormControl>
                       <Input placeholder="Enter product name" {...field} />
                     </FormControl>
-                    <FormMessage>{formState.errors.name?.message}</FormMessage>
+                    <FormMessage>{form.formState.errors.name?.message}</FormMessage>
                   </FormItem>
                 )}
               />
 
               {/* HSN Code */}
               <FormField
-                control={control}
+                control={form.control}
                 name="hsn_code"
                 render={({ field }) => (
                   <FormItem>
@@ -148,7 +202,7 @@ const ProductForm = ({
                       />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.hsn_code?.message}
+                      {form.formState.errors.hsn_code?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -156,7 +210,7 @@ const ProductForm = ({
 
               {/* Price */}
               <FormField
-                control={control}
+                control={form.control}
                 name="price"
                 render={({ field }) => (
                   <FormItem>
@@ -168,14 +222,14 @@ const ProductForm = ({
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage>{formState.errors.price?.message}</FormMessage>
+                    <FormMessage>{form.formState.errors.price?.message}</FormMessage>
                   </FormItem>
                 )}
               />
 
               {/* GST Rate */}
               <FormField
-                control={control}
+                control={form.control}
                 name="gst_rate"
                 render={({ field }) => (
                   <FormItem>
@@ -188,7 +242,7 @@ const ProductForm = ({
                       />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.gst_rate?.message}
+                      {form.formState.errors.gst_rate?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -196,7 +250,7 @@ const ProductForm = ({
 
               {/* Stock Quantity */}
               <FormField
-                control={control}
+                control={form.control}
                 name="stock_quantity"
                 render={({ field }) => (
                   <FormItem>
@@ -209,7 +263,7 @@ const ProductForm = ({
                       />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.stock_quantity?.message}
+                      {form.formState.errors.stock_quantity?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -217,7 +271,7 @@ const ProductForm = ({
 
               {/* Adinath Price */}
               <FormField
-                control={control}
+                control={form.control}
                 name="adinath_price"
                 render={({ field }) => (
                   <FormItem>
@@ -230,15 +284,15 @@ const ProductForm = ({
                       />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.adinath_price?.message}
+                      {form.formState.errors.adinath_price?.message}
                     </FormMessage>
                   </FormItem>
                 )}
               />
 
-                   {/* Monthly Bill Percentage */}
-                   <FormField
-                control={control}
+              {/* Monthly Bill Percentage */}
+              <FormField
+                control={form.control}
                 name="monthly_bill_percentage"
                 render={({ field }) => (
                   <FormItem>
@@ -251,7 +305,7 @@ const ProductForm = ({
                       />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.monthly_bill_percentage?.message}
+                      {form.formState.errors.monthly_bill_percentage?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -259,7 +313,7 @@ const ProductForm = ({
 
               {/* Monthly Bill Price */}
               <FormField
-                control={control}
+                control={form.control}
                 name="monthly_bill_price"
                 render={({ field }) => (
                   <FormItem>
@@ -272,7 +326,7 @@ const ProductForm = ({
                       />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.monthly_bill_price?.message}
+                      {form.formState.errors.monthly_bill_price?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -280,7 +334,7 @@ const ProductForm = ({
 
               {/* Created At */}
               <FormField
-                control={control}
+                control={form.control}
                 name="created_at"
                 render={({ field }) => (
                   <FormItem className="w-full flex flex-col justify-end">
@@ -294,7 +348,7 @@ const ProductForm = ({
                       />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.created_at?.message}
+                      {form.formState.errors.created_at?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -302,20 +356,45 @@ const ProductForm = ({
 
               {/* Product Category ID */}
               <FormField
-                control={control}
+                control={form.control}
                 name="product_category_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Category ID</FormLabel>
+                    <FormLabel>Product Category</FormLabel>
                     <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Enter category ID"
-                        {...field}
-                      />
+                      <Select
+                        onValueChange={(value) => field.onChange(value)} // Bind to React Hook Form
+                        value={field.value as unknown as string} // Controlled value
+                      >
+                        <SelectTrigger>
+                          <SelectValue>
+                            {field.value
+                              ? productCategoryOptionsData?.options?.find(
+                                  (option) =>
+                                    String(option.value) == String(field.value)
+                                )?.label
+                              : "Select a category"}
+                          </SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Select Product Category</SelectLabel>
+                            {productCategoryOptionsData?.options?.map(
+                              (option) => (
+                                <SelectItem
+                                  key={option.value}
+                                  value={option.value}
+                                >
+                                  {option.label}
+                                </SelectItem>
+                              )
+                            )}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.product_category_id?.message}
+                      {form.formState.errors.product_category_id?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -325,7 +404,7 @@ const ProductForm = ({
 
           {/* Submit & Reset Buttons */}
           <div className="px-4 py-4 flex w-full items-center justify-end space-x-4">
-            <Button type="reset" variant="secondary" onClick={() => reset()}>
+            <Button type="reset" variant="secondary" onClick={() => form.reset()}>
               Reset
             </Button>
             <Button

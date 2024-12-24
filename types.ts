@@ -81,6 +81,7 @@ type ProductCategory ={
   name: string;
   description?: string;
   created_at?: Date;
+  category_id: string;
 }
 
 type Employee = {

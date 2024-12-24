@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { AppDateInput, AppFormHeader } from "@/components/common/index";
 import {

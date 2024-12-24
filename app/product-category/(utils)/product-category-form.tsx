@@ -39,10 +39,8 @@ const ProductCategoryForm = ({
   data,
   headerText,
 }: ProductCategoryFormProps) => {
-  const form = useForm<z.infer<typeof productCategorySchema>>({
-    resolver: zodResolver(productCategorySchema),
-  });
-  const { handleSubmit, formState, control, reset } =
+
+  const form =
     useForm<ProductCategoryFormData>({
       resolver: zodResolver(productCategorySchema),
       defaultValues: {
@@ -55,12 +53,12 @@ const ProductCategoryForm = ({
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto">
       <AppFormHeader headerText={headerText} />
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex flex-col grow justify-between space-y-4">
             <div className="flex w-full flex-col gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {/* Category Name */}
               <FormField
-                control={control}
+                control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
@@ -68,14 +66,14 @@ const ProductCategoryForm = ({
                     <FormControl>
                       <Input placeholder="Enter category name" {...field} />
                     </FormControl>
-                    <FormMessage>{formState.errors.name?.message}</FormMessage>
+                    <FormMessage>{form.formState.errors.name?.message}</FormMessage>
                   </FormItem>
                 )}
               />
 
               {/* Description */}
               <FormField
-                control={control}
+                control={form.control}
                 name="description"
                 render={({ field }) => (
                   <FormItem>
@@ -87,7 +85,7 @@ const ProductCategoryForm = ({
                       />
                     </FormControl>
                     <FormMessage>
-                      {formState.errors.description?.message}
+                      {form.formState.errors.description?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -101,9 +99,9 @@ const ProductCategoryForm = ({
               type="reset"
               variant="secondary"
               onClick={() =>
-                reset({
-                  name: data?.name || "",
-                  description: data?.description || "",
+                form.reset({
+                  name: "",
+                  description:  "",
                 })
               }
             >

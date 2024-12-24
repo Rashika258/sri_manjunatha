@@ -12,11 +12,12 @@ const AddProductPage = () => {
   const [isAddingData, setIsAddingData] = React.useState(false);
 
   const mutation = useMutation({
-    mutationFn: addProduct,
+    mutationFn: ()=>{ console.log("a11");
+    },
     onSuccess: () => {
-      toast.success("Product added successfully!");
-      mutation.reset();
-      router.back();
+      // toast.success("Product added successfully!");
+      // mutation.reset();
+      // router.back();
     },
     onMutate: () => {
       setIsAddingData(true);
@@ -31,6 +32,7 @@ const AddProductPage = () => {
   });
 
   const onSubmit: SubmitHandler<ProductFormData> = (data) => {
+    debugger
     mutation.mutate(data);
   };
 
