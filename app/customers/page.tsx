@@ -20,7 +20,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
 const CustomerTable = () => {
-  type ColumnType = ColumnDef<Customer>[];
   const router = useRouter();
   const { data, isLoading, error } = useCustomers();
   const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] = React.useState({
@@ -51,7 +50,7 @@ const CustomerTable = () => {
       },
     ],[router]);
 
-  const columns: ColumnType = React.useMemo(() => [
+  const columns: ColumnDef<Customer>[] = React.useMemo(() => [
       { accessorKey: "name", header: "Name", cell: ({ row }) => <AppTooltip text={row.getValue("name") || ""} /> },
       { accessorKey: "email", header: "Email",  cell: ({ row }) => <AppTooltip text={row.getValue("email") || ""} /> },
       { accessorKey: "phone", header: "Phone", cell: ({ row }) => <AppTooltip text={row.getValue("phone") || ""} /> },
@@ -71,7 +70,7 @@ const CustomerTable = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <AppActionCell  actions={actions} id={row.getValue("customer_id")} />
+          <AppActionCell  actions={actions} id={row.original.customer_id?.toString() as string} />
         ),
       },
     ],[actions]);

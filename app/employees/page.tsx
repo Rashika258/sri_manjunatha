@@ -75,7 +75,11 @@ const EmployeeTable = () => {
     {
       id: "actions",
       header: "Actions",
-      cell: ({ row }) => <AppActionCell actions={actions} id={row.getValue("employee_id")} />,
+      cell: ({ row }) => {        
+        return (
+          <AppActionCell actions={actions} id={row?.original?.employee_id?.toString() as string} />
+        )
+      },
     },
   ], [actions]);
 
