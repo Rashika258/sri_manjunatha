@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   Select,
@@ -6,36 +7,48 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/index";
+import { FallingLines } from "react-loader-spinner";
+import { useTheme } from "next-themes";
+import { AppDropdownProps } from "@/types";
 
-interface AppDropdownProps<T> {
-  options: T[];
-  field: {
-    value: string;
-    onChange: (value: string) => void;
-  };
-  getOptionLabel: (option: T) => string;
-  getOptionValue: (option: T) => string;
-  placeholder: string;
-}
+const AppDropdownLoader = () => {
+  const { theme } = useTheme();
+  return (
+    <div className="flex justify-center items-center flex-col p-2">
+      <FallingLines
+        color={
+          theme === "dark" ? "hsl(215 27.9% 16.9%)" : "hsl(220 14.3% 95.9%)"
+        }
+        width="30"
+        height="30"
+        visible={true}
+      />
+      <span className="text-sm">Loading</span>
+    </div>
+  );
+};
 
-const AppDropdown = <T,>({
+const AppDropdown = ({
   options,
   field,
-  getOptionLabel,
-  getOptionValue,
-  placeholder
-}: AppDropdownProps<T>) => {
+  placeholder,
+  isLoading,
+}: AppDropdownProps) => {
   return (
     <Select onValueChange={field.onChange} defaultValue={field.value}>
       <SelectTrigger>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {options.map((option, index) => (
-          <SelectItem key={index} value={getOptionValue(option)}>
-            {getOptionLabel(option)}
-          </SelectItem>
-        ))}
+        {isLoading ? (
+          <AppDropdownLoader />
+        ) : (
+          options.map((option, index) => (
+            <SelectItem key={index} value={option.value!}>
+              {option.label}
+            </SelectItem>
+          ))
+        )}
       </SelectContent>
     </Select>
   );

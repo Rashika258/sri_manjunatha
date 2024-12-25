@@ -74,7 +74,7 @@ const AppDataTable =<T, > ({
 
   return (
     <div className="w-full h-full">
-      {/* Pass the table instance to AppFilter */}
+
       <AppFilter
         searchQuery=""
         handleSearch={(val) => table.setGlobalFilter(val)}
@@ -84,7 +84,6 @@ const AppDataTable =<T, > ({
         table={table} 
       />
 
-      {/* Table */}
       <div className="overflow-auto w-full rounded-md border">
         <Table>
           <TableHeader>

@@ -1,11 +1,9 @@
 "use client";
 import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
-import { useState } from "react";
-
+import * as React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, Trash2Icon } from "lucide-react";
-
 import {
   TableHeader,
   TableRow,
@@ -19,36 +17,27 @@ import {
   FormMessage,
   Form,
   Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   Input,
 } from "@/components/ui/index";
 import { format } from "date-fns";
-import { Company, FormData, InvoiceItem, PaymentStatus } from "@/types";
+import {
+  AppDropdownOption,
+  FormData,
+  InvoiceItem,
+} from "@/types";
 import {
   AppDropdown,
   AppDateInput,
   AppFormHeader,
 } from "@/components/common/index";
+import { useCustomers } from "@/app/customers/(utils)/api-request";
+import { useProducts } from "@/app/products/(utils)/api-request";
 
-const itemsList = [
-  { id: 1, name: "Item A", price: 100 },
-  { id: 2, name: "Item B", price: 200 },
-  { id: 3, name: "Item C", price: 300 },
-];
 
-const companies: Company[] = [
-  { gstin: "1234567890A", name: "Company A", address: "123 Street, City A" },
-  { gstin: "0987654321B", name: "Company B", address: "456 Avenue, City B" },
-];
-
-const paymentStatusOptions: PaymentStatus[] = [
-  { id: "1234567890A", payment_status: "Paid" },
-  { id: "0987654321B", payment_status: "Overdue" },
-  { id: "0987654321B", payment_status: "Pending" },
+const paymentStatusOptions: AppDropdownOption[] = [
+  { value: "1", label: "Paid" },
+  { value: "2", label: "Overdue" },
+  { value: "3", label: "Pending" },
 ];
 
 const FormSchema = z.object({
@@ -89,9 +78,8 @@ const FormSchema = z.object({
   invoice_items: z
     .array(
       z.object({
-        product_id: z.number().min(1, { message: "Product ID is required." }),
+        product_id: z.string().min(1, { message: "Product ID is required." }),
         product_name: z.string().min(1, { message: "Item name is required." }),
-
         quantity: z
           .number()
           .min(1, { message: "Quantity must be greater than 0." }),
@@ -110,7 +98,28 @@ const FormSchema = z.object({
 });
 
 const AppBillingForm = ({ headerText }: { headerText: string }) => {
-  const [companyDetails, setCompanyDetails] = useState<Company | null>(null);
+  const customerData = useCustomers();
+  const productData = useProducts();
+
+  const productOptions = React.useMemo(() => {
+    return productData?.data?.map((product) => {
+      return {
+        value: product?.product_id?.toString(),
+        label: product?.name,
+      };
+    });
+  }, [productData?.data]);
+
+  const customerOptions = React.useMemo(() => {
+    return customerData?.data?.map((customer) => {
+      return {
+        value: customer?.customer_id?.toString(),
+        label: customer?.name,
+      };
+    });
+  }, [customerData?.data]);
+
+  console.log("aa====", customerOptions, productOptions);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -159,20 +168,20 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
   ) => {
     const item = { ...fields[index], [field]: value };
     if (field === "quantity" || field === "bags" || field === "unit_price") {
-      item.total_price = item.quantity * item.unit_price; // Update total whenever any of these fields change
+      item.total_price = item.quantity * item.unit_price;
     }
     update(index, item);
   };
 
-  const handleGstinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const gstin = e.target.value;
-    const company = companies.find((c) => c.gstin === gstin);
-    setCompanyDetails(company || null);
-  };
-
-  const onSubmit: SubmitHandler<FormData> = (data) => {
+  const onSubmit: SubmitHandler<FormData> = () => {
     alert("Bill submitted successfully!");
   };
+
+  const fetchReferenceData = React.useCallback(async () => {}, []);
+
+  React.useEffect(() => {
+    fetchReferenceData();
+  }, []);
 
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto ">
@@ -207,7 +216,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                       <Input
                         placeholder="GST Number"
                         {...field}
-                        onChange={handleGstinChange}
+                     
                       />
                     </FormControl>
                     <FormMessage>{formState.errors.gstin?.message}</FormMessage>
@@ -223,14 +232,13 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                     <FormLabel>Payment Status</FormLabel>
                     <FormControl>
                       <AppDropdown
+                        isLoading={false}
                         options={paymentStatusOptions}
                         field={{
                           value: field.value,
                           onChange: field.onChange,
                         }}
                         placeholder="Select a payment status"
-                        getOptionLabel={(option) => option.payment_status}
-                        getOptionValue={(option) => option.payment_status}
                       />
                     </FormControl>
                     <FormMessage>
@@ -248,14 +256,13 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                     <FormLabel>Customer</FormLabel>
                     <FormControl>
                       <AppDropdown
-                        options={companies}
+                        isLoading={customerData.isLoading}
+                        options={customerOptions!}
                         field={{
                           value: field.value,
                           onChange: field.onChange,
                         }}
                         placeholder="Select a company"
-                        getOptionLabel={(option) => option.name}
-                        getOptionValue={(option) => option.gstin}
                       />
                     </FormControl>
                     <FormMessage>
@@ -275,7 +282,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                       field={field}
                       formatValue={(value) =>
                         value ? format(value, "PPP") : ""
-                      } // Custom date format
+                      }
                     />
                     <FormMessage />
                   </FormItem>
@@ -292,7 +299,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                       field={field}
                       formatValue={(value) =>
                         value ? format(value, "PPP") : ""
-                      } // Custom date format
+                      }
                     />
 
                     <FormMessage />
@@ -392,24 +399,15 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                           render={({ field }) => (
                             <FormItem>
                               <FormControl>
-                                <Select
-                                  onValueChange={field.onChange}
-                                  defaultValue={field.value}
-                                >
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select a product" />
-                                  </SelectTrigger>
-                                  <SelectContent>
-                                    {itemsList.map((item) => (
-                                      <SelectItem
-                                        key={item.id}
-                                        value={item.name}
-                                      >
-                                        {item.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
+                                <AppDropdown
+                                  isLoading={productData.isLoading}
+                                  options={productOptions!}
+                                  field={{
+                                    value: field.value,
+                                    onChange: field.onChange,
+                                  }}
+                                  placeholder="Select a product"
+                                />
                               </FormControl>
                             </FormItem>
                           )}

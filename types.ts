@@ -16,10 +16,6 @@ type Company = {
   address: string;
 };
 
-type PaymentStatus = {
-  payment_status: "Pending" | "Paid" | "Overdue";
-  id: string;
-};
 
 type FormData = {
   invoice_number: string;
@@ -147,10 +143,27 @@ type DeleteConfirmationPopupDetails = {
   rowId: string;
 }
 
+
+type AppDropdownOption = {
+  value?: string;
+  label: string;
+}
+
+type AppDropdownProps =  {
+  options: AppDropdownOption[];
+  field: {
+    value: string;
+    onChange: (value: string) => void;
+  };
+  placeholder: string;
+  isLoading: boolean;
+}
+
+
 export type {
   InvoiceItem,
   Company,
-  PaymentStatus,
+  AppDropdownOption,
   FormData,
   DailyBill,
   ProductData,
@@ -163,5 +176,6 @@ export type {
   GetCustomersParams,
   CustomerFormProps,
   DeleteConfirmationPopupDetails,
-  EmployeeFormProps
+  EmployeeFormProps,
+  AppDropdownProps
 };
