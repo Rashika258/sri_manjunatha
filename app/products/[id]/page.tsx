@@ -22,6 +22,9 @@ const ProductEditPage = () => {
     enabled: !!productId, 
   });
 
+  console.log("data======",data);
+  
+
   const editMutation = useMutation({
     mutationFn: (data: Product) => updateProduct(productId, data),
 

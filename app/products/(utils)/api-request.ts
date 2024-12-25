@@ -1,7 +1,6 @@
-import { Product } from "@/types";
+import { GetProductsParams, Product } from "@/types";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
-// Add a new product
 const addProduct = async (product: Product): Promise<void> => {
   const response = await fetch("/api/products", {
     method: "POST",
@@ -19,19 +18,11 @@ const addProduct = async (product: Product): Promise<void> => {
   return response.json();
 };
 
-type GetProductsParams = {
-  search?: string;
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  startDate?: string; // ISO string
-  endDate?: string;   // ISO string
-};
-
-// Get list of products
 const getProducts = async (params?: GetProductsParams): Promise<Product[]> => {
   try {
-    const query = new URLSearchParams(params as Record<string, string>).toString();
+    const query = new URLSearchParams(
+      params as Record<string, string>
+    ).toString();
     const url = `/api/products${query ? `?${query}` : ""}`;
 
     const response = await fetch(url, {
@@ -39,17 +30,18 @@ const getProducts = async (params?: GetProductsParams): Promise<Product[]> => {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch products: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch products: ${response.status} ${response.statusText}`
+      );
     }
 
     return await response.json();
   } catch (error) {
     console.error("Error fetching products:", error);
-    throw error; // Rethrow to handle it in the calling function
+    throw error;
   }
 };
 
-// Update product details
 const updateProduct = async (productId: string, productData: Product) => {
   try {
     const response = await fetch(`/api/products/${productId}`, {
@@ -71,7 +63,6 @@ const updateProduct = async (productId: string, productData: Product) => {
   }
 };
 
-// Delete a product
 const deleteProduct = async (productId: string) => {
   try {
     const response = await fetch(`/api/products/${productId}`, {
@@ -89,7 +80,6 @@ const deleteProduct = async (productId: string) => {
   }
 };
 
-// Fetch product details by ID
 const fetchProductData = async (id: string): Promise<Product> => {
   try {
     const response = await fetch(`/api/products/${id}`, {
@@ -99,10 +89,13 @@ const fetchProductData = async (id: string): Promise<Product> => {
       },
     });
 
+    
     if (!response.ok) {
       const errorDetails = await response.json();
       throw new Error(
-        `Failed to fetch data. Status: ${response.status}, Message: ${errorDetails.message || "Unknown error"}`
+        `Failed to fetch data. Status: ${response.status}, Message: ${
+          errorDetails.message || "Unknown error"
+        }`
       );
     }
 
@@ -115,7 +108,6 @@ const fetchProductData = async (id: string): Promise<Product> => {
   }
 };
 
-// Custom hook to fetch products
 const useProducts = (
   params?: GetProductsParams,
   options?: UseQueryOptions<Product[], Error>
@@ -133,5 +125,5 @@ export {
   updateProduct,
   deleteProduct,
   useProducts,
-  fetchProductData
+  fetchProductData,
 };

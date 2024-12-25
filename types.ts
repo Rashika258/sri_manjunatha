@@ -68,21 +68,20 @@ type Customer = {
   created_at?: Date;
 };
 
-
-type ActionItem= {
+type ActionItem = {
   label: string;
-  icon: React.ReactNode; 
+  icon: React.ReactNode;
   handler: (value: string) => void;
   isEnabled: boolean;
   buttonVariant?: "destructive" | "default" | "secondary" | "ghost";
-}
+};
 
-type ProductCategory ={
+type ProductCategory = {
   name: string;
   description?: string;
   created_at?: Date;
   category_id: string;
-}
+};
 
 type Employee = {
   employee_id?: number;
@@ -96,21 +95,28 @@ type Employee = {
   created_at?: Date;
 };
 
-
 type Product = {
-  product_id?: number; // Auto-generated ID for the product
-  name: string; // Name of the product
-  product_category_id: string; // Category ID linked to the product
-  hsn_code?: number; // HSN code for the product (optional)
-  price?: number; // Price of the product (optional)
-  gst_rate?: number; // GST rate for the product (optional)
-  stock_quantity?: number; // Quantity of product in stock (optional)
-  adinath_price?: number; // Price at Adinath (optional)
-  monthly_bill_price?: number; // Monthly bill price (optional)
-  monthly_bill_percentage?: number; // Monthly bill percentage (optional)
-  created_at?: Date; // Date when the product was created (optional)
+  product_id?: number;
+  name: string;
+  product_category_id: string;
+  hsn_code?: number;
+  price?: number;
+  gst_rate?: number;
+  stock_quantity?: number;
+  adinath_price?: number;
+  monthly_bill_price?: number;
+  monthly_bill_percentage?: number;
+  created_at?: Date;
 };
 
+type GetProductsParams = {
+  search?: string;
+  category?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  startDate?: string;
+  endDate?: string;
+};
 
 export type {
   InvoiceItem,
@@ -123,5 +129,6 @@ export type {
   ActionItem,
   ProductCategory,
   Employee,
-  Product
+  Product,
+  GetProductsParams,
 };

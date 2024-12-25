@@ -45,12 +45,34 @@ export async function PUT(
         { status: 400 }
       );
     }
-
-    const data = await req.json();
+    const body = await req.json();
+    const {
+      name,
+      hsn_code,
+      price,
+      gst_rate,
+      stock_quantity,
+      adinath_price,
+      monthly_bill_price,
+      created_at,
+      product_category_id,
+    } = body;
 
     const updatedProduct = await prisma.products.update({
       where: { product_id: productId },
-      data: data,
+      data: {
+        name,
+        hsn_code,
+        price,
+        gst_rate,
+        stock_quantity,
+        adinath_price: adinath_price || 0,
+        monthly_bill_price: monthly_bill_price || 0,
+        created_at: created_at ? new Date(created_at) : undefined,
+        product_category_id: product_category_id
+          ? parseInt(product_category_id, 10)
+          : undefined,
+      },
     });
 
     return NextResponse.json(updatedProduct);
@@ -85,15 +107,25 @@ export async function GET(
       const updatedProduct = {
         name: product?.name,
         hsn_code: product?.hsn_code,
-        price: product?.price,
-        gst_rate: product?.gst_rate,
-        stock_quantity:     product?.stock_quantity,
-        adinath_price: product?.adinath_price || 0,
-        monthly_bill_price:product?.monthly_bill_price || 0,
-        created_at: product?.created_at ? new Date(product?.created_at) : undefined,
-        product_category_id : product?.product_category_id ? parseInt(product?.product_category_id?.toString(), 10) : undefined,
-      }
-      
+        price: product?.price
+          ? parseInt(product?.price?.toString(), 10)
+          : undefined,
+        gst_rate: product?.gst_rate
+          ? parseInt(product?.gst_rate?.toString(), 10)
+          : undefined,
+        stock_quantity: product?.stock_quantity,
+        adinath_price: product?.adinath_price
+          ? parseInt(product?.adinath_price?.toString(), 10)
+          : undefined,
+        monthly_bill_price: product?.monthly_bill_price
+          ? parseInt(product?.monthly_bill_price?.toString(), 10)
+          : undefined,
+        created_at: product?.created_at
+          ? new Date(product?.created_at)
+          : undefined,
+        product_category_id: product?.product_category_id?.toString(),
+      };
+
       if (!product) {
         return NextResponse.json(
           { error: "Product not found" },
@@ -114,4 +146,3 @@ export async function GET(
     );
   }
 }
-
