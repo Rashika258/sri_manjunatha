@@ -172,7 +172,6 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
 
   const onSubmit: SubmitHandler<FormData> = (data) => {
     alert("Bill submitted successfully!");
-    console.log(data);
   };
 
   return (

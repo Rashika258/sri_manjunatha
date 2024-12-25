@@ -111,8 +111,6 @@ const ProductForm = ({
         name: category.name,
         id: category.category_id,
       }));
-      console.log("response", response);
-
       setCategories(options);
     } catch (error) {
       console.error("Error fetching product categories:", error);
@@ -123,16 +121,12 @@ const ProductForm = ({
     fetchProductCategories();
   }, []);
 
-  console.log("form", form.getValues(), form.formState.errors);
-
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto">
       <AppFormHeader headerText={headerText} />
       <Form {...form}>
         <form
           onSubmit={(e) => {
-            console.log("ee");
-
             e.preventDefault();
             form.handleSubmit(onSubmit)(e);
           }}
@@ -168,8 +162,6 @@ const ProductForm = ({
                         {...field}
                         value={field.name}
                         onValueChange={(value) => {
-                          console.log("value", value, field.value);
-
                           field.onChange(value);
                           form.setValue("product_category_id", value);
                         }}

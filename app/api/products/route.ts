@@ -1,35 +1,26 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { isValid, parseISO } from "date-fns";
-import { productSchema } from "@/app/products/(utils)/product-form";
+
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const {
+      name,
+      hsn_code,
+      price,
+      gst_rate,
+      stock_quantity,
+      adinath_price,
+      monthly_bill_price,
+      created_at,
+      product_category_id,
+    } =body;    
     
-    // Validate request body using Zod schema
-    const parsedData = productSchema.safeParse(body);
-    if (!parsedData.success) {
-      return NextResponse.json(
-        { error: parsedData.error.errors },
-        { status: 400 }
-      );
+    if (!name) {
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
-
-    const { 
-      name, 
-      hsn_code, 
-      price, 
-      gst_rate, 
-      stock_quantity, 
-      adinath_price, 
-      monthly_bill_price, 
-      created_at, 
-      product_category_id 
-    } = parsedData.data;
-
-    // Add product to the database
     const newProduct = await prisma.products.create({
       data: {
         name,
@@ -37,10 +28,10 @@ export async function POST(request: NextRequest) {
         price,
         gst_rate,
         stock_quantity,
-        adinath_price,
-        monthly_bill_price,
+        adinath_price:adinath_price || 0,
+        monthly_bill_price:monthly_bill_price || 0,
         created_at: created_at ? new Date(created_at) : undefined,
-        product_category_id,
+        product_category_id : product_category_id ? parseInt(product_category_id, 10) : undefined,
       },
     });
 
@@ -51,13 +42,13 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error adding product:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: `Internal Server Error: ${error}` },
       { status: 500 }
     );
   }
 }
 
-
+// Handle GET requests to fetch products
 export async function GET(request: NextRequest) {
   try {
     const { search, startDate, endDate, categoryId } = Object.fromEntries(new URL(request.url).searchParams);
@@ -90,7 +81,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fetch filtered products
+    // Fetch filtered products from the database
     const products = await prisma.products.findMany({
       where: conditions,
       orderBy: { created_at: "desc" }, // Sort by creation date

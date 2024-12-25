@@ -61,7 +61,7 @@ export function DateRangePicker({
           <Button variant="outline" onClick={() => setDate(undefined)}>
             Clear
           </Button>
-          <Button onClick={() => console.log("Apply clicked")}>Apply</Button>
+          <Button onClick={() => {}}>Apply</Button>
         </div>
       </PopoverContent>
     </Popover>

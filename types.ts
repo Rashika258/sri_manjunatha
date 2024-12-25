@@ -98,9 +98,9 @@ type Employee = {
 
 
 type Product = {
-  product_id: number; // Auto-generated ID for the product
+  product_id?: number; // Auto-generated ID for the product
   name: string; // Name of the product
-  product_category_id: number; // Category ID linked to the product
+  product_category_id: string; // Category ID linked to the product
   hsn_code?: number; // HSN code for the product (optional)
   price?: number; // Price of the product (optional)
   gst_rate?: number; // GST rate for the product (optional)

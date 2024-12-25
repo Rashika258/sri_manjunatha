@@ -25,10 +25,7 @@ const ProductCategoryTable = () => {
     openDeleteConfirmationPopup: false,
     isDeletingCategory: false,
     rowId: "",
-  });
-
-  console.log("data", data);
-  
+  });  
 
   const actions: ActionItem[] = React.useMemo(
     () => [

@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { Product } from "@/types"; 
+import { Product } from "@/types";
 import ProductForm from "../(utils)/product-form";
 import { addProduct } from "../(utils)/api-request";
 import { useMutation } from "@tanstack/react-query";
@@ -17,13 +17,13 @@ const ProductPage = () => {
     onSuccess: () => {
       toast.success("Product Category added successfully!");
       mutation.reset();
-      router.back();  // Redirects to the previous page after success
+      router.back();
     },
     onMutate: () => {
-      setIsAddingData(true);  // Shows loading state when data is being added
+      setIsAddingData(true);
     },
     onSettled: () => {
-      setIsAddingData(false);  // Hides loading state after mutation finishes
+      setIsAddingData(false);
     },
     onError: (error: Error) => {
       console.error("Error adding product category:", error);
@@ -32,9 +32,7 @@ const ProductPage = () => {
   });
 
   const onSubmit: SubmitHandler<Product> = (data) => {
-console.log("ee2", data);
-
-    mutation.mutate(data);  // Calls mutation to add product category
+    mutation.mutate(data);
   };
 
   return (

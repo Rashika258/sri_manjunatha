@@ -12,7 +12,7 @@ const AppLoader = () => {
       <Bars
         height="80"
         width="80"
-        color={theme === "dark" ? "hsl(210 20% 98%)" : "hsl(224 71.4% 4.1%)"}
+        color={theme === "dark" ? "hsl(215 27.9% 16.9%)" : "hsl(220 14.3% 95.9%)"}
         ariaLabel="bars-loading"
         visible={true}
       />
