@@ -21,8 +21,6 @@ const ProductEditPage = () => {
     queryFn: () => fetchProductData(productId), 
     enabled: !!productId, 
   });
-
-  console.log("data======",data);
   
 
   const editMutation = useMutation({

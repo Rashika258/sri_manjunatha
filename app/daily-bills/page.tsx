@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
 import { ColumnDef } from "@tanstack/react-table";
-import { useDailyBills } from "./(api-utils)";
 import {AppTableError, AppTableSkeleton, AppActionCell, AppDataTable, AppPaymentStatus, AppTooltip} from "@/components/common/index";
 import { ActionItem, DailyBill } from "@/types";
 import { Download, Pencil, Share2, Trash } from "lucide-react";
@@ -104,7 +103,6 @@ const BillPage = () => {
   return (
     <div className={`w-full h-full flex items-center flex-col `}>
       <div className="flex flex-col w-full h-full space-y-4 p-8">
-        {/* DataTable */}
         <AppDataTable<DailyBill>
           redirectPath={"/daily-bills/add-bill"}
           columns={columns}

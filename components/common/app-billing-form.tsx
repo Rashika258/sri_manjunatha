@@ -119,8 +119,6 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
     });
   }, [customerData?.data]);
 
-  console.log("aa====", customerOptions, productOptions);
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
