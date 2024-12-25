@@ -12,16 +12,12 @@ import {
 import { toast } from "@/components/ui/index";
 import { format } from "date-fns";
 import { deleteEmployee, useEmployees } from "./(utils)/api-request";
-import { ActionItem, Employee } from "@/types";
+import { ActionItem, DeleteConfirmationPopupDetails, Employee } from "@/types";
 import { Pencil, Trash } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 
-interface DeleteConfirmationPopupDetails {
-  openDeleteConfirmationPopup: boolean;
-  isDeletingEmployee: boolean;
-  rowId: string;
-}
+
 
 const EmployeeTable = () => {
   const router = useRouter();

@@ -1,3 +1,5 @@
+import { SubmitHandler } from "react-hook-form";
+
 type InvoiceItem = {
   product_id: string;
   product_name: string;
@@ -68,6 +70,13 @@ type Customer = {
   created_at?: Date;
 };
 
+type GetCustomersParams = {
+  search?: string;
+  startDate?: string; 
+  endDate?: string;   
+};
+
+
 type ActionItem = {
   label: string;
   icon: React.ReactNode;
@@ -83,6 +92,13 @@ type ProductCategory = {
   category_id: string;
 };
 
+
+type CustomerFormProps = {
+  onSubmit: SubmitHandler<Customer>;
+  isSubmitBtnLoading: boolean;
+  data?: Customer;
+  headerText: string
+}
 type Employee = {
   employee_id?: number;
   first_name: string;
@@ -94,6 +110,13 @@ type Employee = {
   status?: "Active" | "Inactive";
   created_at?: Date;
 };
+
+type EmployeeFormProps = {
+  onSubmit: SubmitHandler<Employee>;
+  isSubmitBtnLoading: boolean;
+  data?: Employee;
+  headerText: string;
+}
 
 type Product = {
   product_id?: number;
@@ -118,6 +141,12 @@ type GetProductsParams = {
   endDate?: string;
 };
 
+type DeleteConfirmationPopupDetails = {
+  openDeleteConfirmationPopup: boolean;
+  isDeletingEmployee: boolean;
+  rowId: string;
+}
+
 export type {
   InvoiceItem,
   Company,
@@ -131,4 +160,8 @@ export type {
   Employee,
   Product,
   GetProductsParams,
+  GetCustomersParams,
+  CustomerFormProps,
+  DeleteConfirmationPopupDetails,
+  EmployeeFormProps
 };

@@ -1,7 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-
-// Helper function to validate employee ID
 const validateEmployeeId = (id: string): number | null => {
   const employeeId = parseInt(id);
   return isNaN(employeeId) ? null : employeeId;
@@ -11,7 +9,7 @@ const validateEmployeeId = (id: string): number | null => {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id?: string } } // id is now optional
+  { params }: { params: { id?: string } } 
 ) {
   try {
     if (params.id) {
@@ -23,8 +21,6 @@ export async function GET(
           { status: 400 }
         );
       }
-
-      // Fetch employee by employeeId
       const employee = await prisma.employees.findUnique({
         where: { employee_id: employeeId },
       });
@@ -86,7 +82,7 @@ export async function PUT(
 
     const updatedEmployee = await prisma.employees.update({
       where: { employee_id: employeeId },
-      data: data, // Data to update
+      data: data, 
     });
 
     return NextResponse.json(updatedEmployee);

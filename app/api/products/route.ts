@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { isValid, parseISO } from "date-fns";
 
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -16,8 +15,8 @@ export async function POST(request: NextRequest) {
       monthly_bill_price,
       created_at,
       product_category_id,
-    } =body;    
-    
+    } = body;
+
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
@@ -28,10 +27,12 @@ export async function POST(request: NextRequest) {
         price,
         gst_rate,
         stock_quantity,
-        adinath_price:adinath_price || 0,
-        monthly_bill_price:monthly_bill_price || 0,
+        adinath_price: adinath_price || 0,
+        monthly_bill_price: monthly_bill_price || 0,
         created_at: created_at ? new Date(created_at) : undefined,
-        product_category_id : product_category_id ? parseInt(product_category_id, 10) : undefined,
+        product_category_id: product_category_id
+          ? parseInt(product_category_id, 10)
+          : undefined,
       },
     });
 
@@ -48,29 +49,29 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Handle GET requests to fetch products
 export async function GET(request: NextRequest) {
   try {
-    const { search, startDate, endDate, categoryId } = Object.fromEntries(new URL(request.url).searchParams);
+    const { search, startDate, endDate, categoryId } = Object.fromEntries(
+      new URL(request.url).searchParams
+    );
 
-    // Build the Prisma query conditions
     const conditions: any = {};
 
-    // Add search filter for product name
     if (search) {
       conditions.name = { contains: search, mode: "insensitive" };
     }
 
-    // Add category filter
     if (categoryId) {
       conditions.product_category_id = parseInt(categoryId, 10);
     }
 
-    // Add date filters for created_at
     if (startDate) {
       const start = parseISO(startDate);
       if (isValid(start)) {
-        conditions.created_at = { ...(conditions.created_at || {}), gte: start };
+        conditions.created_at = {
+          ...(conditions.created_at || {}),
+          gte: start,
+        };
       }
     }
 
@@ -81,10 +82,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fetch filtered products from the database
     const products = await prisma.products.findMany({
       where: conditions,
-      orderBy: { created_at: "desc" }, // Sort by creation date
+      orderBy: { created_at: "desc" }, 
     });
 
     return NextResponse.json(products);

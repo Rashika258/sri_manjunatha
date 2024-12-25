@@ -1,20 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 import { parseISO, isValid } from "date-fns";
-
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { name, email, phone, address, gstin, created_at } = body;
 
-    // Validate required fields
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    // Add customer to the database
     const newCustomer = await prisma.customers.create({
       data: {
         name,
@@ -30,17 +26,8 @@ export async function POST(request: NextRequest) {
       { message: "Customer added successfully", customer: newCustomer },
       { status: 201 }
     );
-} catch (error) {
+  } catch (error) {
     console.error("Error adding customer:", error);
-
-    // // Handle unique constraint errors
-    // if (error.code === "P2002") {
-    //   return NextResponse.json(
-    //     { error: `Unique constraint failed on field: ${error.meta?.target}` },
-    //     { status: 409 }
-    //   );
-    // }
-
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
@@ -48,15 +35,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-
 export async function GET(request: Request) {
   try {
-    const { search, startDate, endDate } = Object.fromEntries(new URL(request.url).searchParams);
+    const { search, startDate, endDate } = Object.fromEntries(
+      new URL(request.url).searchParams
+    );
 
-    // Build the Prisma query conditions
-    const conditions: any = {};
+    const conditions = {};
 
-    // Add search filter
     if (search) {
       conditions.OR = [
         { name: { contains: search, mode: "insensitive" } },
@@ -69,7 +55,10 @@ export async function GET(request: Request) {
     if (startDate) {
       const start = parseISO(startDate);
       if (isValid(start)) {
-        conditions.created_at = { ...(conditions.created_at || {}), gte: start };
+        conditions.created_at = {
+          ...(conditions.created_at || {}),
+          gte: start,
+        };
       }
     }
 
@@ -80,10 +69,9 @@ export async function GET(request: Request) {
       }
     }
 
-    // Fetch filtered customers
     const customers = await prisma.customers.findMany({
       where: conditions,
-      orderBy: { created_at: "desc" }, // Sort by creation date
+      orderBy: { created_at: "desc" },
     });
 
     return NextResponse.json(customers);
@@ -95,5 +83,3 @@ export async function GET(request: Request) {
     );
   }
 }
-
-

@@ -16,7 +16,6 @@ const EmployeeEditPage = () => {
   const employeeId = typeof id === "string" ? id : id?.[0];
   const [isEditingData, setIsEditingData] = React.useState(false);
 
-  // Fetch employee data
   const {
     data: employeeData,
     error: fetchError,
@@ -33,7 +32,7 @@ const EmployeeEditPage = () => {
     onSuccess: () => {
       toast.success("Employee updated successfully!");
       setIsEditingData(false);
-      router.back(); // Navigate back to the previous page
+      router.back(); 
     },
     onError: (error: Error) => {
       console.error("Error updating employee:", error);
@@ -42,7 +41,6 @@ const EmployeeEditPage = () => {
     onSettled: () => setIsEditingData(false),
   });
 
-  // Submit handler for the form
   const onSubmit: SubmitHandler<EmployeeFormData> = (formData) => {
     if (employeeId) {
       setIsEditingData(true);
@@ -50,17 +48,14 @@ const EmployeeEditPage = () => {
     }
   };
 
-  // Display a loader if data is being fetched
   if (isFetching) {
     return <AppFormLoader />;
   }
 
-  // Handle errors during data fetch
   if (fetchError) {
     return <div>Error: {fetchError.message}</div>;
   }
 
-  // Handle case where no data is returned
   if (!employeeData) {
     return <div>No employee data found</div>;
   }

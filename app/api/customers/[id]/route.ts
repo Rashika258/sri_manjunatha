@@ -8,12 +8,11 @@ export async function DELETE(
   try {
     const customerId = parseInt(params.id);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const deletedCustomer = await prisma.customers.delete({
       where: { customer_id: customerId },
     });
 
-    return NextResponse.json({ message: "Customer deleted successfully" });
+    return NextResponse.json({ message: "Customer deleted successfully", data: deletedCustomer });
   } catch (error) {
     console.error("Error deleting customer:", error);
     return NextResponse.json(
@@ -29,11 +28,11 @@ export async function PUT(
 ) {
   try {
     const customerId = parseInt(params.id);
-    const data = await req.json(); // Get the request body
+    const data = await req.json();
 
     const updatedCustomer = await prisma.customers.update({
       where: { customer_id: customerId },
-      data: data, // Data to update
+      data: data, 
     });
 
     return NextResponse.json(updatedCustomer);
@@ -48,13 +47,12 @@ export async function PUT(
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id?: string } } // id is now optional
+  { params }: { params: { id?: string } } 
 ) {
   try {
     if (params.id) {
       const customerId = parseInt(params.id);
 
-      // Validate if 'customerId' is a valid number
       if (isNaN(customerId)) {
         return NextResponse.json(
           { error: "Invalid customer ID" },
@@ -62,7 +60,6 @@ export async function GET(
         );
       }
 
-      // Fetch customer by customerId
       const customer = await prisma.customers.findUnique({
         where: { customer_id: customerId },
       });

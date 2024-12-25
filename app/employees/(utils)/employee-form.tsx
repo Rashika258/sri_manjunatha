@@ -19,12 +19,7 @@ import { Employee } from "@/types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-interface EmployeeFormProps {
-  onSubmit: SubmitHandler<Employee>;
-  isSubmitBtnLoading: boolean;
-  data?: Employee;
-  headerText: string;
-}
+
 
 const employeeSchema = z.object({
   first_name: z.string().min(1, { message: "First name is required" }),

@@ -10,7 +10,6 @@ export default async function handler(
   const { method } = req;
   const { id } = req.query;
 
-  // Validate `id`
   if (!id || Array.isArray(id) || isNaN(parseInt(id))) {
     res.status(400).json({ error: 'Invalid or missing ID' });
     return;

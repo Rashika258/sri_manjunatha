@@ -12,17 +12,10 @@ import {
   Input,
 } from "@/components/ui/index";
 import { format } from "date-fns";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { Customer } from "@/types";
+import { useForm } from "react-hook-form";
+import { CustomerFormProps } from "@/types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
-interface CustomerFormProps {
-  onSubmit: SubmitHandler<Customer>;
-  isSubmitBtnLoading: boolean;
-  data?: Customer;
-  headerText: string
-}
 
 const customerSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -46,7 +39,12 @@ const customerSchema = z.object({
 });
 export type CustomerFormData = z.infer<typeof customerSchema>;
 
-const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: CustomerFormProps) => {
+const CustomerForm = ({
+  onSubmit,
+  isSubmitBtnLoading,
+  data,
+  headerText,
+}: CustomerFormProps) => {
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
@@ -55,8 +53,7 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
       phone: data?.phone || undefined,
       address: data?.address || undefined,
       gstin: data?.gstin || undefined,
-      created_at:data?.created_at? new Date(data?.created_at) :new Date(),
-
+      created_at: data?.created_at ? new Date(data?.created_at) : new Date(),
     },
   });
 
@@ -77,7 +74,9 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                     <FormControl>
                       <Input placeholder="Enter customer name" {...field} />
                     </FormControl>
-                    <FormMessage>{form.formState.errors.name?.message}</FormMessage>
+                    <FormMessage>
+                      {form.formState.errors.name?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
@@ -96,7 +95,9 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage>{form.formState.errors.email?.message}</FormMessage>
+                    <FormMessage>
+                      {form.formState.errors.email?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
@@ -111,7 +112,9 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                     <FormControl>
                       <Input placeholder="Enter phone number" {...field} />
                     </FormControl>
-                    <FormMessage>{form.formState.errors.phone?.message}</FormMessage>
+                    <FormMessage>
+                      {form.formState.errors.phone?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
@@ -143,7 +146,9 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                     <FormControl>
                       <Input placeholder="Enter GSTIN" {...field} />
                     </FormControl>
-                    <FormMessage>{form.formState.errors.gstin?.message}</FormMessage>
+                    <FormMessage>
+                      {form.formState.errors.gstin?.message}
+                    </FormMessage>
                   </FormItem>
                 )}
               />
@@ -159,7 +164,7 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
                         field={field}
                         formatValue={(value) =>
                           value ? format(value, "PPP") : ""
-                        } // Custom date format
+                        }
                       />
                     </FormControl>
                     <FormMessage>
@@ -173,7 +178,11 @@ const CustomerForm = ({ onSubmit, isSubmitBtnLoading, data, headerText }: Custom
 
           {/* Submit & Reset Buttons */}
           <div className="px-4 py-4 flex w-full items-center justify-end space-x-4">
-            <Button type="reset" variant="secondary" onClick={() => form.reset()}>
+            <Button
+              type="reset"
+              variant="secondary"
+              onClick={() => form.reset()}
+            >
               Reset
             </Button>
             <Button
