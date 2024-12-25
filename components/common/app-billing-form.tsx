@@ -132,7 +132,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
       customer_name: "",
       customer_phone: "",
       is_gst_bill: false,
-      payment_status: "Pending",
+      payment_status: "",
       tax_amount: 0,
       total_amount: 0,
       due_date: new Date(),
