@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import { AppFormHeader, AppDateInput } from "@/components/common/index";
 import {
   Button,
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/index";
 import { format } from "date-fns";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Product } from "@/types"; // Assuming the type is defined
+import { Product } from "@/types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getProductCategories } from "@/app/product-category/(utils)/api-request";
@@ -31,18 +31,19 @@ interface ProductFormProps {
   headerText: string;
 }
 
-const productSchema = z.object({
+export const productSchema = z.object({
   name: z.string().min(1, { message: "Product name is required" }),
   product_category_id: z
-    .number()
+    .string()
     .min(1, { message: "Please select a category" }),
   hsn_code: z
     .number()
     .min(1, { message: "HSN code must be a valid number" })
     .optional(),
-  price: z
+  price: z.number().min(0, { message: "Price must be a positive number" }),
+  bags: z
     .number()
-    .min(0, { message: "Price must be a positive number" })
+    .min(1, { message: "Bags must be a positive number" })
     .optional(),
   gst_rate: z
     .number()
@@ -54,12 +55,10 @@ const productSchema = z.object({
     .optional(),
   adinath_price: z
     .number()
-    .min(0, { message: "Adinath price must be a positive number" })
-    .optional(),
+    .min(0, { message: "Adinath price must be a positive number" }),
   monthly_bill_price: z
     .number()
-    .min(0, { message: "Monthly bill price must be a positive number" })
-    .optional(),
+    .min(0, { message: "Monthly bill price must be a positive number" }),
   monthly_bill_percentage: z
     .number()
     .min(0, { message: "Monthly bill percentage cannot be negative" })
@@ -95,6 +94,16 @@ const ProductForm = ({
     },
   });
 
+  const price = form.watch("price");
+  const monthlyBillPercentage = form.watch("monthly_bill_percentage");
+
+  React.useEffect(() => {
+    if (price !== undefined && monthlyBillPercentage !== undefined) {
+      const calculatedMonthlyBill = (price * monthlyBillPercentage) / 100;
+      form.setValue("monthly_bill_price", calculatedMonthlyBill);
+    }
+  }, [price, monthlyBillPercentage, form]);
+
   const fetchProductCategories = React.useCallback(async () => {
     try {
       const response = await getProductCategories();
@@ -114,11 +123,20 @@ const ProductForm = ({
     fetchProductCategories();
   }, []);
 
+  console.log("form", form.getValues(), form.formState.errors);
+
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto">
       <AppFormHeader headerText={headerText} />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form
+          onSubmit={(e) => {
+            console.log("ee");
+
+            e.preventDefault();
+            form.handleSubmit(onSubmit)(e);
+          }}
+        >
           <div className="flex flex-col grow justify-between space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
               {/* Product Name */}
@@ -146,23 +164,38 @@ const ProductForm = ({
                   <FormItem>
                     <FormLabel>Product Category</FormLabel>
                     <FormControl>
-                      <Select {...field}>
+                      <Select
+                        {...field}
+                        value={field.name}
+                        onValueChange={(value) => {
+                          console.log("value", value, field.value);
+
+                          field.onChange(value);
+                          form.setValue("product_category_id", value);
+                        }}
+                      >
                         <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
+                          <SelectValue>
+                            {field.value
+                              ? categories.find(
+                                  (category) => category.id === field.value
+                                )?.name
+                              : "Select a category"}
+                          </SelectValue>
                         </SelectTrigger>
-                        <SelectContent>
-                          {categories.length > 0 ? (
-                            categories.map((category) => (
-                              <SelectItem key={category.id} value={category.id}>
-                                {category.name}
-                              </SelectItem>
-                            ))
-                          ) : (
-                            <SelectItem value={-1}>
-                              No categories available
-                            </SelectItem>
-                          )}
-                        </SelectContent>
+                        <SelectGroup>
+                          <SelectContent>
+                            {categories.length > 0 &&
+                              categories.map((category) => (
+                                <SelectItem
+                                  key={category.id}
+                                  value={String(category.id)}
+                                >
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </SelectGroup>
                       </Select>
                     </FormControl>
                     <FormMessage>
@@ -180,7 +213,13 @@ const ProductForm = ({
                   <FormItem>
                     <FormLabel>HSN Code</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter HSN code" {...field} />
+                      <Input
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e?.target?.value));
+                        }}
+                        placeholder="Enter HSN code"
+                      />
                     </FormControl>
                     <FormMessage>
                       {form.formState.errors.hsn_code?.message}
@@ -198,9 +237,12 @@ const ProductForm = ({
                     <FormLabel>Price</FormLabel>
                     <FormControl>
                       <Input
+                        {...field}
                         type="number"
                         placeholder="Enter price"
-                        {...field}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e?.target?.value));
+                        }}
                       />
                     </FormControl>
                     <FormMessage>
@@ -219,9 +261,12 @@ const ProductForm = ({
                     <FormLabel>GST Rate</FormLabel>
                     <FormControl>
                       <Input
+                        {...field}
                         type="number"
                         placeholder="Enter GST rate"
-                        {...field}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e?.target?.value));
+                        }}
                       />
                     </FormControl>
                     <FormMessage>
@@ -240,13 +285,40 @@ const ProductForm = ({
                     <FormLabel>Stock Quantity</FormLabel>
                     <FormControl>
                       <Input
+                        {...field}
                         type="number"
                         placeholder="Enter stock quantity"
-                        {...field}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e?.target?.value));
+                        }}
                       />
                     </FormControl>
                     <FormMessage>
                       {form.formState.errors.stock_quantity?.message}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
+
+              {/* Bags */}
+              <FormField
+                control={form.control}
+                name="bags"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bags</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        placeholder="Enter bags"
+                        onChange={(e) => {
+                          field.onChange(parseInt(e?.target?.value));
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage>
+                      {form.formState.errors.bags?.message}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -261,9 +333,12 @@ const ProductForm = ({
                     <FormLabel>Adinath Price</FormLabel>
                     <FormControl>
                       <Input
+                        {...field}
                         type="number"
                         placeholder="Enter Adinath price"
-                        {...field}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e?.target?.value));
+                        }}
                       />
                     </FormControl>
                     <FormMessage>
@@ -282,9 +357,12 @@ const ProductForm = ({
                     <FormLabel>Monthly Bill Price</FormLabel>
                     <FormControl>
                       <Input
+                        {...field}
                         type="number"
                         placeholder="Enter monthly bill price"
-                        {...field}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e?.target?.value));
+                        }}
                       />
                     </FormControl>
                     <FormMessage>
@@ -303,9 +381,12 @@ const ProductForm = ({
                     <FormLabel>Monthly Bill Percentage</FormLabel>
                     <FormControl>
                       <Input
+                        {...field}
                         type="number"
                         placeholder="Enter monthly bill percentage"
-                        {...field}
+                        onChange={(e) => {
+                          field.onChange(parseInt(e?.target?.value));
+                        }}
                       />
                     </FormControl>
                     <FormMessage>
