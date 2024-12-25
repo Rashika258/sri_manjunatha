@@ -2,14 +2,18 @@
 import * as React from "react";
 import { ColumnDef } from "@tanstack/react-table";
 import {AppTableError, AppTableSkeleton, AppActionCell, AppDataTable, AppPaymentStatus, AppTooltip} from "@/components/common/index";
-import { ActionItem, DailyBill } from "@/types";
+import { ActionItem, Bill } from "@/types";
 import { Download, Pencil, Share2, Trash } from "lucide-react";
+import { useBills } from "./(utils)/api-request";
 
 
 const BillPage = () => {
-  const { data, isLoading, error } = useDailyBills();
+  const { data, isLoading, error } = useBills();
 
-  type ColumnType = ColumnDef<DailyBill>[];
+  console.log("data========", data);
+  
+
+  type ColumnType = ColumnDef<Bill>[];
 
   const actions: ActionItem[] = React.useMemo(() => [
     {
@@ -103,7 +107,7 @@ const BillPage = () => {
   return (
     <div className={`w-full h-full flex items-center flex-col `}>
       <div className="flex flex-col w-full h-full space-y-4 p-8">
-        <AppDataTable<DailyBill>
+        <AppDataTable<Bill>
           redirectPath={"/daily-bills/add-bill"}
           columns={columns}
           data={data!}

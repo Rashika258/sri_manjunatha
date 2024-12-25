@@ -1,100 +1,80 @@
-import { PrismaClient } from '@prisma/client';
-import { NextApiRequest, NextApiResponse } from 'next';
 
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma";
+import { InvoiceItem } from "@/types";
+import { NextRequest, NextResponse } from "next/server";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-): Promise<void> {
-  const { method } = req;
-  const { id } = req.query;
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const invoiceId = parseInt(params.id);
+    const data = await req.json();
 
-  if (!id || Array.isArray(id) || isNaN(parseInt(id))) {
-    res.status(400).json({ error: 'Invalid or missing ID' });
-    return;
-  }
+    const updatedInvoice = await prisma.invoice.update({
+      where: { invoice_id: invoiceId },
+      data: {
+        invoice_number: data.invoice_number,
+        gstin: data.gstin,
+        customer_name: data.customer_name,
+        customer_address: data.customer_address,
+        customer_email: data.customer_email,
+        customer_phone: data.customer_phone,
+        payment_status: data.payment_status,
+        is_gst_bill: data.is_gst_bill,
+        tax_amount: data.tax_amount,
+        total_amount: data.total_amount,
+        invoice_date: new Date(data.invoice_date),
+        due_date: new Date(data.due_date),
+        items: {
+          upsert: data.invoice_items.map((item: InvoiceItem) => ({
+            where: { item_id: item.product_id || -1 }, // New item will have a different ID
+            update: { ...item },
+            create: { ...item },
+          })),
+        },
+      },
+      include: { items: true },
+    });
 
-  const invoiceId = parseInt(id);
-
-  switch (method) {
-    case 'GET': // Get a specific daily bill
-      try {
-        const bill = await prisma.invoices.findUnique({
-          where: { invoice_id: invoiceId },
-        });
-
-        if (!bill) {
-          res.status(404).json({ error: 'Bill not found' });
-          return;
-        }
-
-        res.status(200).json(bill);
-      } catch (error) {
-        console.error('Error fetching bill:', error);
-        res.status(500).json({ error: 'Failed to fetch bill' });
-      }
-      break;
-
-    case 'PUT': // Update a daily bill
-      try {
-        const { customer_id, invoice_date, total_amount, grand_total } = req.body;
-
-        // Validate required fields
-        if (
-          !customer_id ||
-          !invoice_date ||
-          total_amount === undefined ||
-          grand_total === undefined
-        ) {
-          res.status(400).json({ error: 'Missing required fields' });
-          return;
-        }
-
-        const updatedBill = await prisma.invoices.update({
-          where: { invoice_id: invoiceId },
-          data: {
-            customer_id,
-            invoice_date: new Date(invoice_date),
-            total_amount,
-            grand_total,
-          },
-        });
-
-        res.status(200).json(updatedBill);
-      } catch (error: any) {
-        console.error('Error updating bill:', error);
-
-        if (error.code === 'P2025') {
-          res.status(404).json({ error: 'Bill not found' });
-          return;
-        }
-
-        res.status(500).json({ error: 'Failed to update bill' });
-      }
-      break;
-
-    case 'DELETE': // Delete a daily bill
-      try {
-        await prisma.invoices.delete({
-          where: { invoice_id: invoiceId },
-        });
-
-        res.status(204).end(); // No content
-      } catch (error: any) {
-        console.error('Error deleting bill:', error);
-
-        if (error.code === 'P2025') {
-          res.status(404).json({ error: 'Bill not found' });
-          return;
-        }
-
-        res.status(500).json({ error: 'Failed to delete bill' });
-      }
-      break;
-
-    default:
-      res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
-      res.status(405).end(`Method ${method} Not Allowed`);
+    return NextResponse.json(updatedInvoice);
+  } catch (error) {
+    console.error("Error updating invoice:", error);
+    return NextResponse.json({ error: "Error updating invoice" }, { status: 500 });
   }
 }
+
+
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const invoiceId = parseInt(params.id);
+
+    const deletedInvoice = await prisma.invoice.delete({
+      where: { invoice_id: invoiceId },
+    });
+
+    return NextResponse.json({ message: "Invoice deleted successfully", data: deletedInvoice });
+  } catch (error) {
+    console.error("Error deleting invoice:", error);
+    return NextResponse.json({ error: "Error deleting invoice" }, { status: 500 });
+  }
+};
+
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const invoiceId = parseInt(params.id);
+
+    const invoice = await prisma.invoice.findUnique({
+      where: { invoice_id: invoiceId },
+      include: { items: true }, // Include the related items
+    });
+
+    if (!invoice) {
+      return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(invoice);
+  } catch (error) {
+    console.error("Error fetching invoice:", error);
+    return NextResponse.json({ error: "Error fetching invoice" }, { status: 500 });
+  }
+}
+

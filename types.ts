@@ -16,7 +16,6 @@ type Company = {
   address: string;
 };
 
-
 type FormData = {
   invoice_number: string;
   gstin: string;
@@ -68,10 +67,9 @@ type Customer = {
 
 type GetCustomersParams = {
   search?: string;
-  startDate?: string; 
-  endDate?: string;   
+  startDate?: string;
+  endDate?: string;
 };
-
 
 type ActionItem = {
   label: string;
@@ -88,13 +86,12 @@ type ProductCategory = {
   category_id: string;
 };
 
-
 type CustomerFormProps = {
   onSubmit: SubmitHandler<Customer>;
   isSubmitBtnLoading: boolean;
   data?: Customer;
-  headerText: string
-}
+  headerText: string;
+};
 type Employee = {
   employee_id?: number;
   first_name: string;
@@ -112,7 +109,7 @@ type EmployeeFormProps = {
   isSubmitBtnLoading: boolean;
   data?: Employee;
   headerText: string;
-}
+};
 
 type Product = {
   product_id?: number;
@@ -141,15 +138,14 @@ type DeleteConfirmationPopupDetails = {
   openDeleteConfirmationPopup: boolean;
   isDeletingEmployee: boolean;
   rowId: string;
-}
-
+};
 
 type AppDropdownOption = {
   value?: string;
   label: string;
-}
+};
 
-type AppDropdownProps =  {
+type AppDropdownProps = {
   options: AppDropdownOption[];
   field: {
     value: string;
@@ -157,7 +153,24 @@ type AppDropdownProps =  {
   };
   placeholder: string;
   isLoading: boolean;
-}
+};
+
+type Bill = {
+  id: string;
+  amount: number;
+  date: string;
+  description: string;
+  dueDate: string;
+  status: "paid" | "unpaid" | "overdue";
+  createdAt: string;
+  updatedAt: string;
+};
+
+type GetBillsParams = {
+  search?: string;  
+  startDate?: string;  
+  endDate?: string;   
+};
 
 
 export type {
@@ -177,5 +190,7 @@ export type {
   CustomerFormProps,
   DeleteConfirmationPopupDetails,
   EmployeeFormProps,
-  AppDropdownProps
+  AppDropdownProps,
+  Bill,
+  GetBillsParams
 };
