@@ -1,5 +1,5 @@
 "use client";
-import * as  React from "react";
+import * as React from "react";
 import AppSearch from "./app-search";
 import { DateRange } from "react-day-picker";
 import { useRouter } from "next/navigation";
@@ -12,7 +12,7 @@ import {
   Button,
   DateRangePicker,
 } from "@/components/ui/index";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, FileDown } from "lucide-react";
 import { Table as ReactTable } from "@tanstack/react-table";
 
 const AppFilter = <T,>({
@@ -33,33 +33,28 @@ const AppFilter = <T,>({
   const router = useRouter();
   const [localSearch, setLocalSearch] = React.useState(searchQuery);
 
-  // Debounced search handling
   const debounceSearch = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setLocalSearch(value);
 
-      // Debounce API call
       const timeout = setTimeout(() => {
         handleSearch(value);
-      }, 300); // 300ms debounce time
+      }, 300);
 
       return () => clearTimeout(timeout);
     },
     [handleSearch]
   );
 
-
   return (
     <div className="flex justify-between flex-col sm:flex-row">
       <div className="flex flex-col sm:flex-row sm:w-full w-full items-start gap-2 py-4">
-      <AppSearch searchQuery={localSearch} handleSearch={debounceSearch} />
+        <AppSearch searchQuery={localSearch} handleSearch={debounceSearch} />
         <DateRangePicker date={date} setDate={setDate} />
-
-  
       </div>
       <div className="flex items-center gap-2">
-      <DropdownMenu>
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
               Columns <ChevronDown />
@@ -81,6 +76,10 @@ const AppFilter = <T,>({
               ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button variant="secondary" onClick={() =>{}}>
+        <FileDown />
+          Download
+        </Button>
         <Button variant="default" onClick={() => router.push(redirectPath)}>
           Add
         </Button>
