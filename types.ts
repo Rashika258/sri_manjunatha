@@ -98,15 +98,17 @@ type Employee = {
 
 
 type Product = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  imageUrl?: string;
-  stock: number;
-  createdAt: string;
-  updatedAt: string;
+  product_id: number; // Auto-generated ID for the product
+  name: string; // Name of the product
+  product_category_id: number; // Category ID linked to the product
+  hsn_code?: number; // HSN code for the product (optional)
+  price?: number; // Price of the product (optional)
+  gst_rate?: number; // GST rate for the product (optional)
+  stock_quantity?: number; // Quantity of product in stock (optional)
+  adinath_price?: number; // Price at Adinath (optional)
+  monthly_bill_price?: number; // Monthly bill price (optional)
+  monthly_bill_percentage?: number; // Monthly bill percentage (optional)
+  created_at?: Date; // Date when the product was created (optional)
 };
 
 
