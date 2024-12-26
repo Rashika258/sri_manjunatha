@@ -1,5 +1,5 @@
 "use client";
-import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import * as React from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,11 +20,7 @@ import {
   Input,
 } from "@/components/ui/index";
 import { format } from "date-fns";
-import {
-  AppDropdownOption,
-  FormData,
-  InvoiceItem,
-} from "@/types";
+import { AppDropdownOption, BillingFormData, InvoiceItem } from "@/types";
 import {
   AppDropdown,
   AppDateInput,
@@ -32,7 +28,6 @@ import {
 } from "@/components/common/index";
 import { useCustomers } from "@/app/customers/(utils)/api-request";
 import { useProducts } from "@/app/products/(utils)/api-request";
-
 
 const paymentStatusOptions: AppDropdownOption[] = [
   { value: "1", label: "Paid" },
@@ -97,9 +92,42 @@ const FormSchema = z.object({
     .min(1, { message: "At least one item is required." }),
 });
 
+const defaultFormData = {
+  invoice_number: Date.now().toString(),
+  customer_id: Math.random(),
+  gstin: "",
+  customer_address: "",
+  customer_email: "",
+  customer_name: "",
+  customer_phone: "",
+  is_gst_bill: false,
+  payment_status: "",
+  tax_amount: 0,
+  total_amount: 0,
+  due_date: new Date(),
+  invoice_date: new Date(),
+  invoice_items: [
+    {
+      product_id: "",
+      product_name: "",
+      quantity: undefined,
+      bags: undefined,
+      unit_price: undefined,
+      total_price: undefined,
+    },
+  ],
+};
+
 const AppBillingForm = ({ headerText }: { headerText: string }) => {
   const customerData = useCustomers();
   const productData = useProducts();
+  const [formData, setFormData] =
+    React.useState<BillingFormData>(defaultFormData);
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  });
+  const { handleSubmit, formState } = form;
 
   const productOptions = React.useMemo(() => {
     return productData?.data?.map((product) => {
@@ -119,60 +147,70 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
     });
   }, [customerData?.data]);
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
-    defaultValues: {
-      invoice_number: Date.now().toString(),
-      customer_id: Math.random(),
-      gstin: "",
-      customer_address: "",
-      customer_email: "",
-      customer_name: "",
-      customer_phone: "",
-      is_gst_bill: false,
-      payment_status: "",
-      tax_amount: 0,
-      total_amount: 0,
-      due_date: new Date(),
-      invoice_date: new Date(),
+  const onSubmit: SubmitHandler<BillingFormData> = () => {
+    alert("Bill submitted successfully!");
+  };
+
+  // Add new item
+  const addItem = () => {
+    setFormData((prev) => ({
+      ...prev,
       invoice_items: [
+        ...prev.invoice_items,
         {
           product_id: "",
           product_name: "",
-          quantity: 0,
-          bags: 0,
-          unit_price: 0,
-          total_price: 0,
+          quantity: undefined,
+          bags: undefined,
+          unit_price: undefined,
+          total_price: undefined,
         },
       ],
-    },
-  });
-
-  const { register, control, handleSubmit, watch, formState } = form;
-  const { fields, append, remove, update } = useFieldArray({
-    control,
-    name: "invoice_items",
-  });
-
-  const watchItems = watch("invoice_items");
-
-  const calculateTotalBill = () =>
-    watchItems.reduce((acc, item) => acc + Number(item.total_price || 0), 0);
-
-  const handleItemChange = (
-    index: number,
-    field: keyof InvoiceItem,
-    value: number | string
-  ) => {
-    const item = { ...fields[index], [field]: value };
-    if (field === "quantity" || field === "bags" || field === "unit_price") {
-      item.total_price = item.quantity * item.unit_price;
-    }
-    update(index, item);
+    }));
   };
 
-  const onSubmit: SubmitHandler<FormData> = () => {
-    alert("Bill submitted successfully!");
+  const updateItemField = (
+    index: number,
+    key: keyof InvoiceItem,
+    value: string
+  ) => {
+    setFormData((prev) => {
+      const updatedItems = [...prev.invoice_items];
+      updatedItems[index] = {
+        ...updatedItems[index],
+        [key]: value,
+      };
+      if (key === "quantity" || key === "unit_price") {
+        if (updatedItems[index]?.quantity && updatedItems[index]?.unit_price) {
+          updatedItems[index].total_price =
+            updatedItems[index]?.quantity * updatedItems[index]?.unit_price;
+        }
+      }
+      return { ...prev, invoice_items: updatedItems };
+    });
+  };
+  // Remove item
+  const removeItem = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      invoice_items: prev.invoice_items.filter((_, i) => i !== index),
+    }));
+  };
+
+  const calculateTotalBill = React.useCallback(
+    () =>
+      formData.invoice_items.reduce(
+        (total, item) => total + (item.total_price || 0),
+        0
+      ),
+    [formData.invoice_items]
+  );
+
+  const updateFormField = (key: keyof BillingFormData, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
   };
 
   const fetchReferenceData = React.useCallback(async () => {}, []);
@@ -195,7 +233,14 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                   <FormItem>
                     <FormLabel>Invoice Number</FormLabel>
                     <FormControl>
-                      <Input placeholder="Bill Number" {...field} />
+                      <Input
+                        {...field}
+                        placeholder="Bill Number"
+                        value={formData.invoice_number}
+                        onChange={(e) =>
+                          updateFormField("invoice_number", e.target.value)
+                        }
+                      />
                     </FormControl>
                     <FormMessage>
                       {formState.errors.invoice_number?.message}
@@ -212,9 +257,12 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                     <FormLabel>GST Number</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="GST Number"
                         {...field}
-                     
+                        placeholder="GST Number"
+                        value={formData.gstin}
+                        onChange={(e) =>
+                          updateFormField("gstin", e.target.value)
+                        }
                       />
                     </FormControl>
                     <FormMessage>{formState.errors.gstin?.message}</FormMessage>
@@ -230,11 +278,20 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                     <FormLabel>Payment Status</FormLabel>
                     <FormControl>
                       <AppDropdown
+                        {...field}
                         isLoading={false}
                         options={paymentStatusOptions}
                         field={{
-                          value: field.value,
-                          onChange: field.onChange,
+                          value:
+                            (
+                              paymentStatusOptions?.find(
+                                (option) =>
+                                  option.value === formData.payment_status
+                              ) || {}
+                            ).value || "",
+                          onChange: (value) => {
+                            updateFormField("payment_status", value);
+                          },
                         }}
                         placeholder="Select a payment status"
                       />
@@ -254,11 +311,20 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                     <FormLabel>Customer</FormLabel>
                     <FormControl>
                       <AppDropdown
+                        {...field}
                         isLoading={customerData.isLoading}
                         options={customerOptions!}
                         field={{
-                          value: field.value,
-                          onChange: field.onChange,
+                          value:
+                            (
+                              customerOptions?.find(
+                                (option) =>
+                                  option.value === formData.customer_name
+                              ) || {}
+                            ).value || "",
+                          onChange: (value) => {
+                            updateFormField("customer_name", value);
+                          },
                         }}
                         placeholder="Select a company"
                       />
@@ -313,9 +379,12 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                     <FormLabel>Customer Address</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Customer Address"
                         {...field}
-                        onChange={field.onChange}
+                        placeholder="Customer Address"
+                        value={formData.customer_address}
+                        onChange={(e) =>
+                          updateFormField("customer_address", e.target.value)
+                        }
                       />
                     </FormControl>
                   </FormItem>
@@ -330,9 +399,12 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                     <FormLabel>Customer Phone</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Customer Phone"
                         {...field}
-                        onChange={field.onChange}
+                        placeholder="Customer Phone"
+                        value={formData.customer_phone}
+                        onChange={(e) =>
+                          updateFormField("customer_phone", e.target.value)
+                        }
                       />
                     </FormControl>
                   </FormItem>
@@ -349,7 +421,10 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                       <Input
                         placeholder="Customer Email"
                         {...field}
-                        onChange={field.onChange}
+                        value={formData.customer_email}
+                        onChange={(e) =>
+                          updateFormField("customer_email", e.target.value)
+                        }
                       />
                     </FormControl>
                   </FormItem>
@@ -359,26 +434,14 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
 
             <div className="flex items-center justify-between ">
               <h3 className="font-bold text-lg">Invoice Items</h3>
-              <Button
-                onClick={() =>
-                  append({
-                    product_id: "",
-                    product_name: "",
-                    quantity: 0,
-                    bags: 0,
-                    unit_price: 0,
-                    total_price: 0,
-                  })
-                }
-                size={"icon"}
-              >
+              <Button onClick={() => addItem()} size={"icon"}>
                 <PlusIcon />
               </Button>
             </div>
             <div className="overflow-auto w-full rounded-md border max-h-[200px]">
               <Table>
                 <TableHeader>
-                  <TableRow className="w-full flex">
+                  <TableRow>
                     <TableCell>Product</TableCell>
                     <TableCell>Quantity</TableCell>
                     <TableCell>Bags</TableCell>
@@ -388,83 +451,63 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {fields.map((field, index) => (
-                    <TableRow key={field.id}>
+                  {formData?.invoice_items.map((item, index) => (
+                    <TableRow key={index}>
                       <TableCell>
-                        <FormField
-                          control={form.control}
-                          name={`invoice_items.${index}.product_name`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <AppDropdown
-                                  isLoading={productData.isLoading}
-                                  options={productOptions!}
-                                  field={{
-                                    value: field.value,
-                                    onChange: field.onChange,
-                                  }}
-                                  placeholder="Select a product"
-                                />
-                              </FormControl>
-                            </FormItem>
-                          )}
+                        <AppDropdown
+                          isLoading={productData.isLoading}
+                          options={productOptions!}
+                          field={{
+                            value:
+                              productOptions?.find(
+                                (option) => option.value === item.product_id
+                              )?.label || "",
+                            onChange: (value) => {
+                              updateItemField(index, "product_name", value);
+                            },
+                          }}
+                          placeholder="Select a product"
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           type="number"
-                          {...register(`invoice_items.${index}.quantity`)}
-                          defaultValue={field.quantity}
+                          value={item.quantity}
                           onChange={(e) =>
-                            handleItemChange(
-                              index,
-                              "quantity",
-                              Number(e.target.value)
-                            )
+                            updateItemField(index, "quantity", e.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           type="number"
-                          {...register(`invoice_items.${index}.bags`)}
-                          defaultValue={field.bags}
+                          value={item.bags}
                           onChange={(e) =>
-                            handleItemChange(
-                              index,
-                              "bags",
-                              Number(e.target.value)
-                            )
+                            updateItemField(index, "bags", e.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           type="number"
-                          {...register(`invoice_items.${index}.unit_price`)}
-                          defaultValue={field.unit_price}
+                          value={item.unit_price}
                           onChange={(e) =>
-                            handleItemChange(
-                              index,
-                              "unit_price",
-                              Number(e.target.value)
-                            )
+                            updateItemField(index, "unit_price", e.target.value)
                           }
                         />
                       </TableCell>
                       <TableCell>
                         <Input
                           disabled
-                          {...register(`invoice_items.${index}.total_price`)}
-                          value={field.total_price || 0}
+                          type="number"
+                          value={item.total_price || 0}
                         />
                       </TableCell>
                       <TableCell>
                         <Button
                           type="button"
                           variant="destructive"
-                          onClick={() => remove(index)}
+                          onClick={() => removeItem(index)}
                         >
                           <Trash2Icon className="h-4 w-4" />
                         </Button>
@@ -483,22 +526,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() =>
-                  form.reset({
-                    invoice_number: Date.now().toString(),
-                    customer_id: Math.random(),
-                    gstin: "",
-                    customer_name: "",
-                    customer_email: "",
-                    customer_phone: "",
-                    is_gst_bill: false,
-                    payment_status: "Pending",
-                    tax_amount: 0,
-                    total_amount: 0,
-                    invoice_date: new Date(),
-                    invoice_items: [],
-                  })
-                }
+                onClick={() => setFormData(defaultFormData)}
               >
                 Reset
               </Button>

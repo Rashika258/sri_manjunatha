@@ -1,13 +1,13 @@
 import { SubmitHandler } from "react-hook-form";
 
 type InvoiceItem = {
-  product_id: string;
-  product_name: string;
-  quantity: number;
+  product_id?: string;
+  product_name?: string;
+  quantity?: number;
   hsn?: number;
-  bags: number;
-  unit_price: number;
-  total_price: number;
+  bags?: number;
+  unit_price?: number;
+  total_price?: number;
 };
 
 type Company = {
@@ -16,7 +16,7 @@ type Company = {
   address: string;
 };
 
-type FormData = {
+type BillingFormData = {
   invoice_number: string;
   gstin: string;
   customer_name: string;
@@ -29,7 +29,7 @@ type FormData = {
   total_amount: number;
   is_gst_bill: boolean;
   tax_amount: number;
-  payment_status: "Pending" | "Paid" | "Overdue";
+  payment_status: string;
   invoice_items: InvoiceItem[];
 };
 
@@ -177,7 +177,7 @@ export type {
   InvoiceItem,
   Company,
   AppDropdownOption,
-  FormData,
+  BillingFormData,
   DailyBill,
   ProductData,
   Customer,
