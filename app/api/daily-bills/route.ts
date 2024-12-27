@@ -1,39 +1,10 @@
 import { prisma } from "@/lib/prisma";
-import { InvoiceItem } from "@/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-
-    // Create the invoice with associated items
-    const invoice = await prisma.invoice.create({
-      data: {
-        invoice_number: data.invoice_number,
-        gstin: data.gstin,
-        customer_name: data.customer_name,
-        customer_address: data.customer_address,
-        customer_email: data.customer_email,
-        customer_phone: data.customer_phone,
-        payment_status: data.payment_status,
-        is_gst_bill: data.is_gst_bill,
-        tax_amount: data.tax_amount,
-        total_amount: data.total_amount,
-        invoice_date: new Date(data.invoice_date),
-        due_date: new Date(data.due_date),
-        customer_id: data.customer_id,
-        items: {
-          create: data.invoice_items.map((item: InvoiceItem) => ({
-            product_id: item.product_id,
-            product_name: item.product_name,
-            quantity: item.quantity,
-            bags: item.bags,
-            unit_price: item.unit_price,
-            total_price: item.total_price,
-          })),
-        },
-      },
-    });
+    const invoice = await prisma.invoice.create(data);
 
     return NextResponse.json(invoice, { status: 201 });
   } catch (error) {

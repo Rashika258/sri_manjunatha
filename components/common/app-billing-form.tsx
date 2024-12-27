@@ -56,7 +56,7 @@ type FormErrors = {
 
 
 
-const AppBillingForm = ({ headerText }: { headerText: string }) => {
+const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { headerText: string, isSubmitBtnLoading: boolean, handleSubmit: (data: BillingFormData) => void }) => {
   const customerData = useCustomers();
   const productData = useProducts();
   const [formData, setFormData] =
@@ -126,6 +126,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
       setErrors(formErrors);
     } else {
       alert("Bill submitted successfully!");
+      handleSubmit(formData);
     }
   };
 
@@ -472,7 +473,7 @@ const AppBillingForm = ({ headerText }: { headerText: string }) => {
             >
               Reset
             </Button>
-            <Button type="submit">Submit</Button>
+            <Button loading={isSubmitBtnLoading} type="submit">Submit</Button>
           </div>
         </div>
       </form>
