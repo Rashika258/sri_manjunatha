@@ -5,6 +5,7 @@ import {AppTableError, AppTableSkeleton, AppActionCell, AppDataTable, AppPayment
 import { ActionItem, Bill } from "@/types";
 import { Download, Pencil, Share2, Trash } from "lucide-react";
 import { useBills } from "./(utils)/api-request";
+import { downloadInvoice } from "./(utils)/download-invoice";
 
 
 const BillPage = () => {
@@ -34,7 +35,7 @@ const BillPage = () => {
     {
       label: "Download",
       icon: <Download />,
-      handler: () => console.log("Download clicked"),
+      handler: (id: string) => downloadInvoice(id), 
       isEnabled: true,
       buttonVariant: "ghost",
     },

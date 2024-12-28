@@ -35,7 +35,7 @@ const AppDropdown = ({
   isLoading,
 }: AppDropdownProps) => {
   return (
-    <Select onValueChange={field.onChange} defaultValue={field.value}>
+    <Select onValueChange={(value)=> field.onChange(value, options?.find((option) => option.value === value)?.label as string)} defaultValue={field.value}>
       <SelectTrigger>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
@@ -43,7 +43,7 @@ const AppDropdown = ({
         {isLoading ? (
           <AppDropdownLoader />
         ) : (
-          options.map((option, index) => (
+          options?.map((option, index) => (
             <SelectItem key={index} value={option.value!}>
               {option.label}
             </SelectItem>

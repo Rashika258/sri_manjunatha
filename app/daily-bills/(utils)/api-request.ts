@@ -2,6 +2,7 @@ import { Bill, BillingFormData, GetBillsParams } from "@/types";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 const addBill = async (bill: BillingFormData): Promise<void> => {
+  debugger
   const response = await fetch("/api/daily-bills", {
     method: "POST",
     headers: {

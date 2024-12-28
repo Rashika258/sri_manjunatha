@@ -89,6 +89,21 @@ model invoice {
   invoiceitem      invoiceitem[]
 }
 
+model invoiceitem {
+  item_id        Int     @id @default(autoincrement())
+  product_id     String
+  product_name   String
+  hsn            Int
+  quantity       Int
+  bags           Int
+  unit_price     Float
+  total_price    Float
+  invoice_number String
+  invoice        invoice @relation(fields: [invoice_number], references: [invoice_number], map: "invoiceItem_invoice_number_fkey")
+
+  @@index([invoice_number], map: "invoiceItem_invoice_number_fkey")
+}
+
 model leaves {
   leave_id         Int                  @id @default(autoincrement())
   employee_id      Int
@@ -160,20 +175,6 @@ model working_hours_config {
   id                    Int     @id
   daily_expected_hours  Decimal @db.Decimal(5, 2)
   weekly_expected_hours Decimal @db.Decimal(5, 2)
-}
-
-model invoiceitem {
-  item_id      Int     @id @default(autoincrement())
-  product_id   String
-  product_name String
-  quantity     Int
-  bags         Int
-  unit_price   Float
-  total_price  Float
-  invoice_id   Int
-  invoice      invoice @relation(fields: [invoice_id], references: [invoice_id], map: "invoiceItem_invoice_id_fkey")
-
-  @@index([invoice_id], map: "invoiceItem_invoice_id_fkey")
 }
 
 enum leaves_leave_type {

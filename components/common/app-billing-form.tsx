@@ -9,9 +9,22 @@ import {
   Table,
   Button,
   Input,
+  Switch,
+  Label,
 } from "@/components/ui/index";
-import { AppDropdownOption, BillingFormData, InvoiceItem } from "@/types";
-import { AppDropdown, AppFormHeader } from "@/components/common/index";
+import {
+  AppDropdownOption,
+  BillingFormData,
+  FormErrors,
+  FormField,
+  InvoiceItem,
+  ItemField,
+} from "@/types";
+import {
+  AppDateInput,
+  AppDropdown,
+  AppFormHeader,
+} from "@/components/common/index";
 import { useCustomers } from "@/app/customers/(utils)/api-request";
 import { useProducts } from "@/app/products/(utils)/api-request";
 
@@ -22,41 +35,41 @@ const paymentStatusOptions: AppDropdownOption[] = [
 ];
 
 const defaultFormData = {
-  invoice_number: Date.now().toString(),
-  customer_id: Math.random(),
-  gstin: "",
-  customer_address: "",
-  customer_email: "",
-  customer_name: "",
-  customer_phone: "",
+  invoice_number: undefined,
+  customer_id: undefined,
+  gstin: undefined,
+  customer_address: undefined,
+  customer_email: undefined,
+  customer_name: undefined,
+  customer_phone: undefined,
   is_gst_bill: false,
-  payment_status: "",
+  payment_status: undefined,
   tax_amount: 0,
   total_amount: 0,
   due_date: new Date(),
   invoice_date: new Date(),
-  invoice_items: [
+  invoiceitem: [
     {
-      product_id: "",
-      product_name: "",
+      product_id: undefined,
+      product_name: undefined,
       quantity: undefined,
       bags: undefined,
       unit_price: undefined,
       total_price: undefined,
+      hsn: undefined,
     },
   ],
 };
 
-type FormErrors = {
-  [key in keyof BillingFormData]?: string;
-} & {
-  [key: string]: string | undefined; // Allow dynamic string keys like invoice_items[0].product_name
-};
-
-
-
-
-const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { headerText: string, isSubmitBtnLoading: boolean, handleSubmit: (data: BillingFormData) => void }) => {
+const AppBillingForm = ({
+  headerText,
+  isSubmitBtnLoading,
+  handleSubmit,
+}: {
+  headerText: string;
+  isSubmitBtnLoading: boolean;
+  handleSubmit: (data: BillingFormData) => void;
+}) => {
   const customerData = useCustomers();
   const productData = useProducts();
   const [formData, setFormData] =
@@ -66,7 +79,7 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
   const productOptions = React.useMemo(() => {
     return productData?.data?.map((product) => {
       return {
-        value: product?.product_id?.toString(),
+        value: product?.product_id?.toString() as string,
         label: product?.name,
       };
     });
@@ -75,7 +88,7 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
   const customerOptions = React.useMemo(() => {
     return customerData?.data?.map((customer) => {
       return {
-        value: customer?.customer_id?.toString(),
+        value: customer?.customer_id?.toString() as string,
         label: customer?.name,
       };
     });
@@ -84,7 +97,6 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
   const onSubmit = () => {
     const formErrors: FormErrors = {};
 
-    // Manually validate required fields
     if (!formData.invoice_number) {
       formErrors.invoice_number = "Invoice number is required";
     }
@@ -101,12 +113,12 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
       formErrors.customer_name = "Customer name is required";
     }
 
-    if (!formData.invoice_items || formData.invoice_items.length === 0) {
+    if (!formData.invoiceitem || formData.invoiceitem.length === 0) {
       formErrors.invoice_items = "At least one item is required";
     }
 
     // Validate invoice items
-    formData.invoice_items.forEach((item, index) => {
+    formData.invoiceitem.forEach((item, index) => {
       if (!item.product_name) {
         formErrors[`invoice_items[${index}].product_name`] =
           "Product name is required";
@@ -121,28 +133,26 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
       }
     });
 
-    // If errors exist, don't submit the form
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
     } else {
-      alert("Bill submitted successfully!");
       handleSubmit(formData);
     }
   };
 
-  // Add new item
   const addItem = () => {
     setFormData((prev) => ({
       ...prev,
       invoice_items: [
-        ...prev.invoice_items,
+        ...prev.invoiceitem,
         {
-          product_id: "",
-          product_name: "",
+          product_id: undefined,
+          product_name: undefined,
           quantity: undefined,
           bags: undefined,
           unit_price: undefined,
           total_price: undefined,
+          hsn: undefined,
         },
       ],
     }));
@@ -151,10 +161,10 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
   const updateItemField = (
     index: number,
     key: keyof InvoiceItem,
-    value: string
+    value: string | number | Date | undefined
   ) => {
     setFormData((prev) => {
-      const updatedItems = [...prev.invoice_items];
+      const updatedItems = [...prev.invoiceitem];
       updatedItems[index] = {
         ...updatedItems[index],
         [key]: value,
@@ -172,31 +182,255 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
   const removeItem = (index: number) => {
     setFormData((prev) => ({
       ...prev,
-      invoice_items: prev.invoice_items.filter((_, i) => i !== index),
+      invoice_items: prev.invoiceitem.filter((_, i) => i !== index),
     }));
   };
 
   const calculateTotalBill = React.useCallback(
     () =>
-      formData.invoice_items.reduce(
+      formData.invoiceitem.reduce(
         (total, item) => total + (item.total_price || 0),
         0
       ),
-    [formData.invoice_items]
+    [formData.invoiceitem]
   );
 
-  const updateFormField = (key: keyof BillingFormData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [key]: value,
-    }));
+  const updateFormField = (
+    key: keyof BillingFormData,
+    value: string | number | Date | undefined | boolean
+  ) => {
+    console.log("key=========", key, "value========", value);
+    if (key === "customer_id") {
+      setFormData((prev) => {
+        const selectedCustomer = customerOptions?.find(
+          (customer) => customer?.value === value
+        );
+        return {
+          ...prev,
+          [key]: value,
+          customer_name: selectedCustomer?.label || "", // Fallback to an empty string if not found
+        };
+      });
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
+    }
   };
 
-  const fetchReferenceData = React.useCallback(async () => {}, []);
+  const fields: FormField[] = React.useMemo(
+    () => [
+      {
+        name: "invoice_number",
+        label: "Invoice Number",
+        type: "input",
+        value: formData.invoice_number,
+      },
+      {
+        name: "gstin",
+        label: "GST Number",
+        type: "input",
+        value: formData.gstin,
+      },
+      {
+        name: "payment_status",
+        label: "Payment Status",
+        type: "dropdown",
+        value: formData.payment_status,
+        options: paymentStatusOptions,
+      },
+      {
+        name: "customer_id",
+        label: "Customer Name",
+        type: "dropdown",
+        value: formData.customer_name,
+        options: customerOptions,
+      },
+      {
+        name: "invoice_date",
+        label: "Invoice Date",
+        type: "date",
+        value: formData.invoice_date,
+      },
+      {
+        name: "due_date",
+        label: "Due Date",
+        type: "date",
+        value: formData.due_date,
+      },
+      {
+        name: "customer_address",
+        label: "Customer Address",
+        type: "input",
+        value: formData.customer_address,
+      },
+      {
+        name: "customer_phone",
+        label: "Customer Phone",
+        type: "input",
+        value: formData.customer_phone,
+      },
+      {
+        name: "customer_email",
+        label: "Customer Email",
+        type: "input",
+        value: formData.customer_email,
+      },
+      {
+        name: "tax_amount",
+        label: "Tax Amount",
+        type: "input",
+        value: formData.tax_amount,
+      },
+    ],
+    [
+      customerOptions,
+      formData.customer_address,
+      formData.customer_email,
+      formData.customer_name,
+      formData.customer_phone,
+      formData.due_date,
+      formData.gstin,
+      formData.invoice_date,
+      formData.invoice_number,
+      formData.payment_status,
+      formData.tax_amount,
+    ]
+  );
 
-  React.useEffect(() => {
-    fetchReferenceData();
-  }, []);
+  const tableFields = React.useCallback(
+    (item: InvoiceItem): ItemField[] => {
+      return [
+        {
+          name: "product_name",
+          label: "Product",
+          type: "dropdown",
+          value: item.product_name,
+          options: productOptions,
+        },
+        {
+          name: "quantity",
+          label: "Quantity",
+          type: "input",
+          value: item.quantity,
+          inputType: "number",
+        },
+        {
+          name: "hsn",
+          label: "HSN Code",
+          type: "input",
+          value: item.hsn,
+          inputType: "number",
+        },
+        {
+          name: "bags",
+          label: "Bags",
+          type: "input",
+          value: item.bags,
+          inputType: "number",
+        },
+        {
+          name: "unit_price",
+          label: "Unit Price",
+          type: "input",
+          value: item.unit_price,
+        },
+        {
+          name: "total_price",
+          label: "Total Price",
+          type: "input",
+          value: item.total_price,
+          disabled: true,
+        },
+      ];
+    },
+    [productOptions]
+  );
+
+  const renderFormField = (
+    field: FormField | ItemField,
+    idx: number,
+    renderType?: string
+  ) => {
+    const { name, label, type, value, options, inputType } = field;
+    return (
+      <div key={idx + label} className="flex flex-col gap-2">
+        {renderType === "form" && <div className="font-semibold">{label}</div>}
+        <div>
+          {type === "input" && (
+            <Input
+              type={inputType || "text"}
+              placeholder={label}
+              value={value as string}
+              onChange={(e) => {
+                const value =
+                  inputType === "number"
+                    ? Number(e.target.value)
+                    : e.target.value;
+
+                if (renderType === "item") {
+                  updateItemField(idx, name as keyof InvoiceItem, value);
+                } else if (renderType === "form") {
+                  updateFormField(name as keyof BillingFormData, value);
+                }
+              }}
+            />
+          )}
+
+          {type === "dropdown" && (
+            <AppDropdown
+              isLoading={false}
+              options={options!}
+              field={{
+                value:
+                  (options?.find((option) => option.value === value) || {})
+                    .value || "",
+                onChange: (value, label) => {
+                  console.log("value=====", value);
+
+                  if (renderType === "item") {
+                    updateItemField(
+                      idx,
+                      name as keyof InvoiceItem,
+                      value,
+                      label
+                    );
+                  } else if (renderType === "form") {
+                    updateFormField(
+                      name as keyof BillingFormData,
+                      value,
+                      label
+                    );
+                  }
+                },
+              }}
+              placeholder={label}
+            />
+          )}
+
+          {type === "date" && (
+            <AppDateInput
+              date={value ? new Date(value) : undefined}
+              setDate={(value) => {
+                if (renderType === "item") {
+                  updateItemField(idx, name as keyof InvoiceItem, value);
+                } else if (renderType === "form") {
+                  updateFormField(name as keyof BillingFormData, value);
+                }
+              }}
+            />
+          )}
+        </div>
+
+        <div className="text-sm text-destructive-foreground">
+          {errors[name]}
+        </div>
+      </div>
+    );
+  };
+
+  console.log("aaa=======", formData);
 
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto ">
@@ -204,175 +438,7 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
       <form onSubmit={onSubmit}>
         <div className="flex flex-col grow justify-between space-y-4 ">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">Invoice Number</div>
-              <div>
-                <Input
-                  placeholder="Bill Number"
-                  value={formData.invoice_number}
-                  onChange={(e) =>
-                    updateFormField("invoice_number", e.target.value)
-                  }
-                />
-              </div>
-              {/* Conditionally display the error message */}
-              {errors.invoice_number && (
-                <div className="text-sm text-destructive-foreground">
-                  {errors.invoice_number}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">GST Number</div>
-              <div>
-                <Input
-                  placeholder="GST Number"
-                  value={formData.gstin}
-                  onChange={(e) => updateFormField("gstin", e.target.value)}
-                />
-              </div>
-              {/* Conditionally display the error message using div */}
-              {errors.gstin && (
-                <div className="text-sm text-destructive-foreground">
-                  {errors.gstin}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">Payment Status</div>
-              <div>
-                <AppDropdown
-                  isLoading={false}
-                  options={paymentStatusOptions}
-                  field={{
-                    value:
-                      (
-                        paymentStatusOptions?.find(
-                          (option) => option.value === formData.payment_status
-                        ) || {}
-                      ).value || "",
-                    onChange: (value) => {
-                      updateFormField("payment_status", value);
-                    },
-                  }}
-                  placeholder="Select a payment status"
-                />
-              </div>
-              {/* Conditionally display the error message using div */}
-              {errors.payment_status && (
-                <div className="text-sm text-destructive-foreground">
-                  {errors.payment_status}
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">Customer</div>
-              <div>
-                <AppDropdown
-                  isLoading={customerData.isLoading}
-                  options={customerOptions!}
-                  field={{
-                    value:
-                      (
-                        customerOptions?.find(
-                          (option) => option.value === formData.customer_name
-                        ) || {}
-                      ).value || "",
-                    onChange: (value) => {
-                      updateFormField("customer_name", value);
-                    },
-                  }}
-                  placeholder="Select a company"
-                />
-              </div>
-              {/* Conditionally display the error message using div */}
-              {errors.customer_name && (
-                <div className="text-sm text-destructive-foreground">
-                  {errors.customer_name}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">Invoice Date</div>
-              <div>{/* Add your AppDateInput component here */}</div>
-              {/* Conditionally display error message */}
-              {errors.invoice_date && (
-                <div className="text-sm text-destructive-foreground">
-                  {errors.invoice_date}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">Due Date</div>
-              <div>{/* Add your AppDateInput component here */}</div>
-              {/* Conditionally display error message */}
-              {errors.due_date && (
-                <div className="text-sm text-destructive-foreground">
-                  {errors.due_date}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">Customer Address</div>
-              <div>
-                <Input
-                  placeholder="Customer Address"
-                  value={formData.customer_address}
-                  onChange={(e) =>
-                    updateFormField("customer_address", e.target.value)
-                  }
-                />
-              </div>
-              {/* Conditionally display error message */}
-              {errors.customer_address && (
-                <div className="text-sm text-destructive-foreground">
-                  {errors.customer_address}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">Customer Phone</div>
-              <div>
-                <Input
-                  placeholder="Customer Phone"
-                  value={formData.customer_phone}
-                  onChange={(e) =>
-                    updateFormField("customer_phone", e.target.value)
-                  }
-                />
-              </div>
-              {/* Conditionally display error message */}
-              {errors.customer_phone && (
-                <div className="text-sm text-destructive-foreground">
-                  {errors.customer_phone}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <div className="font-semibold">Customer Email</div>
-              <div>
-                <Input
-                  placeholder="Customer Email"
-                  value={formData.customer_email}
-                  onChange={(e) =>
-                    updateFormField("customer_email", e.target.value)
-                  }
-                />
-              </div>
-              {/* Conditionally display error message */}
-              {errors.customer_email && (
-                <div className="text-sm text-destructive-foreground">
-                  {errors.customer_email}
-                </div>
-              )}
-            </div>
+            {fields.map((field, idx) => renderFormField(field, idx, "form"))}
           </div>
 
           <div className="flex items-center justify-between ">
@@ -394,58 +460,16 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {formData?.invoice_items.map((item, index) => (
+                {formData?.invoiceitem.map((item, index) => (
                   <TableRow key={index}>
-                    <TableCell>
-                      <AppDropdown
-                        isLoading={productData.isLoading}
-                        options={productOptions!}
-                        field={{
-                          value:
-                            productOptions?.find(
-                              (option) => option.value === item.product_id
-                            )?.label || "",
-                          onChange: (value) => {
-                            updateItemField(index, "product_name", value);
-                          },
-                        }}
-                        placeholder="Select a product"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) =>
-                          updateItemField(index, "quantity", e.target.value)
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        value={item.bags}
-                        onChange={(e) =>
-                          updateItemField(index, "bags", e.target.value)
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        type="number"
-                        value={item.unit_price}
-                        onChange={(e) =>
-                          updateItemField(index, "unit_price", e.target.value)
-                        }
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        disabled
-                        type="number"
-                        value={item.total_price || 0}
-                      />
-                    </TableCell>
+                    {tableFields(item).map((field, idx) => {
+                      return (
+                        <TableCell key={idx}>
+                          {renderFormField(field, index, "item")}
+                        </TableCell>
+                      );
+                    })}
+
                     <TableCell>
                       <Button
                         type="button"
@@ -461,6 +485,19 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
             </Table>
           </div>
         </div>
+
+        <div className="flex items-center space-x-2 py-4">
+          <Switch
+            id="status"
+            checked={formData?.is_gst_bill}
+            onCheckedChange={(checked) => {
+              updateFormField("is_gst_bill", !checked);
+            }}
+          />
+          <Label htmlFor="status">
+            {formData?.is_gst_bill ? "Is gst bill" : "Not gst bill"}
+          </Label>
+        </div>
         <div className="px-4 py-4 flex w-full items-center justify-between space-x-4">
           <div>
             <span>Total Bill: ₹ {calculateTotalBill()}</span>
@@ -473,7 +510,9 @@ const AppBillingForm = ({ headerText, isSubmitBtnLoading, handleSubmit }: { head
             >
               Reset
             </Button>
-            <Button loading={isSubmitBtnLoading} type="submit">Submit</Button>
+            <Button loading={isSubmitBtnLoading} type="submit">
+              Submit
+            </Button>
           </div>
         </div>
       </form>

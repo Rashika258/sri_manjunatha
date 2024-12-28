@@ -1,13 +1,13 @@
 import { SubmitHandler } from "react-hook-form";
 
 type InvoiceItem = {
-  product_id?: string;
-  product_name?: string;
-  quantity?: number;
-  hsn?: number;
-  bags?: number;
-  unit_price?: number;
-  total_price?: number;
+  product_id: string | undefined;
+  product_name: string | undefined;
+  quantity: number | undefined;
+  hsn: number | undefined;
+  bags: number | undefined;
+  unit_price: number | undefined;
+  total_price: number | undefined;
 };
 
 type Company = {
@@ -16,21 +16,23 @@ type Company = {
   address: string;
 };
 
+
+
 type BillingFormData = {
-  invoice_number: string;
-  gstin: string;
-  customer_name: string;
-  customer_id: number;
-  customer_address: string;
-  customer_email: string;
-  customer_phone: string;
+  invoice_number: string | undefined;
+  gstin: string | undefined;
+  customer_name: string | undefined;
+  customer_id: number | undefined;
+  customer_address: string | undefined;
+  customer_email: string | undefined;
+  customer_phone: string | undefined;
   invoice_date: Date;
   due_date?: Date;
   total_amount: number;
   is_gst_bill: boolean;
-  tax_amount: number;
-  payment_status: string;
-  invoice_items: InvoiceItem[];
+  tax_amount?: number;
+  payment_status: string | undefined;
+  invoiceitem: InvoiceItem[];
 };
 
 type DailyBill = {
@@ -141,7 +143,7 @@ type DeleteConfirmationPopupDetails = {
 };
 
 type AppDropdownOption = {
-  value?: string;
+  value: string;
   label: string;
 };
 
@@ -149,7 +151,7 @@ type AppDropdownProps = {
   options: AppDropdownOption[];
   field: {
     value: string;
-    onChange: (value: string) => void;
+    onChange: (value: string, label: string) => void;
   };
   placeholder: string;
   isLoading: boolean;
@@ -172,6 +174,32 @@ type GetBillsParams = {
   endDate?: string;   
 };
 
+type FormErrors = {[key in keyof BillingFormData]?: string;
+} & {
+  [key: string]: string | undefined;
+};
+
+type FormField = {
+  name: keyof BillingFormData;
+  label: string;
+  type: "input" | "dropdown" | "date";
+  value: string | number | Date | undefined;
+  options?: AppDropdownOption[];
+  disabled?: boolean;
+  inputType?: "number" | "text";
+};
+
+type ItemField = {
+  name: keyof InvoiceItem;
+  label: string;
+  type: "input" | "dropdown" | "date";
+  value: string | number | Date | undefined;
+  options?: AppDropdownOption[];
+  disabled?: boolean;
+  inputType?: "number" | "text";
+
+};
+
 
 export type {
   InvoiceItem,
@@ -192,5 +220,8 @@ export type {
   EmployeeFormProps,
   AppDropdownProps,
   Bill,
-  GetBillsParams
+  GetBillsParams,
+  FormErrors,
+  FormField,
+  ItemField
 };
