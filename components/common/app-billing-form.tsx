@@ -139,7 +139,6 @@ const AppBillingForm = ({
           "Price must be greater than 0";
       }
     });
-    debugger;
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
     } else {

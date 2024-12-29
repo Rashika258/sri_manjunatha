@@ -1,12 +1,29 @@
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
 import { InvoiceItem } from "@/types";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
 
-    const { invoice_number, customer_id, gstin, customer_name, customer_address, customer_email, customer_phone, payment_status, is_gst_bill, tax_amount, total_amount, invoice_date, due_date, invoice_items } = data;
+    const {
+      invoice_number,
+      customer_id,
+      gstin,
+      customer_name,
+      customer_address,
+      customer_email,
+      customer_phone,
+      payment_status,
+      is_gst_bill,
+      tax_amount,
+      total_amount,
+      invoice_date,
+      due_date,
+      invoiceitem,
+    } = data;
+
+    console.log("data", data);
 
     const invoice = await prisma.invoice.create({
       data: {
@@ -21,23 +38,31 @@ export async function POST(req: NextRequest) {
         is_gst_bill,
         tax_amount,
         total_amount,
-        invoice_date: new Date(invoice_date),  // Ensure the date is parsed properly
-        due_date: new Date(due_date),          // Ensure the date is parsed properly
-        invoiceitem: {
-          create: invoice_items.map((item: InvoiceItem) => ({
-            product_id: item.product_id,
-            product_name: item.product_name,
-            quantity: item.quantity,
-            bags: item.bags,
-            unit_price: item.unit_price,
-            total_price: item.total_price,
-            invoice_number,  // Set the foreign key relation
-          })),
-        },
+        invoice_date: new Date(invoice_date),
+        due_date: new Date(due_date),         
       },
     });
+    console.log("invoice", invoice);
 
-    return NextResponse.json(invoice, { status: 201 });
+
+    if (invoiceitem && invoiceitem.length > 0) {
+      await prisma.invoiceitem.createMany({
+        data: invoiceitem.map((item : InvoiceItem) => ({
+          product_id: item.product_id,
+          product_name: item.product_name,
+          quantity: item.quantity,
+          bags: item.bags,
+          unit_price: item.unit_price,
+          total_price: item.total_price,
+          hsn: item.hsn,
+          invoice_id: invoice.invoice_id, 
+        })),
+      });
+    }
+    console.log("invoice", invoice);
+
+
+    return NextResponse.json({ success: true, invoice }, { status: 201 });
   } catch (error) {
     console.error("Error creating invoice:", error);
     return NextResponse.json(

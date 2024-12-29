@@ -11,7 +11,6 @@ import {
   FormMessage,
   Input,
 } from "@/components/ui/index";
-import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { CustomerFormProps } from "@/types";
 import { z } from "zod";
@@ -30,13 +29,12 @@ const customerSchema = z.object({
   address: z.string().optional(),
   gstin: z
     .string()
+    .trim()  
     .length(15, { message: "GSTIN must be exactly 15 characters" })
-    .optional()
-    .refine((val) => val === undefined || val.length <= 10, {
-      message: "GSTIN must be exactly 15 characters",
-    }),
+    .optional(),
   created_at: z.date().optional(),
 });
+
 export type CustomerFormData = z.infer<typeof customerSchema>;
 
 const CustomerForm = ({
@@ -161,10 +159,9 @@ const CustomerForm = ({
                     <FormLabel>Created At</FormLabel>
                     <FormControl>
                       <AppDateInput
-                        field={field}
-                        formatValue={(value) =>
-                          value ? format(value, "PPP") : ""
-                        }
+                        {...field}
+                        date={field.value}
+                        setDate={field.onChange}
                       />
                     </FormControl>
                     <FormMessage>
