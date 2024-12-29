@@ -94,7 +94,8 @@ const AppBillingForm = ({
     });
   }, [customerData?.data]);
 
-  const onSubmit = () => {
+  const onSubmit = React.useCallback(() => {
+    
     const formErrors: FormErrors = {};
 
     if (!formData.invoice_number) {
@@ -109,26 +110,25 @@ const AppBillingForm = ({
       formErrors.payment_status = "Payment status is required";
     }
 
-    if (!formData.customer_name) {
-      formErrors.customer_name = "Customer name is required";
+    if (!formData.customer_name || !formData?.customer_id) {
+      formErrors.customer_id = "Customer name is required";
     }
-
     if (!formData.invoiceitem || formData.invoiceitem.length === 0) {
-      formErrors.invoice_items = "At least one item is required";
+      formErrors.invoiceitem = "At least one item is required";
     }
 
     // Validate invoice items
     formData.invoiceitem.forEach((item, index) => {
-      if (!item.product_name) {
-        formErrors[`invoice_items[${index}].product_name`] =
+      if (!item.product_name || !item.product_id) {
+        formErrors[`invoiceitem[${index}].product_id`] =
           "Product name is required";
       }
       if (item.quantity === undefined || item.quantity <= 0) {
-        formErrors[`invoice_items[${index}].quantity`] =
+        formErrors[`invoiceitem[${index}].quantity`] =
           "Quantity must be greater than 0";
       }
       if (item.unit_price === undefined || item.unit_price <= 0) {
-        formErrors[`invoice_items[${index}].unit_price`] =
+        formErrors[`invoiceitem[${index}].unit_price`] =
           "Price must be greater than 0";
       }
     });
@@ -136,14 +136,14 @@ const AppBillingForm = ({
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
     } else {
-      handleSubmit(formData);
+      // handleSubmit(formData);
     }
-  };
+  },[formData?.customer_id, formData.customer_name, formData.gstin, formData.invoice_number, formData.invoiceitem, formData.payment_status])
 
-  const addItem = () => {
+  const addItem = React.useCallback(() => {
     setFormData((prev) => ({
       ...prev,
-      invoice_items: [
+      invoiceitem: [
         ...prev.invoiceitem,
         {
           product_id: undefined,
@@ -156,9 +156,9 @@ const AppBillingForm = ({
         },
       ],
     }));
-  };
+  },[])
 
-  const updateItemField = (
+  const updateItemField = React.useCallback((
     index: number,
     key: keyof InvoiceItem,
     value: string | number | Date | undefined
@@ -169,22 +169,29 @@ const AppBillingForm = ({
         ...updatedItems[index],
         [key]: value,
       };
+      if(key === "product_id") {
+        const selectedProduct = productOptions?.find(
+          (product) => product?.value === value
+        );
+        updatedItems[index].product_name = selectedProduct?.label || "";
+      }
       if (key === "quantity" || key === "unit_price") {
         if (updatedItems[index]?.quantity && updatedItems[index]?.unit_price) {
           updatedItems[index].total_price =
             updatedItems[index]?.quantity * updatedItems[index]?.unit_price;
         }
       }
-      return { ...prev, invoice_items: updatedItems };
+      return { ...prev, invoiceitem: updatedItems };
     });
-  };
-  // Remove item
-  const removeItem = (index: number) => {
+  },[productOptions])
+
+
+  const removeItem = React.useCallback((index: number) => {
     setFormData((prev) => ({
       ...prev,
-      invoice_items: prev.invoiceitem.filter((_, i) => i !== index),
+      invoiceitem: prev.invoiceitem.filter((_, i) => i !== index),
     }));
-  };
+  },[])
 
   const calculateTotalBill = React.useCallback(
     () =>
@@ -195,7 +202,7 @@ const AppBillingForm = ({
     [formData.invoiceitem]
   );
 
-  const updateFormField = (
+  const updateFormField = React.useCallback((
     key: keyof BillingFormData,
     value: string | number | Date | undefined | boolean
   ) => {
@@ -208,7 +215,7 @@ const AppBillingForm = ({
         return {
           ...prev,
           [key]: value,
-          customer_name: selectedCustomer?.label || "", // Fallback to an empty string if not found
+          customer_name: selectedCustomer?.label || "", 
         };
       });
     } else {
@@ -217,7 +224,7 @@ const AppBillingForm = ({
         [key]: value,
       }));
     }
-  };
+  },[customerOptions])
 
   const fields: FormField[] = React.useMemo(
     () => [
@@ -226,12 +233,14 @@ const AppBillingForm = ({
         label: "Invoice Number",
         type: "input",
         value: formData.invoice_number,
+
       },
       {
         name: "gstin",
         label: "GST Number",
         type: "input",
         value: formData.gstin,
+
       },
       {
         name: "payment_status",
@@ -239,6 +248,7 @@ const AppBillingForm = ({
         type: "dropdown",
         value: formData.payment_status,
         options: paymentStatusOptions,
+
       },
       {
         name: "customer_id",
@@ -246,42 +256,49 @@ const AppBillingForm = ({
         type: "dropdown",
         value: formData.customer_name,
         options: customerOptions,
+
       },
       {
         name: "invoice_date",
         label: "Invoice Date",
         type: "date",
         value: formData.invoice_date,
+
       },
       {
         name: "due_date",
         label: "Due Date",
         type: "date",
         value: formData.due_date,
+
       },
       {
         name: "customer_address",
         label: "Customer Address",
         type: "input",
         value: formData.customer_address,
+
       },
       {
         name: "customer_phone",
         label: "Customer Phone",
         type: "input",
         value: formData.customer_phone,
+
       },
       {
         name: "customer_email",
         label: "Customer Email",
         type: "input",
         value: formData.customer_email,
+
       },
       {
         name: "tax_amount",
         label: "Tax Amount",
         type: "input",
         value: formData.tax_amount,
+
       },
     ],
     [
@@ -299,45 +316,59 @@ const AppBillingForm = ({
     ]
   );
 
+  console.log("Errors==========", errors);
+  function generateFieldName<T extends keyof InvoiceItem>(
+    prefix: string,
+    index: number,
+    field: T
+  ): `${string}[${number}].${T}` {
+    return `${prefix}[${index}].${field}` as const;
+  }
+  
+
   const tableFields = React.useCallback(
-    (item: InvoiceItem): ItemField[] => {
+    (item: InvoiceItem, index: number): ItemField[] => {
+      const prefix = "invoiceitem";
+
       return [
         {
-          name: "product_name",
+          name: generateFieldName(prefix, index, "product_id"),
           label: "Product",
           type: "dropdown",
-          value: item.product_name,
+          value: item.product_id,
           options: productOptions,
+          
         },
         {
-          name: "quantity",
+          name: generateFieldName(prefix, index, "quantity"),
           label: "Quantity",
           type: "input",
           value: item.quantity,
           inputType: "number",
         },
         {
-          name: "hsn",
+          name: generateFieldName(prefix, index, "hsn"),
           label: "HSN Code",
           type: "input",
           value: item.hsn,
           inputType: "number",
         },
         {
-          name: "bags",
+          name: generateFieldName(prefix, index, "bags"),
           label: "Bags",
           type: "input",
           value: item.bags,
           inputType: "number",
         },
         {
-          name: "unit_price",
+          name: generateFieldName(prefix, index, "unit_price"),
           label: "Unit Price",
           type: "input",
           value: item.unit_price,
+          inputType: "number",
         },
         {
-          name: "total_price",
+          name: generateFieldName(prefix, index, "total_price"),
           label: "Total Price",
           type: "input",
           value: item.total_price,
@@ -348,21 +379,25 @@ const AppBillingForm = ({
     [productOptions]
   );
 
-  const renderFormField = (
+  const renderFormField = React.useCallback((
     field: FormField | ItemField,
     idx: number,
     renderType?: string
   ) => {
-    const { name, label, type, value, options, inputType } = field;
+    const { name, label, type, value, options, inputType, disabled } = field;
+
+    console.log("aa1238", name, errors, errors[name]);
+    
     return (
-      <div key={idx + label} className="flex flex-col gap-2">
+      <div key={idx + label} className="flex flex-col gap-2 w-full">
         {renderType === "form" && <div className="font-semibold">{label}</div>}
-        <div>
+        <div className="w-full">
           {type === "input" && (
             <Input
               type={inputType || "text"}
               placeholder={label}
               value={value as string}
+              disabled={disabled}
               onChange={(e) => {
                 const value =
                   inputType === "number"
@@ -386,7 +421,7 @@ const AppBillingForm = ({
                 value:
                   (options?.find((option) => option.value === value) || {})
                     .value || "",
-                onChange: (value, label) => {
+                onChange: (value) => {
                   console.log("value=====", value);
 
                   if (renderType === "item") {
@@ -394,13 +429,11 @@ const AppBillingForm = ({
                       idx,
                       name as keyof InvoiceItem,
                       value,
-                      label
                     );
                   } else if (renderType === "form") {
                     updateFormField(
                       name as keyof BillingFormData,
                       value,
-                      label
                     );
                   }
                 },
@@ -423,19 +456,19 @@ const AppBillingForm = ({
           )}
         </div>
 
-        <div className="text-sm text-destructive-foreground">
+        <div className="text-sm text-destructive">
           {errors[name]}
         </div>
       </div>
     );
-  };
+  },[errors, updateFormField, updateItemField])
 
   console.log("aaa=======", formData);
 
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto ">
       <AppFormHeader headerText={headerText} />
-      <form onSubmit={onSubmit}>
+      <form onSubmit={(e) => {e.preventDefault(); onSubmit()}}>
         <div className="flex flex-col grow justify-between space-y-4 ">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             {fields.map((field, idx) => renderFormField(field, idx, "form"))}
@@ -453,6 +486,7 @@ const AppBillingForm = ({
                 <TableRow>
                   <TableCell>Product</TableCell>
                   <TableCell>Quantity</TableCell>
+                  <TableCell>HSN</TableCell>
                   <TableCell>Bags</TableCell>
                   <TableCell>Price</TableCell>
                   <TableCell>Total</TableCell>
@@ -462,7 +496,7 @@ const AppBillingForm = ({
               <TableBody>
                 {formData?.invoiceitem.map((item, index) => (
                   <TableRow key={index}>
-                    {tableFields(item).map((field, idx) => {
+                    {tableFields(item, index).map((field, idx) => {
                       return (
                         <TableCell key={idx}>
                           {renderFormField(field, index, "item")}

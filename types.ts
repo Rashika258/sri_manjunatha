@@ -190,7 +190,7 @@ type FormField = {
 };
 
 type ItemField = {
-  name: keyof InvoiceItem;
+  name: `${string}[${number}].${keyof InvoiceItem}`; 
   label: string;
   type: "input" | "dropdown" | "date";
   value: string | number | Date | undefined;
