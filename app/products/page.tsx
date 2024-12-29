@@ -21,11 +21,12 @@ const ProductTable = () => {
   type ColumnType = ColumnDef<Product>[];
   const router = useRouter();
   const { data, isLoading, error } = useProducts();
-  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] = React.useState({
-    openDeleteConfirmationPopup: false,
-    isDeletingProduct: false,
-    rowId: "",
-  });
+  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
+    React.useState({
+      openDeleteConfirmationPopup: false,
+      isDeletingProduct: false,
+      rowId: "",
+    });
 
   const actions: ActionItem[] = React.useMemo(
     () => [
@@ -57,23 +58,54 @@ const ProductTable = () => {
 
   const columns: ColumnType = React.useMemo(
     () => [
-      { accessorKey: "product_id", header: "Product ID", cell: ({ row }) => <AppTooltip text={row.getValue("product_id") || ""} /> },
-      { accessorKey: "name", header: "Name", cell: ({ row }) => <AppTooltip text={row.getValue("name") || ""} /> },
-      { accessorKey: "hsn_code", header: "HSN Code", cell: ({ row }) => <AppTooltip text={row.getValue("hsn_code") || ""} /> },
-      { accessorKey: "price", header: "Price", cell: ({ row }) => <AppTooltip text={`₹${row.getValue("price") || 0}`} /> },
-      { accessorKey: "stock_quantity", header: "Stock Quantity", cell: ({ row }) => <AppTooltip text={`${row.getValue("stock_quantity") || 0}`} /> },
+      {
+        accessorKey: "product_id",
+        header: "Product ID",
+        cell: ({ row }) => (
+          <AppTooltip text={row.getValue("product_id") || ""} />
+        ),
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ row }) => <AppTooltip text={row.getValue("name") || ""} />,
+      },
+      {
+        accessorKey: "hsn_code",
+        header: "HSN Code",
+        cell: ({ row }) => <AppTooltip text={row.getValue("hsn_code") || ""} />,
+      },
+      {
+        accessorKey: "price",
+        header: "Price",
+        cell: ({ row }) => (
+          <AppTooltip text={`₹${row.getValue("price") || 0}`} />
+        ),
+      },
+      {
+        accessorKey: "stock_quantity",
+        header: "Stock Quantity",
+        cell: ({ row }) => (
+          <AppTooltip text={`${row.getValue("stock_quantity") || 0}`} />
+        ),
+      },
       {
         accessorKey: "created_at",
         header: "Created At",
         cell: ({ row }) => {
-          const formattedDate = format(new Date(row.getValue("created_at")), "dd MMM yyyy");
+          const formattedDate = format(
+            new Date(row.getValue("created_at")),
+            "dd MMM yyyy"
+          );
           return <AppTooltip text={formattedDate} />;
         },
       },
       {
         id: "actions",
         header: "Actions",
-        cell: ({ row }) => <AppActionCell actions={actions} id={row.getValue("product_id")} />,
+        cell: ({ row }) => (
+          <AppActionCell actions={actions} id={row.getValue("product_id")} />
+        ),
       },
     ],
     [actions]

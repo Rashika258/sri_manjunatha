@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { AppDateInput, AppFormHeader } from "@/components/common/index";
+import {  AppFormHeader } from "@/components/common/index";
 import {
   Button,
   Form,
@@ -151,25 +151,6 @@ const CustomerForm = ({
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="created_at"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col justify-end">
-                    <FormLabel>Created At</FormLabel>
-                    <FormControl>
-                      <AppDateInput
-                        {...field}
-                        date={field.value}
-                        setDate={field.onChange}
-                      />
-                    </FormControl>
-                    <FormMessage>
-                      {form.formState.errors.created_at?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
             </div>
           </div>
 

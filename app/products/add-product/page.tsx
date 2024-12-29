@@ -36,13 +36,11 @@ const ProductPage = () => {
   };
 
   return (
-    <div>
-      <ProductForm
-        onSubmit={onSubmit}
-        isSubmitBtnLoading={isAddingData}
-        headerText="Add Product"
-      />
-    </div>
+    <ProductForm
+      onSubmit={onSubmit}
+      isSubmitBtnLoading={isAddingData}
+      headerText="Add Product"
+    />
   );
 };
 

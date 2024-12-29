@@ -227,15 +227,20 @@ const AppBillingForm = ({
       value: string | number | Date | undefined | boolean
     ) => {
       if (key === "customer_id") {
-        const selectedCustomer: Customer | null = customerData?.data?.find(
-          (customer) => customer?.customer_id == value
-        ) || null;
+        const selectedCustomer: Customer | null =
+          customerData?.data?.find(
+            (customer) => customer?.customer_id == value
+          ) || null;
 
-        console.log("selectedCustomer", selectedCustomer, customerData?.data, value);
-        
+        console.log(
+          "selectedCustomer",
+          selectedCustomer,
+          customerData?.data,
+          value
+        );
+
         if (selectedCustomer) {
-        setFormData((prev) => {
-          
+          setFormData((prev) => {
             return {
               ...prev,
               [key]: value,
@@ -245,9 +250,8 @@ const AppBillingForm = ({
               customer_email: selectedCustomer?.email || "",
               customer_phone: selectedCustomer?.phone || "",
             };
-          }
-        );
-      }
+          });
+        }
       } else {
         setFormData((prev) => ({
           ...prev,

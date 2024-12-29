@@ -72,7 +72,6 @@ const items = [
     url: "/ecommerce",
     icon: BriefcaseBusinessIcon,
   },
-
 ];
 
 export function AppSidebar() {
@@ -80,7 +79,9 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarContent>
-        <SidebarHeader>Sri Manujanatha</SidebarHeader>
+        <SidebarHeader className="caveat__font text-slate-600 text-lg">
+            Sri Manjunatha Engineering Works
+        </SidebarHeader>
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>

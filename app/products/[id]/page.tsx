@@ -44,7 +44,7 @@ const ProductEditPage = () => {
     },
   });
 
-  const onSubmit: SubmitHandler<ProductFormData> = (formData) => {
+  const onSubmit =(formData) => {
     if (productId) {
       editMutation.mutate(formData);
     }
