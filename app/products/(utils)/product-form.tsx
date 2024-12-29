@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { AppFormHeader, AppDateInput } from "@/components/common/index";
+import { AppFormHeader } from "@/components/common/index";
 import {
   Button,
   Form,
@@ -17,9 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/index";
-import { format } from "date-fns";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Product } from "@/types";
+import { AppDropdownOption, Product } from "@/types";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getProductCategories } from "@/app/product-category/(utils)/api-request";
@@ -35,7 +34,8 @@ export const productSchema = z.object({
   name: z.string().min(1, { message: "Product name is required" }),
   product_category_id: z
     .string()
-    .min(1, { message: "Please select a category" }),
+    .min(1, { message: "Please select a category" })
+    .optional(),
   hsn_code: z
     .number()
     .min(1, { message: "HSN code must be a valid number" })
@@ -74,9 +74,7 @@ const ProductForm = ({
   data,
   headerText,
 }: ProductFormProps) => {
-  const [categories, setCategories] = React.useState<
-    { id: string; name: string }[]
-  >([]);
+  const [categories, setCategories] = React.useState<AppDropdownOption[]>([]);
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
@@ -108,8 +106,8 @@ const ProductForm = ({
     try {
       const response = await getProductCategories();
       const options = response.map((category) => ({
-        name: category.name,
-        id: category.category_id,
+        label: category.name,
+        value: category.category_id,
       }));
       setCategories(options);
     } catch (error) {
@@ -120,6 +118,8 @@ const ProductForm = ({
   React.useEffect(() => {
     fetchProductCategories();
   }, []);
+
+  console.log("categories============", form.getValues());
 
   return (
     <div className="flex flex-col grow w-full h-full p-8 overflow-auto">
@@ -160,7 +160,11 @@ const ProductForm = ({
                     <FormControl>
                       <Select
                         {...field}
-                        value={field.name}
+                        value={
+                          categories.find(
+                            (category) => category.value === field.value
+                          )?.label
+                        }
                         onValueChange={(value) => {
                           field.onChange(value);
                           form.setValue("product_category_id", value);
@@ -170,8 +174,8 @@ const ProductForm = ({
                           <SelectValue>
                             {field.value
                               ? categories.find(
-                                  (category) => category.id === field.value
-                                )?.name
+                                  (category) => category.value === field.value
+                                )?.label
                               : "Select a category"}
                           </SelectValue>
                         </SelectTrigger>
@@ -180,10 +184,10 @@ const ProductForm = ({
                             {categories.length > 0 &&
                               categories.map((category) => (
                                 <SelectItem
-                                  key={category.id}
-                                  value={String(category.id)}
+                                  key={category.value}
+                                  value={String(category.value)}
                                 >
-                                  {category.name}
+                                  {category.label}
                                 </SelectItem>
                               ))}
                           </SelectContent>
@@ -383,28 +387,6 @@ const ProductForm = ({
                     </FormControl>
                     <FormMessage>
                       {form.formState.errors.monthly_bill_percentage?.message}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
-
-              {/* Created At */}
-              <FormField
-                control={form.control}
-                name="created_at"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col justify-end">
-                    <FormLabel>Created At</FormLabel>
-                    <FormControl>
-                      <AppDateInput
-                        field={field}
-                        formatValue={(value) =>
-                          value ? format(value, "PPP") : ""
-                        } // Custom date format
-                      />
-                    </FormControl>
-                    <FormMessage>
-                      {form.formState.errors.created_at?.message}
                     </FormMessage>
                   </FormItem>
                 )}

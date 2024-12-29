@@ -117,6 +117,7 @@ type Product = {
   product_id?: number;
   name: string;
   product_category_id: string;
+  product_category_name?: string;
   hsn_code?: number;
   price?: number;
   gst_rate?: number;

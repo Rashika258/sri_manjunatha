@@ -232,13 +232,6 @@ const AppBillingForm = ({
             (customer) => customer?.customer_id == value
           ) || null;
 
-        console.log(
-          "selectedCustomer",
-          selectedCustomer,
-          customerData?.data,
-          value
-        );
-
         if (selectedCustomer) {
           setFormData((prev) => {
             return {
@@ -261,7 +254,6 @@ const AppBillingForm = ({
     },
     [customerData?.data]
   );
-  console.log("Errors==========", errors);
 
   const fields: FormField[] = React.useMemo(
     () => [
@@ -451,8 +443,6 @@ const AppBillingForm = ({
                     (options?.find((option) => option.value === value) || {})
                       .value || "",
                   onChange: (value) => {
-                    console.log("value=====", value);
-
                     if (renderType === "item") {
                       updateItemField(
                         idx,

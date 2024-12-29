@@ -13,9 +13,12 @@ export async function POST(request: NextRequest) {
       stock_quantity,
       adinath_price,
       monthly_bill_price,
-      created_at,
       product_category_id,
     } = body;
+
+
+    console.log("aaa==================", body);
+    
 
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -29,7 +32,6 @@ export async function POST(request: NextRequest) {
         stock_quantity,
         adinath_price: adinath_price || 0,
         monthly_bill_price: monthly_bill_price || 0,
-        created_at: created_at ? new Date(created_at) : undefined,
         product_category_id: product_category_id
           ? parseInt(product_category_id, 10)
           : undefined,

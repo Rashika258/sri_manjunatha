@@ -4,8 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
 import { fetchProductData, updateProduct } from "../(utils)/api-request"; 
-import ProductForm, { ProductFormData } from "../(utils)/product-form"; 
-import { SubmitHandler } from "react-hook-form";
+import ProductForm from "../(utils)/product-form"; 
 import { toast } from "sonner";
 import { Product } from "@/types";
 import { AppFormLoader } from "@/components/common/index"; 
@@ -44,7 +43,7 @@ const ProductEditPage = () => {
     },
   });
 
-  const onSubmit =(formData) => {
+  const onSubmit =(formData: Product) => {
     if (productId) {
       editMutation.mutate(formData);
     }
