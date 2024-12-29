@@ -197,6 +197,7 @@ type ItemField = {
   options?: AppDropdownOption[];
   disabled?: boolean;
   inputType?: "number" | "text";
+  itemName: keyof InvoiceItem;
 
 };
 

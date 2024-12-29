@@ -10,8 +10,6 @@ import { downloadInvoice } from "./(utils)/download-invoice";
 
 const BillPage = () => {
   const { data, isLoading, error } = useBills();
-
-  console.log("data========", data);
   
 
   type ColumnType = ColumnDef<Bill>[];

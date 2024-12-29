@@ -5,12 +5,9 @@ import { InvoiceItem } from "@/types";
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    console.log("invoice data:=================", data);  // For debugging purposes
 
-    // Assuming your data contains invoice details along with invoiceitems
     const { invoice_number, customer_id, gstin, customer_name, customer_address, customer_email, customer_phone, payment_status, is_gst_bill, tax_amount, total_amount, invoice_date, due_date, invoice_items } = data;
 
-    // Create invoice with nested invoice items
     const invoice = await prisma.invoice.create({
       data: {
         invoice_number,
