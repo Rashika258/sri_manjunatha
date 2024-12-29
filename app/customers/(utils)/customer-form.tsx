@@ -1,6 +1,5 @@
 "use client";
-import React from "react";
-import {  AppFormHeader } from "@/components/common/index";
+import { AppFormHeader } from "@/components/common/index";
 import {
   Button,
   Form,
@@ -11,10 +10,10 @@ import {
   FormMessage,
   Input,
 } from "@/components/ui/index";
-import { useForm } from "react-hook-form";
 import { CustomerFormProps } from "@/types";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const customerSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),
@@ -29,7 +28,7 @@ const customerSchema = z.object({
   address: z.string().optional(),
   gstin: z
     .string()
-    .trim()  
+    .trim()
     .length(15, { message: "GSTIN must be exactly 15 characters" })
     .optional(),
   created_at: z.date().optional(),
@@ -150,7 +149,6 @@ const CustomerForm = ({
                   </FormItem>
                 )}
               />
-
             </div>
           </div>
 

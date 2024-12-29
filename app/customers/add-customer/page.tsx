@@ -1,11 +1,11 @@
 "use client";
+import * as React from "react";
 import { toast } from "@/components/ui/index";
 import { useMutation } from "@tanstack/react-query";
-import React from "react";
-import { SubmitHandler } from "react-hook-form";
-import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
-import { addCustomer } from "../(utils)/api-request";
 import { useRouter } from "next/navigation";
+import { SubmitHandler } from "react-hook-form";
+import { addCustomer } from "../(utils)/api-request";
+import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
 
 const AddCustomerPage = () => {
   const router = useRouter();

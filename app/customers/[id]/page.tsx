@@ -1,13 +1,13 @@
 "use client";
+import * as React from "react";
+import { AppFormLoader } from "@/components/common";
+import { Customer } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import * as React from "react";
-import { fetchCustomerData, updateCustomer } from "../(utils)/api-request";
-import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
 import { SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
-import { Customer } from "@/types";
-import { AppFormLoader } from "@/components/common";
+import { fetchCustomerData, updateCustomer } from "../(utils)/api-request";
+import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
 
 const CustomerEditPage = () => {
   const { id } = useParams();

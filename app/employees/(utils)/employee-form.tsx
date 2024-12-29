@@ -13,11 +13,10 @@ import {
   Label,
   Switch,
 } from "@/components/ui/index";
-import { format } from "date-fns";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { Employee } from "@/types";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { EmployeeFormProps } from "@/types";
 
 
 
@@ -196,10 +195,10 @@ const EmployeeForm = ({
                     <FormLabel>Date of Joining</FormLabel>
                     <FormControl>
                       <AppDateInput
-                        field={field}
-                        formatValue={(value) =>
-                          value ? format(value, "PPP") : ""
-                        }
+                        {...field}
+                        date={field.value}
+                        setDate={field.onChange}
+    
                       />
                     </FormControl>
                     <FormMessage>
