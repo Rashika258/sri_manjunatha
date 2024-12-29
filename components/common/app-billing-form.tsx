@@ -15,6 +15,7 @@ import {
 import {
   AppDropdownOption,
   BillingFormData,
+  Customer,
   FormErrors,
   FormField,
   InvoiceItem,
@@ -211,14 +212,14 @@ const AppBillingForm = ({
     }));
   }, []);
 
-  const calculateTotalBill = React.useCallback(
-    () =>
-      formData.invoiceitem.reduce(
+  const calculateTotalBill = React.useCallback(() => {
+    if (formData?.invoiceitem) {
+      return formData?.invoiceitem.reduce(
         (total, item) => total + (item.total_price || 0),
         0
-      ),
-    [formData.invoiceitem]
-  );
+      );
+    }
+  }, [formData.invoiceitem]);
 
   const updateFormField = React.useCallback(
     (
@@ -226,16 +227,27 @@ const AppBillingForm = ({
       value: string | number | Date | undefined | boolean
     ) => {
       if (key === "customer_id") {
+        const selectedCustomer: Customer | null = customerData?.data?.find(
+          (customer) => customer?.customer_id == value
+        ) || null;
+
+        console.log("selectedCustomer", selectedCustomer, customerData?.data, value);
+        
+        if (selectedCustomer) {
         setFormData((prev) => {
-          const selectedCustomer = customerOptions?.find(
-            (customer) => customer?.value === value
-          );
-          return {
-            ...prev,
-            [key]: value,
-            customer_name: selectedCustomer?.label || "",
-          };
-        });
+          
+            return {
+              ...prev,
+              [key]: value,
+              customer_name: selectedCustomer?.name || "",
+              customer_address: selectedCustomer?.address || "",
+              gstin: selectedCustomer?.gstin || "",
+              customer_email: selectedCustomer?.email || "",
+              customer_phone: selectedCustomer?.phone || "",
+            };
+          }
+        );
+      }
       } else {
         setFormData((prev) => ({
           ...prev,
@@ -243,7 +255,7 @@ const AppBillingForm = ({
         }));
       }
     },
-    [customerOptions]
+    [customerData?.data]
   );
   console.log("Errors==========", errors);
 
