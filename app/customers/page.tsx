@@ -9,9 +9,7 @@ import {
   AppDeleteConfirmationPopup,
   AppTooltip,
 } from "@/components/common/index";
-import {
-toast
-} from "@/components/ui/index";
+import { toast } from "@/components/ui/index";
 import { format } from "date-fns";
 import { deleteCustomer, useCustomers } from "./(utils)/api-request";
 import { ActionItem, Customer } from "@/types";
@@ -22,13 +20,15 @@ import { useRouter } from "next/navigation";
 const CustomerTable = () => {
   const router = useRouter();
   const { data, isLoading, error } = useCustomers();
-  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] = React.useState({
-    openDeleteConfirmationPopup: false,
-    isDeletingCustomer: false,
-    rowId: ""
-  })
+  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
+    React.useState({
+      openDeleteConfirmationPopup: false,
+      isDeletingCustomer: false,
+      rowId: "",
+    });
 
-  const actions: ActionItem[] = React.useMemo(() => [
+  const actions: ActionItem[] = React.useMemo(
+    () => [
       {
         label: "Edit",
         icon: <Pencil />,
@@ -44,17 +44,40 @@ const CustomerTable = () => {
         icon: <Trash />,
         buttonVariant: "destructive",
         handler: (id: string) => {
-          setDeleteConfirmationPopupDetails((prev)=>({...prev, openDeleteConfirmationPopup: true, rowId: id}))
+          setDeleteConfirmationPopupDetails((prev) => ({
+            ...prev,
+            openDeleteConfirmationPopup: true,
+            rowId: id,
+          }));
         },
         isEnabled: true,
       },
-    ],[router]);
+    ],
+    [router]
+  );
 
-  const columns: ColumnDef<Customer>[] = React.useMemo(() => [
-      { accessorKey: "name", header: "Name", cell: ({ row }) => <AppTooltip text={row.getValue("name") || ""} /> },
-      { accessorKey: "email", header: "Email",  cell: ({ row }) => <AppTooltip text={row.getValue("email") || ""} /> },
-      { accessorKey: "phone", header: "Phone", cell: ({ row }) => <AppTooltip text={row.getValue("phone") || ""} /> },
-      { accessorKey: "address", header: "Address", cell: ({ row }) => <AppTooltip text={row.getValue("address") || ""} /> },
+  const columns: ColumnDef<Customer>[] = React.useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Name",
+        cell: ({ row }) => <AppTooltip text={row.getValue("name") || ""} />,
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+        cell: ({ row }) => <AppTooltip text={row.getValue("email") || ""} />,
+      },
+      {
+        accessorKey: "phone",
+        header: "Phone",
+        cell: ({ row }) => <AppTooltip text={row.getValue("phone") || ""} />,
+      },
+      {
+        accessorKey: "address",
+        header: "Address",
+        cell: ({ row }) => <AppTooltip text={row.getValue("address") || ""} />,
+      },
       {
         accessorKey: "created_at",
         header: "Created At",
@@ -70,33 +93,49 @@ const CustomerTable = () => {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <AppActionCell  actions={actions} id={row.original.customer_id?.toString() as string} />
+          <AppActionCell
+            actions={actions}
+            id={row.original.customer_id?.toString() as string}
+          />
         ),
       },
-    ],[actions]);
+    ],
+    [actions]
+  );
 
-    const deleteMutation = useMutation({
-      mutationFn: (customerId: string )=>deleteCustomer(customerId),
-      onSuccess: () => {
-        toast.success("Customer deleted successfully!");
-        setDeleteConfirmationPopupDetails((prev)=>({...prev, openDeleteConfirmationPopup: false}))
-      },
-      onMutate: () => {
-        setDeleteConfirmationPopupDetails((prev)=>({...prev, isDeletingCustomer: true}))
-      },
-      onSettled: () => {
-        setDeleteConfirmationPopupDetails((prev)=>({...prev, isDeletingCustomer: false}))
-      },
-      onError: (error: Error) => {
-        console.error("Error adding customer:", error);
-        toast("Failed to add customer. Please try again.");
-      },
-    });
+  const deleteMutation = useMutation({
+    mutationFn: (customerId: string) => deleteCustomer(customerId),
+    onSuccess: () => {
+      toast.success("Customer deleted successfully!");
+      setDeleteConfirmationPopupDetails((prev) => ({
+        ...prev,
+        openDeleteConfirmationPopup: false,
+      }));
+    },
+    onMutate: () => {
+      setDeleteConfirmationPopupDetails((prev) => ({
+        ...prev,
+        isDeletingCustomer: true,
+      }));
+    },
+    onSettled: () => {
+      setDeleteConfirmationPopupDetails((prev) => ({
+        ...prev,
+        isDeletingCustomer: false,
+      }));
+    },
+    onError: (error: Error) => {
+      console.error("Error adding customer:", error);
+      toast("Failed to add customer. Please try again.");
+    },
+  });
 
-  const handleConfirm = React.useCallback((rowId : string) => {
-    deleteMutation.mutate(rowId);
-  
-  }, [deleteMutation]);
+  const handleConfirm = React.useCallback(
+    (rowId: string) => {
+      deleteMutation.mutate(rowId);
+    },
+    [deleteMutation]
+  );
 
   if (isLoading) return <AppTableSkeleton />;
   if (error) return <AppTableError />;
@@ -110,12 +149,15 @@ const CustomerTable = () => {
       />
       <AppDeleteConfirmationPopup
         description={"Do you want to delete this customer?"}
-        onConfirm={(rowId : string) => {
+        onConfirm={(rowId: string) => {
           handleConfirm(rowId);
         }}
         isOpen={deleteConfirmationPopupDetails?.openDeleteConfirmationPopup}
-        setIsOpen={
-          (value : boolean) => setDeleteConfirmationPopupDetails((prev)=>({...prev, openDeleteConfirmationPopup: value}))
+        setIsOpen={(value: boolean) =>
+          setDeleteConfirmationPopupDetails((prev) => ({
+            ...prev,
+            openDeleteConfirmationPopup: value,
+          }))
         }
         isDeleting={deleteConfirmationPopupDetails?.isDeletingCustomer}
         rowId={deleteConfirmationPopupDetails?.rowId}

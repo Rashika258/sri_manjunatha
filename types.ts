@@ -1,6 +1,7 @@
 import { SubmitHandler } from "react-hook-form";
 
 type InvoiceItem = {
+  item_id?: number;
   product_id: string | undefined;
   product_name: string | undefined;
   quantity: number | undefined;
@@ -20,6 +21,7 @@ type Company = {
 
 type BillingFormData = {
   invoice_number: string | undefined;
+  invoice_id?: string | undefined;
   gstin: string | undefined;
   customer_name: string | undefined;
   customer_id: number | undefined;

@@ -8,6 +8,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const invoiceId = parseInt(params.id);
     const data = await req.json();
 
+    // Ensure invoice_items is an array or default to an empty array
+    const invoiceItems = Array.isArray(data.invoice_items) ? data.invoice_items : [];
+
     const updatedInvoice = await prisma.invoice.update({
       where: { invoice_id: invoiceId },
       data: {
@@ -23,15 +26,32 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         total_amount: data.total_amount,
         invoice_date: new Date(data.invoice_date),
         due_date: new Date(data.due_date),
-        items: {
-          upsert: data.invoice_items.map((item: InvoiceItem) => ({
-            where: { item_id: item.product_id || -1 }, // New item will have a different ID
-            update: { ...item },
-            create: { ...item },
+        invoiceitem: {
+          upsert: invoiceItems.map((item: InvoiceItem) => ({
+            where: { item_id: item.item_id || 0 }, // Use `item_id` for `upsert` lookup
+            update: {
+              product_id: item.product_id,
+              product_name: item.product_name,
+              quantity: item.quantity,
+              bags: item.bags,
+              unit_price: item.unit_price,
+              total_price: item.total_price,
+              hsn: item.hsn,
+            },
+            create: {
+              product_id: item.product_id,
+              product_name: item.product_name,
+              quantity: item.quantity,
+              bags: item.bags,
+              unit_price: item.unit_price,
+              total_price: item.total_price,
+              hsn: item.hsn,
+              invoice: { connect: { invoice_id: invoiceId } },
+            },
           })),
         },
       },
-      include: { items: true },
+      include: { invoiceitem: true },
     });
 
     return NextResponse.json(updatedInvoice);
@@ -42,30 +62,70 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 
-
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const invoiceId = parseInt(params.id);
+    const invoiceId = parseInt(params.id, 10);
 
-    const deletedInvoice = await prisma.invoice.delete({
+    // Validate invoiceId
+    if (isNaN(invoiceId)) {
+      return NextResponse.json(
+        { error: "Invalid invoice ID" },
+        { status: 400 }
+      );
+    }
+
+    
+    // Check if the invoice exists
+    const existingInvoice = await prisma.invoice.findUnique({
       where: { invoice_id: invoiceId },
     });
 
-    return NextResponse.json({ message: "Invoice deleted successfully", data: deletedInvoice });
+    console.log("invoiceId================", invoiceId, existingInvoice);
+
+
+    if (!existingInvoice) {
+      return NextResponse.json(
+        { error: "Invoice not found" },
+        { status: 404 }
+      );
+    }
+
+    // Delete the invoice
+    const deletedInvoice = await prisma.invoice.delete({
+      where: { invoice_id: invoiceId },
+      include:{invoiceitem: true}
+    });
+
+
+    return NextResponse.json({
+      message: "Invoice deleted successfully",
+      data: deletedInvoice,
+    });
   } catch (error) {
     console.error("Error deleting invoice:", error);
-    return NextResponse.json({ error: "Error deleting invoice" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error deleting invoice" },
+      { status: 500 }
+    );
   }
-};
+}
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const invoiceId = parseInt(params.id);
 
     const invoice = await prisma.invoice.findUnique({
       where: { invoice_id: invoiceId },
-      include: { items: true }, // Include the related items
+      include: { invoiceitem: true },
     });
+
 
     if (!invoice) {
       return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
@@ -74,7 +134,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     return NextResponse.json(invoice);
   } catch (error) {
     console.error("Error fetching invoice:", error);
-    return NextResponse.json({ error: "Error fetching invoice" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error fetching invoice" },
+      { status: 500 }
+    );
   }
 }
 

@@ -1,4 +1,4 @@
-import { Bill, BillingFormData, GetBillsParams } from "@/types";  
+import {  BillingFormData, GetBillsParams } from "@/types";  
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 const addBill = async (bill: BillingFormData): Promise<void> => {
@@ -18,7 +18,7 @@ const addBill = async (bill: BillingFormData): Promise<void> => {
   return response.json();
 };
 
-const getBills = async (params?: GetBillsParams): Promise<Bill[]> => {
+const getBills = async (params?: GetBillsParams): Promise<BillingFormData[]> => {
   try {
     const query = new URLSearchParams(params as Record<string, string>).toString();
     const url = `/api/daily-bills${query ? `?${query}` : ""}`;
@@ -35,7 +35,7 @@ const getBills = async (params?: GetBillsParams): Promise<Bill[]> => {
   }
 };
 
-const updateBill = async (billId: string, billData: Bill) => {
+const updateBill = async (billId: string, billData: BillingFormData) => {
   try {
     const response = await fetch(`/api/daily-bills/${billId}`, {
       method: "PUT",
@@ -58,7 +58,7 @@ const updateBill = async (billId: string, billData: Bill) => {
 
 const deleteBill = async (billId: string) => {
   try {
-    const response = await fetch(`/api/bills/${billId}`, {
+    const response = await fetch(`/api/daily-bills/${billId}`, {
       method: "DELETE",
     });
 
@@ -73,9 +73,9 @@ const deleteBill = async (billId: string) => {
   }
 };
 
-const fetchBillData = async (id: string): Promise<Bill> => {
+const fetchBillData = async (id: string): Promise<BillingFormData> => {
   try {
-    const response = await fetch(`/api/bills/${id}`, {
+    const response = await fetch(`/api/daily-bills/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -100,9 +100,9 @@ const fetchBillData = async (id: string): Promise<Bill> => {
 
 const useBills = (
   params?: GetBillsParams,
-  options?: UseQueryOptions<Bill[], Error>
+  options?: UseQueryOptions<BillingFormData[], Error>
 ) => {
-  return useQuery<Bill[], Error>({
+  return useQuery<BillingFormData[], Error>({
     queryKey: ["bills", params],
     queryFn: () => getBills(params),
     ...options,

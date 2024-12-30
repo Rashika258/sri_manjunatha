@@ -35,21 +35,21 @@ const paymentStatusOptions: AppDropdownOption[] = [
   { value: "3", label: "Pending" },
 ];
 
-const defaultFormData = {
-  invoice_number: undefined,
-  customer_id: undefined,
-  gstin: undefined,
-  customer_address: undefined,
-  customer_email: undefined,
-  customer_name: undefined,
-  customer_phone: undefined,
-  is_gst_bill: false,
-  payment_status: undefined,
-  tax_amount: 0,
-  total_amount: 0,
-  due_date: new Date(),
-  invoice_date: new Date(),
-  invoiceitem: [
+const defaultFormData = (data?: BillingFormData): BillingFormData => ({
+  invoice_number: data?.invoice_number || undefined,
+  customer_id: data?.customer_id || undefined,
+  gstin: data?.gstin || undefined,
+  customer_address: data?.customer_address || undefined,
+  customer_email: data?.customer_email || undefined,
+  customer_name: data?.customer_name || undefined,
+  customer_phone: data?.customer_phone || undefined,
+  is_gst_bill: data?.is_gst_bill || false,
+  payment_status: data?.payment_status || undefined,
+  tax_amount: data?.tax_amount || 0,
+  total_amount: data?.total_amount || 0,
+  due_date: data?.due_date || new Date(),
+  invoice_date: data?.invoice_date || new Date(),
+  invoiceitem: data?.invoiceitem || [
     {
       product_id: undefined,
       product_name: undefined,
@@ -60,8 +60,7 @@ const defaultFormData = {
       hsn: undefined,
     },
   ],
-};
-
+});
 function generateFieldName<T extends keyof InvoiceItem>(
   prefix: string,
   index: number,
@@ -74,15 +73,17 @@ const AppBillingForm = ({
   headerText,
   isSubmitBtnLoading,
   handleSubmit,
+  data
 }: {
   headerText: string;
   isSubmitBtnLoading: boolean;
   handleSubmit: (data: BillingFormData) => void;
+  data?: BillingFormData
 }) => {
   const customerData = useCustomers();
   const productData = useProducts();
   const [formData, setFormData] =
-    React.useState<BillingFormData>(defaultFormData);
+    React.useState<BillingFormData>(defaultFormData(data));
   const [errors, setErrors] = React.useState<FormErrors>({});
 
   const productOptions = React.useMemo(() => {
@@ -570,7 +571,7 @@ const AppBillingForm = ({
             <Button
               type="button"
               variant="secondary"
-              onClick={() => setFormData(defaultFormData)}
+              onClick={() => setFormData(defaultFormData())}
             >
               Reset
             </Button>

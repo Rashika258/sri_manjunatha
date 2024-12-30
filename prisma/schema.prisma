@@ -99,11 +99,10 @@ model invoiceitem {
   total_price  Float
   hsn          Int
   invoice_id   Int
-  invoice      invoice @relation(fields: [invoice_id], references: [invoice_id], name: "InvoiceItems")
+  invoice      invoice @relation("InvoiceItems", fields: [invoice_id], references: [invoice_id], onDelete: Cascade)
 
   @@index([invoice_id])
 }
-
 
 model leaves {
   leave_id         Int                  @id @default(autoincrement())
