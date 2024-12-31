@@ -3,9 +3,9 @@
 import React from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { AppBillingForm, AppFormLoader, AppTableError } from "@/components/common";
+import { AppBillingForm, AppFormLoader, AppTableError } from "@/components/common/index";
 import { toast } from "sonner";
-import { fetchBillData, updateBill } from "../(utils)/api-request";
+import { fetchBillData, updateBill } from "../(utils)/index";
 import { BillingFormData } from "@/types";
 
 const EditBillPage = () => {

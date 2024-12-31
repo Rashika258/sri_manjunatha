@@ -1,4 +1,4 @@
-import { Customer, GetCustomersParams } from "@/types";
+import { ApiQueryParams, Customer } from "@/types";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 const addCustomer = async (customer: Customer): Promise<void> => {
@@ -18,10 +18,11 @@ const addCustomer = async (customer: Customer): Promise<void> => {
   return response.json();
 };
 
-
-const getCustomers = async (params?: GetCustomersParams): Promise<Customer[]> => {
+const getCustomers = async (params?: ApiQueryParams): Promise<Customer[]> => {
   try {
-    const query = new URLSearchParams(params as Record<string, string>).toString();
+    const query = new URLSearchParams(
+      params as Record<string, string>
+    ).toString();
     const url = `/api/customers${query ? `?${query}` : ""}`;
 
     const response = await fetch(url, {
@@ -29,13 +30,15 @@ const getCustomers = async (params?: GetCustomersParams): Promise<Customer[]> =>
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch customers: ${response.status} ${response.statusText}`);
+      throw new Error(
+        `Failed to fetch customers: ${response.status} ${response.statusText}`
+      );
     }
 
     return await response.json();
   } catch (error) {
     console.error("Error fetching customers:", error);
-    throw error; 
+    throw error;
   }
 };
 
@@ -88,7 +91,9 @@ const fetchCustomerData = async (id: string): Promise<Customer> => {
     if (!response.ok) {
       const errorDetails = await response.json();
       throw new Error(
-        `Failed to fetch data. Status: ${response.status}, Message: ${errorDetails.message || "Unknown error"}`
+        `Failed to fetch data. Status: ${response.status}, Message: ${
+          errorDetails.message || "Unknown error"
+        }`
       );
     }
 
@@ -101,9 +106,8 @@ const fetchCustomerData = async (id: string): Promise<Customer> => {
   }
 };
 
-
 const useCustomers = (
-  params?: GetCustomersParams,
+  params?: ApiQueryParams,
   options?: UseQueryOptions<Customer[], Error>
 ) => {
   return useQuery<Customer[], Error>({
@@ -119,5 +123,5 @@ export {
   updateCustomer,
   deleteCustomer,
   useCustomers,
-  fetchCustomerData
+  fetchCustomerData,
 };

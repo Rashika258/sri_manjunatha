@@ -17,63 +17,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/index";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { AppDropdownOption, Product } from "@/types";
-import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { AppDropdownOption, FormProps,ProductFormData, productSchema } from "@/types";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getProductCategories } from "@/app/product-category/(utils)/api-request";
 
-interface ProductFormProps {
-  onSubmit: SubmitHandler<Product>;
-  isSubmitBtnLoading: boolean;
-  data?: Product;
-  headerText: string;
-}
 
-export const productSchema = z.object({
-  name: z.string().min(1, { message: "Product name is required" }),
-  product_category_id: z
-    .string()
-    .min(1, { message: "Please select a category" })
-    .optional(),
-  hsn_code: z
-    .number()
-    .min(1, { message: "HSN code must be a valid number" })
-    .optional(),
-  price: z.number().min(0, { message: "Price must be a positive number" }),
-  bags: z
-    .number()
-    .min(1, { message: "Bags must be a positive number" })
-    .optional(),
-  gst_rate: z
-    .number()
-    .min(0, { message: "GST rate cannot be negative" })
-    .optional(),
-  stock_quantity: z
-    .number()
-    .min(0, { message: "Stock quantity cannot be negative" })
-    .optional(),
-  adinath_price: z
-    .number()
-    .min(0, { message: "Adinath price must be a positive number" }),
-  monthly_bill_price: z
-    .number()
-    .min(0, { message: "Monthly bill price must be a positive number" }),
-  monthly_bill_percentage: z
-    .number()
-    .min(0, { message: "Monthly bill percentage cannot be negative" })
-    .optional(),
-  created_at: z.date().optional(),
-});
 
-export type ProductFormData = z.infer<typeof productSchema>;
 
 const ProductForm = ({
   onSubmit,
   isSubmitBtnLoading,
   data,
   headerText,
-}: ProductFormProps) => {
+}: FormProps<ProductFormData>) => {
   const [categories, setCategories] = React.useState<AppDropdownOption[]>([]);
 
   const form = useForm<ProductFormData>({

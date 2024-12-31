@@ -9,7 +9,7 @@ import {
   AppTableSkeleton,
   AppTooltip,
 } from "@/components/common/index";
-import { ActionItem, BillingFormData, GetBillsParams } from "@/types";
+import { ActionItem, BillingFormData, ApiQueryParams } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Download, Pencil, Share2, Trash } from "lucide-react";
 import { deleteBill, useBills } from "./(utils)/api-request";
@@ -25,11 +25,17 @@ type ColumnType = ColumnDef<BillingFormData>[];
 const BillPage = () => {
   const router = useRouter();
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
+  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
+  React.useState({
+    openDeleteConfirmationPopup: false,
+    isDeletingCustomer: false,
+    rowId: "",
+  });
 
   console.log("date", date);
   
 
-  const params: GetBillsParams | undefined = React.useMemo(() => {
+  const params: ApiQueryParams | undefined = React.useMemo(() => {
     if (!date || !date.from || !date.to) return undefined;
     return {
       start_date: date.from ? convertISTToInstant(date.from) : undefined,
@@ -38,12 +44,7 @@ const BillPage = () => {
   }, [date]);
 
   const { data, isLoading, error, refetch } = useBills(params);
-  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
-    React.useState({
-      openDeleteConfirmationPopup: false,
-      isDeletingCustomer: false,
-      rowId: "",
-    });
+
 
   console.log("date===========", date);
 
@@ -222,15 +223,16 @@ const BillPage = () => {
     },
     [deleteMutation]
   );
-
-  if (isLoading) return <AppTableSkeleton />;
-  if (error) return <AppTableError />;
-
   const applyDateFilter = (date: DateRange | undefined) => {
     setDate(date);
     refetch();
     
   }
+
+  if (isLoading) return <AppTableSkeleton />;
+  if (error) return <AppTableError />;
+
+
 
   return (
     <div className={`w-full h-full p-4`}>

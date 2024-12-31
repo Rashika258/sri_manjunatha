@@ -110,7 +110,7 @@ const fetchProductCategoryData = async (categoryId: string) => {
 const useProductCategories = (
   params?: GetProductCategoriesParams,
   options?: UseQueryOptions<ProductCategory[], Error>
-) =>{
+) => {
   return useQuery<ProductCategory[], Error>({
     queryKey: ["product-categories", params],
     queryFn: () => getProductCategories(params),
@@ -126,6 +126,4 @@ export {
   deleteProductCategory,
   useProductCategories,
   fetchProductCategoryData,
-  
-  
 };

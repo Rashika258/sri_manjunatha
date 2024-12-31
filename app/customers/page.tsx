@@ -9,23 +9,33 @@ import {
   AppDeleteConfirmationPopup,
   AppTooltip,
 } from "@/components/common/index";
-import { toast } from "@/components/ui/index";
+import { convertISTToInstant, toast } from "@/components/ui/index";
 import { format } from "date-fns";
-import { deleteCustomer, useCustomers } from "./(utils)/api-request";
-import { ActionItem, Customer } from "@/types";
+import { deleteCustomer, useCustomers } from "./(utils)/index";
+import { ActionItem, ApiQueryParams, Customer } from "@/types";
 import { Pencil, Trash } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { DateRange } from "react-day-picker";
 
 const CustomerTable = () => {
   const router = useRouter();
-  const { data, isLoading, error } = useCustomers();
+  const [date, setDate] = React.useState<DateRange | undefined>(undefined);
   const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
     React.useState({
       openDeleteConfirmationPopup: false,
       isDeletingCustomer: false,
       rowId: "",
     });
+
+  const params: ApiQueryParams | undefined = React.useMemo(() => {
+    if (!date || !date.from || !date.to) return undefined;
+    return {
+      start_date: date.from ? convertISTToInstant(date.from) : undefined,
+      end_date: date.to ? convertISTToInstant(date.to) : undefined,
+    };
+  }, [date]);
+  const { data, isLoading, error, refetch } = useCustomers(params);
 
   const actions: ActionItem[] = React.useMemo(
     () => [
@@ -136,6 +146,13 @@ const CustomerTable = () => {
     },
     [deleteMutation]
   );
+  const applyDateFilter = React.useCallback(
+    (date: DateRange | undefined) => {
+      setDate(date);
+      refetch();
+    },
+    [refetch]
+  );
 
   if (isLoading) return <AppTableSkeleton />;
   if (error) return <AppTableError />;
@@ -146,6 +163,8 @@ const CustomerTable = () => {
         columns={columns}
         data={data!}
         redirectPath={"/customers/add-customer"}
+        date={date}
+        setDate={applyDateFilter}
       />
       <AppDeleteConfirmationPopup
         description={"Do you want to delete this customer?"}

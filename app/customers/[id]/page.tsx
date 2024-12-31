@@ -1,13 +1,12 @@
 "use client";
 import * as React from "react";
-import { AppFormLoader } from "@/components/common";
-import { Customer } from "@/types";
+import { AppFormLoader, AppTableError } from "@/components/common/index";
+import { Customer, CustomerFormSchemaData } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import { SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
-import { fetchCustomerData, updateCustomer } from "../(utils)/api-request";
-import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
+import { CustomerForm, fetchCustomerData, updateCustomer } from "../(utils)/index";
 
 const CustomerEditPage = () => {
   const { id } = useParams();
@@ -45,7 +44,7 @@ const CustomerEditPage = () => {
 
 
 
-  const onSubmit: SubmitHandler<CustomerFormData> = (formData) => {
+  const onSubmit: SubmitHandler<CustomerFormSchemaData> = (formData) => {
     if (id) {
       editMutation.mutate(formData);
     }
@@ -56,7 +55,7 @@ const CustomerEditPage = () => {
   }
 
   if (error) {
-    return <div>Error: {(error as Error).message}</div>;
+    return <AppTableError />;
   }
 
   if (!data) {

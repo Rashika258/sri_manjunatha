@@ -35,25 +35,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
-    const { search, startDate, endDate } = Object.fromEntries(
+    const { start_date, end_date } = Object.fromEntries(
       new URL(request.url).searchParams
     );
 
-    const conditions = {};
+    const conditions: {
+      created_at?: { gte?: Date; lte?: Date };
+    } = {};
 
-    if (search) {
-      conditions.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { email: { contains: search, mode: "insensitive" } },
-        { phone: { contains: search, mode: "insensitive" } },
-      ];
-    }
-
-    // Add date filters
-    if (startDate) {
-      const start = parseISO(startDate);
+    if (start_date) {
+      const start = parseISO(start_date);
       if (isValid(start)) {
         conditions.created_at = {
           ...(conditions.created_at || {}),
@@ -62,8 +55,8 @@ export async function GET(request: Request) {
       }
     }
 
-    if (endDate) {
-      const end = parseISO(endDate);
+    if (end_date) {
+      const end = parseISO(end_date);
       if (isValid(end)) {
         conditions.created_at = { ...(conditions.created_at || {}), lte: end };
       }

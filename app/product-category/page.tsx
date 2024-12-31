@@ -15,17 +15,21 @@ import { ActionItem, ProductCategory } from "@/types";
 import { Pencil, Trash } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { deleteProductCategory, useProductCategories } from "./(utils)/api-request";
+import {
+  deleteProductCategory,
+  useProductCategories,
+} from "./(utils)/api-request";
 
 const ProductCategoryTable = () => {
   type ColumnType = ColumnDef<ProductCategory>[];
   const router = useRouter();
   const { data, isLoading, error } = useProductCategories();
-  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] = React.useState({
-    openDeleteConfirmationPopup: false,
-    isDeletingCategory: false,
-    rowId: "",
-  });  
+  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
+    React.useState({
+      openDeleteConfirmationPopup: false,
+      isDeletingCategory: false,
+      rowId: "",
+    });
 
   const actions: ActionItem[] = React.useMemo(
     () => [
@@ -57,9 +61,25 @@ const ProductCategoryTable = () => {
 
   const columns: ColumnType = React.useMemo(
     () => [
-      { accessorKey: "category_id", header: "Category ID", cell: ({ row }) => <AppTooltip text={row.getValue("category_id") || ""} /> },
-      { accessorKey: "name", header: "Category Name", cell: ({ row }) => <AppTooltip text={row.getValue("name") || ""} /> },
-      { accessorKey: "description", header: "Description", cell: ({ row }) => <AppTooltip text={row.getValue("description") || ""} /> },
+      {
+        accessorKey: "category_id",
+        header: "Category ID",
+        cell: ({ row }) => (
+          <AppTooltip text={row.getValue("category_id") || ""} />
+        ),
+      },
+      {
+        accessorKey: "name",
+        header: "Category Name",
+        cell: ({ row }) => <AppTooltip text={row.getValue("name") || ""} />,
+      },
+      {
+        accessorKey: "description",
+        header: "Description",
+        cell: ({ row }) => (
+          <AppTooltip text={row.getValue("description") || ""} />
+        ),
+      },
       {
         accessorKey: "created_at",
         header: "Created At",

@@ -1,4 +1,5 @@
-import { SubmitHandler } from "react-hook-form";
+import { FieldValues, SubmitHandler } from "react-hook-form";
+import { z } from "zod";
 
 type InvoiceItem = {
   item_id?: number;
@@ -10,14 +11,6 @@ type InvoiceItem = {
   unit_price: number | undefined;
   total_price: number | undefined;
 };
-
-type Company = {
-  gstin: string;
-  name: string;
-  address: string;
-};
-
-
 
 type BillingFormData = {
   invoice_number: string | undefined;
@@ -37,28 +30,6 @@ type BillingFormData = {
   invoiceitem: InvoiceItem[];
 };
 
-type DailyBill = {
-  id: number;
-  bill_no: string;
-  company_name: string;
-  date: Date;
-  items: InvoiceItem[];
-  price: number;
-  qty: number;
-  total: number;
-  payment_status: "PAID" | "UNPAID" | "INPROGRESS";
-};
-
-type ProductData = {
-  name: string;
-  hsn_code?: number;
-  price: number;
-  monthly_bill_percentage?: number;
-  monthly_bill_price?: number;
-  adinath_price?: number;
-  stock_quantity?: number;
-};
-
 type Customer = {
   customer_id?: number;
   name: string;
@@ -67,12 +38,6 @@ type Customer = {
   address?: string;
   gstin?: string;
   created_at?: Date;
-};
-
-type GetCustomersParams = {
-  search?: string;
-  startDate?: string;
-  endDate?: string;
 };
 
 type ActionItem = {
@@ -90,10 +55,10 @@ type ProductCategory = {
   category_id: string;
 };
 
-type CustomerFormProps = {
-  onSubmit: SubmitHandler<Customer>;
+type FormProps<T extends FieldValues> = {
+  onSubmit: SubmitHandler<T>;
   isSubmitBtnLoading: boolean;
-  data?: Customer;
+  data?: T;
   headerText: string;
 };
 type Employee = {
@@ -106,13 +71,6 @@ type Employee = {
   date_of_joining?: Date;
   status?: "Active" | "Inactive";
   created_at?: Date;
-};
-
-type EmployeeFormProps = {
-  onSubmit: SubmitHandler<Employee>;
-  isSubmitBtnLoading: boolean;
-  data?: Employee;
-  headerText: string;
 };
 
 type Product = {
@@ -128,15 +86,6 @@ type Product = {
   monthly_bill_price?: number;
   monthly_bill_percentage?: number;
   created_at?: Date;
-};
-
-type GetProductsParams = {
-  search?: string;
-  category?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  startDate?: string;
-  endDate?: string;
 };
 
 type DeleteConfirmationPopupDetails = {
@@ -160,23 +109,13 @@ type AppDropdownProps = {
   isLoading: boolean;
 };
 
-type Bill = {
-  id: string;
-  amount: number;
-  date: string;
-  description: string;
-  dueDate: string;
-  status: "paid" | "unpaid" | "overdue";
-  createdAt: string;
-  updatedAt: string;
+type ApiQueryParams = {
+  start_date?: string | undefined;
+  end_date?: string | undefined;
 };
 
-type GetBillsParams = {
-  start_date?: string | undefined;  
-  end_date?: string | undefined;   
-};
-
-type FormErrors = {[key in keyof BillingFormData]?: string;
+type FormErrors = {
+  [key in keyof BillingFormData]?: string;
 } & {
   [key: string]: string | undefined;
 };
@@ -192,7 +131,7 @@ type FormField = {
 };
 
 type ItemField = {
-  name: `${string}[${number}].${keyof InvoiceItem}`; 
+  name: `${string}[${number}].${keyof InvoiceItem}`;
   label: string;
   type: "input" | "dropdown" | "date";
   value: string | number | Date | undefined;
@@ -200,31 +139,84 @@ type ItemField = {
   disabled?: boolean;
   inputType?: "number" | "text";
   itemName: keyof InvoiceItem;
-
 };
+const productSchema = z.object({
+  name: z.string().min(1, { message: "Product name is required" }),
+  product_category_id: z
+    .string()
+    .min(1, { message: "Please select a category" })
+    .optional(),
+  hsn_code: z
+    .number()
+    .min(1, { message: "HSN code must be a valid number" })
+    .optional(),
+  price: z.number().min(0, { message: "Price must be a positive number" }),
+  bags: z
+    .number()
+    .min(1, { message: "Bags must be a positive number" })
+    .optional(),
+  gst_rate: z
+    .number()
+    .min(0, { message: "GST rate cannot be negative" })
+    .optional(),
+  stock_quantity: z
+    .number()
+    .min(0, { message: "Stock quantity cannot be negative" })
+    .optional(),
+  adinath_price: z
+    .number()
+    .min(0, { message: "Adinath price must be a positive number" }),
+  monthly_bill_price: z
+    .number()
+    .min(0, { message: "Monthly bill price must be a positive number" }),
+  monthly_bill_percentage: z
+    .number()
+    .min(0, { message: "Monthly bill percentage cannot be negative" })
+    .optional(),
+  created_at: z.date().optional(),
+});
 
+type ProductFormData = z.infer<typeof productSchema>;
+
+const customerSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  email: z.string().email({ message: "Please enter a valid email" }).optional(),
+  phone: z
+    .string()
+    .min(10, { message: "Phone number must be at least 10 digits" })
+    .optional()
+    .refine((val) => val === undefined || val.length >= 10, {
+      message: "Phone number must be at least 10 digits",
+    }),
+  address: z.string().optional(),
+  gstin: z
+    .string()
+    .trim()
+    .length(15, { message: "GSTIN must be exactly 15 characters" })
+    .optional(),
+  created_at: z.date().optional(),
+});
+
+ type CustomerFormSchemaData = z.infer<typeof customerSchema>;
+
+export { productSchema, customerSchema };
 
 export type {
   InvoiceItem,
-  Company,
   AppDropdownOption,
+  ProductFormData,
   BillingFormData,
-  DailyBill,
-  ProductData,
   Customer,
   ActionItem,
   ProductCategory,
   Employee,
   Product,
-  GetProductsParams,
-  GetCustomersParams,
-  CustomerFormProps,
   DeleteConfirmationPopupDetails,
-  EmployeeFormProps,
   AppDropdownProps,
-  Bill,
-  GetBillsParams,
+  ApiQueryParams,
   FormErrors,
   FormField,
-  ItemField
+  ItemField,
+  FormProps,
+  CustomerFormSchemaData
 };

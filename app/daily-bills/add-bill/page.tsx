@@ -5,7 +5,7 @@ import { toast } from "@/components/ui/index";
 import { BillingFormData } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
-import { addBill } from "../(utils)/api-request";
+import { addBill } from "../(utils)/index";
 
 const AddBillPage = () => {
   const router = useRouter();

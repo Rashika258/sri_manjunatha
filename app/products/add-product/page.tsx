@@ -1,12 +1,11 @@
 "use client";
 import * as React from "react";
-import { Product } from "@/types";
-import ProductForm from "../(utils)/product-form";
-import { addProduct } from "../(utils)/api-request";
+import {  ProductFormData } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { addProduct, ProductForm } from "../(utils)/index";
 
 const ProductPage = () => {
   const router = useRouter();
@@ -15,7 +14,7 @@ const ProductPage = () => {
   const mutation = useMutation({
     mutationFn: addProduct,
     onSuccess: () => {
-      toast.success("Product Category added successfully!");
+      toast.success("Product added successfully!");
       mutation.reset();
       router.back();
     },
@@ -26,12 +25,12 @@ const ProductPage = () => {
       setIsAddingData(false);
     },
     onError: (error: Error) => {
-      console.error("Error adding product category:", error);
-      toast("Failed to add product category. Please try again.");
+      console.error("Error adding product :", error);
+      toast.error("Failed to add product. Please try again.");
     },
   });
 
-  const onSubmit: SubmitHandler<Product> = (data) => {
+  const onSubmit: SubmitHandler<ProductFormData> = (data) => {
     mutation.mutate(data);
   };
 

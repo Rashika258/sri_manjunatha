@@ -16,9 +16,7 @@ export async function POST(request: NextRequest) {
       product_category_id,
     } = body;
 
-
     console.log("aaa==================", body);
-    
 
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -53,22 +51,17 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { search, startDate, endDate, categoryId } = Object.fromEntries(
+    const { start_date, end_date } = Object.fromEntries(
       new URL(request.url).searchParams
     );
 
-    const conditions: any = {};
+    const conditions: {
+      created_at?: { gte?: Date; lte?: Date };
+    } = {};
 
-    if (search) {
-      conditions.name = { contains: search, mode: "insensitive" };
-    }
-
-    if (categoryId) {
-      conditions.product_category_id = parseInt(categoryId, 10);
-    }
-
-    if (startDate) {
-      const start = parseISO(startDate);
+    // Filter by start_date
+    if (start_date) {
+      const start = parseISO(start_date);
       if (isValid(start)) {
         conditions.created_at = {
           ...(conditions.created_at || {}),
@@ -77,8 +70,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (endDate) {
-      const end = parseISO(endDate);
+    if (end_date) {
+      const end = parseISO(end_date);
       if (isValid(end)) {
         conditions.created_at = { ...(conditions.created_at || {}), lte: end };
       }
@@ -86,7 +79,7 @@ export async function GET(request: NextRequest) {
 
     const products = await prisma.products.findMany({
       where: conditions,
-      orderBy: { created_at: "desc" }, 
+      orderBy: { created_at: "desc" },
     });
 
     return NextResponse.json(products);

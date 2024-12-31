@@ -10,39 +10,17 @@ import {
   FormMessage,
   Input,
 } from "@/components/ui/index";
-import { CustomerFormProps } from "@/types";
+import { CustomerFormSchemaData, customerSchema, FormProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
-
-const customerSchema = z.object({
-  name: z.string().min(1, { message: "Name is required" }),
-  email: z.string().email({ message: "Please enter a valid email" }).optional(),
-  phone: z
-    .string()
-    .min(10, { message: "Phone number must be at least 10 digits" })
-    .optional()
-    .refine((val) => val === undefined || val.length >= 10, {
-      message: "Phone number must be at least 10 digits",
-    }),
-  address: z.string().optional(),
-  gstin: z
-    .string()
-    .trim()
-    .length(15, { message: "GSTIN must be exactly 15 characters" })
-    .optional(),
-  created_at: z.date().optional(),
-});
-
-export type CustomerFormData = z.infer<typeof customerSchema>;
 
 const CustomerForm = ({
   onSubmit,
   isSubmitBtnLoading,
   data,
   headerText,
-}: CustomerFormProps) => {
-  const form = useForm<CustomerFormData>({
+}: FormProps<CustomerFormSchemaData>) => {
+  const form = useForm<CustomerFormSchemaData>({
     resolver: zodResolver(customerSchema),
     defaultValues: {
       name: data?.name || "",

@@ -9,24 +9,35 @@ import {
   AppDeleteConfirmationPopup,
   AppTooltip,
 } from "@/components/common/index";
-import { toast } from "@/components/ui/index";
+import { convertISTToInstant, toast } from "@/components/ui/index";
 import { format } from "date-fns";
-import { deleteProduct, useProducts } from "./(utils)/api-request";
-import { ActionItem, Product } from "@/types";
+import { deleteProduct, useProducts } from "./(utils)/index";
+import { ActionItem, ApiQueryParams, Product } from "@/types";
 import { Pencil, Trash } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { DateRange } from "react-day-picker";
 
 const ProductTable = () => {
   type ColumnType = ColumnDef<Product>[];
   const router = useRouter();
-  const { data, isLoading, error } = useProducts();
+  const [date, setDate] = React.useState<DateRange | undefined>(undefined);
   const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
-    React.useState({
-      openDeleteConfirmationPopup: false,
-      isDeletingProduct: false,
-      rowId: "",
-    });
+  React.useState({
+    openDeleteConfirmationPopup: false,
+    isDeletingProduct: false,
+    rowId: "",
+  });
+
+
+  const params: ApiQueryParams | undefined = React.useMemo(() => {
+    if (!date || !date.from || !date.to) return undefined;
+    return {
+      start_date: date.from ? convertISTToInstant(date.from) : undefined,
+      end_date: date.to ? convertISTToInstant(date.to) : undefined,
+    };
+  }, [date]);
+  const { data, isLoading, error, refetch } = useProducts(params);
 
   const actions: ActionItem[] = React.useMemo(
     () => [
@@ -144,16 +155,23 @@ const ProductTable = () => {
     },
     [deleteMutation]
   );
+  const applyDateFilter = React.useCallback((date: DateRange | undefined) => {
+    setDate(date);
+    refetch();
+    
+  },[refetch])
 
   if (isLoading) return <AppTableSkeleton />;
   if (error) return <AppTableError />;
 
   return (
     <div className="w-full h-full p-8">
-      <AppDataTable
+      <AppDataTable<Product>
         columns={columns}
         data={data!}
         redirectPath={"/products/add-product"}
+        date={date}
+        setDate={applyDateFilter}
       />
       <AppDeleteConfirmationPopup
         description={"Do you want to delete this product?"}

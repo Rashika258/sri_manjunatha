@@ -4,8 +4,8 @@ import { toast } from "@/components/ui/index";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { SubmitHandler } from "react-hook-form";
-import { addCustomer } from "../(utils)/api-request";
-import CustomerForm, { CustomerFormData } from "../(utils)/customer-form";
+import { CustomerForm, addCustomer } from "../(utils)/index";
+import { CustomerFormData } from "../(utils)/customer-form";
 
 const AddCustomerPage = () => {
   const router = useRouter();
@@ -34,7 +34,13 @@ const AddCustomerPage = () => {
     mutation.mutate(data);
   };
 
-  return <CustomerForm headerText="Add Customer" onSubmit={onSubmit} isSubmitBtnLoading={isAddingData} />;
+  return (
+    <CustomerForm
+      headerText="Add Customer"
+      onSubmit={onSubmit}
+      isSubmitBtnLoading={isAddingData}
+    />
+  );
 };
 
 export default AddCustomerPage;
