@@ -32,9 +32,6 @@ const BillPage = () => {
     rowId: "",
   });
 
-  console.log("date", date);
-  
-
   const params: ApiQueryParams | undefined = React.useMemo(() => {
     if (!date || !date.from || !date.to) return undefined;
     return {
@@ -44,10 +41,6 @@ const BillPage = () => {
   }, [date]);
 
   const { data, isLoading, error, refetch } = useBills(params);
-
-
-  console.log("date===========", date);
-
 
   const actions: ActionItem[] = React.useMemo(
     () => [
@@ -137,9 +130,7 @@ const BillPage = () => {
       accessorKey: "invoice_date",
       header: "Invoice Date",
       cell: ({ row }) => {
-
         return <AppTooltip text={convertInstantToIST(row.getValue("invoice_date"))} />;
-
       },
     },
     {
