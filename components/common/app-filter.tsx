@@ -22,11 +22,12 @@ const AppFilter = <T,>({
   setDate,
   redirectPath,
   table,
+  
 }: {
   searchQuery: string;
   handleSearch: (val: string) => void;
   date: DateRange | undefined;
-  setDate: React.Dispatch<React.SetStateAction<DateRange | undefined>>;
+  setDate: (date: DateRange | undefined) => void;
   redirectPath: string;
   table: ReactTable<T>;
 }) => {
@@ -51,7 +52,7 @@ const AppFilter = <T,>({
     <div className="flex justify-between flex-col sm:flex-row">
       <div className="flex flex-col sm:flex-row sm:w-full w-full items-start gap-2 py-4">
         <AppSearch searchQuery={localSearch} handleSearch={debounceSearch} />
-        <DateRangePicker date={date} setDate={setDate} />
+        <DateRangePicker  value={date} onApply={setDate} />
       </div>
       <div className="flex items-center gap-2">
         <DropdownMenu>

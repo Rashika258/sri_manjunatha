@@ -9,19 +9,35 @@ import {
   AppTableSkeleton,
   AppTooltip,
 } from "@/components/common/index";
-import { ActionItem, BillingFormData } from "@/types";
+import { ActionItem, BillingFormData, GetBillsParams } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Download, Pencil, Share2, Trash } from "lucide-react";
 import { deleteBill, useBills } from "./(utils)/api-request";
 import { downloadInvoice } from "./(utils)/download-invoice";
 import { useRouter } from "next/navigation";
-import { format } from "date-fns";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
+import { DateRange } from "react-day-picker";
+import { convertInstantToIST, convertISTToInstant } from "@/components/ui/index";
+
+type ColumnType = ColumnDef<BillingFormData>[];
 
 const BillPage = () => {
-  const { data, isLoading, error } = useBills();
   const router = useRouter();
+  const [date, setDate] = React.useState<DateRange | undefined>(undefined);
+
+  console.log("date", date);
+  
+
+  const params: GetBillsParams | undefined = React.useMemo(() => {
+    if (!date || !date.from || !date.to) return undefined;
+    return {
+      start_date: date.from ? convertISTToInstant(date.from) : undefined,
+      end_date: date.to ? convertISTToInstant(date.to) : undefined,
+    };
+  }, [date]);
+
+  const { data, isLoading, error, refetch } = useBills(params);
   const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
     React.useState({
       openDeleteConfirmationPopup: false,
@@ -29,9 +45,8 @@ const BillPage = () => {
       rowId: "",
     });
 
-  console.log("data", data);
+  console.log("date===========", date);
 
-  type ColumnType = ColumnDef<BillingFormData>[];
 
   const actions: ActionItem[] = React.useMemo(
     () => [
@@ -121,22 +136,16 @@ const BillPage = () => {
       accessorKey: "invoice_date",
       header: "Invoice Date",
       cell: ({ row }) => {
-        const formattedDate = format(
-          new Date(row.getValue("invoice_date")),
-          "dd MMM yyyy"
-        );
-        return <AppTooltip text={formattedDate} />;
+
+        return <AppTooltip text={convertInstantToIST(row.getValue("invoice_date"))} />;
+
       },
     },
     {
       accessorKey: "due_date",
       header: "Due Date",
       cell: ({ row }) => {
-        const formattedDate = format(
-          new Date(row.getValue("due_date")),
-          "dd MMM yyyy"
-        );
-        return <AppTooltip text={formattedDate} />;
+          return <AppTooltip text={convertInstantToIST(row.getValue("due_date"))} />;
       },
     },
 
@@ -144,22 +153,17 @@ const BillPage = () => {
       accessorKey: "created_at",
       header: "Created At",
       cell: ({ row }) => {
-        const formattedDate = format(
-          new Date(row.getValue("created_at")),
-          "dd MMM yyyy"
-        );
-        return <AppTooltip text={formattedDate} />;
+        return <AppTooltip text={convertInstantToIST(row.getValue("created_at"))} />;
+
       },
     },
     {
       accessorKey: "updated_at",
       header: "Updated At",
       cell: ({ row }) => {
-        const formattedDate = format(
-          new Date(row.getValue("updated_at")),
-          "dd MMM yyyy"
-        );
-        return <AppTooltip text={formattedDate} />;
+
+        return <AppTooltip text={convertInstantToIST(row.getValue("updated_at"))} />;
+
       },
     },
     {
@@ -222,12 +226,20 @@ const BillPage = () => {
   if (isLoading) return <AppTableSkeleton />;
   if (error) return <AppTableError />;
 
+  const applyDateFilter = (date: DateRange | undefined) => {
+    setDate(date);
+    refetch();
+    
+  }
+
   return (
     <div className={`w-full h-full p-4`}>
       <AppDataTable<BillingFormData>
         redirectPath={"/daily-bills/add-bill"}
         columns={columns}
         data={data!}
+        date={date}
+        setDate={applyDateFilter}
       />
       <AppDeleteConfirmationPopup
         description={"Do you want to delete this bill?"}

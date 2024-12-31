@@ -18,7 +18,7 @@ const addBill = async (bill: BillingFormData): Promise<void> => {
   return response.json();
 };
 
-const getBills = async (params?: GetBillsParams): Promise<BillingFormData[]> => {
+const getBills = async (params?: GetBillsParams | undefined): Promise<BillingFormData[]> => {
   try {
     const query = new URLSearchParams(params as Record<string, string>).toString();
     const url = `/api/daily-bills${query ? `?${query}` : ""}`;
@@ -99,7 +99,7 @@ const fetchBillData = async (id: string): Promise<BillingFormData> => {
 };
 
 const useBills = (
-  params?: GetBillsParams,
+  params: GetBillsParams | undefined,
   options?: UseQueryOptions<BillingFormData[], Error>
 ) => {
   return useQuery<BillingFormData[], Error>({

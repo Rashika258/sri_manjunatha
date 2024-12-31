@@ -23,6 +23,7 @@ import {
   Button
 } from "@/components/ui/index";
 import AppFilter from "./app-filter";
+import { DateRange } from "react-day-picker";
 
 export type TableData = {
   [key: string]: string | number | boolean;
@@ -33,6 +34,8 @@ interface DataTableProps<T> {
   columns: ColumnDef<T>[];
   data: T[];
   redirectPath: string;
+  date:DateRange | undefined;
+  setDate: (date: DateRange | undefined) => void;
 }
 
 
@@ -40,6 +43,8 @@ const AppDataTable =<T, > ({
   columns,
   data,
   redirectPath,
+  date,
+  setDate,
 }: DataTableProps<T>) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
@@ -78,8 +83,8 @@ const AppDataTable =<T, > ({
       <AppFilter
         searchQuery=""
         handleSearch={(val) => table.setGlobalFilter(val)}
-        date={undefined}
-        setDate={() => {}}
+        date={date}
+        setDate={setDate}
         redirectPath={redirectPath}
         table={table} 
       />

@@ -9,7 +9,7 @@ import {
   CollapsibleTrigger,
   CollapsibleContent,
 } from "./collapsible";
-import { DateRangePicker } from "./date-range-picker";
+import { DateRangePicker, convertISTToInstant, convertInstantToIST } from "./date-range-picker";
 import {
   Dialog,
   DialogPortal,
@@ -169,6 +169,8 @@ export {
   Collapsible,
   CollapsibleTrigger,
   CollapsibleContent,
+  convertISTToInstant,
+  convertInstantToIST,
   Dialog,
   DialogPortal,
   DialogOverlay,

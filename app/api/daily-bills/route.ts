@@ -72,29 +72,51 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET request to fetch all bills, optionally filtered by customer_id or date range
+
+
+const buildDateCondition = (date: string | undefined, operator: "gte" | "lte") => {
+  if (date) {
+    const parsedDate = new Date(date);
+    if (!isNaN(parsedDate.getTime())) {
+      return { [operator]: parsedDate };
+    }
+  }
+  return null;
+};
+
 export async function GET(req: NextRequest) {
   try {
-    const { customer_id, startDate, endDate } = Object.fromEntries(
-      new URL(req.url).searchParams
-    );
+    const { start_date, end_date } = Object.fromEntries(new URL(req.url).searchParams);
 
-    const conditions: any = {};
+    // Validate and create conditions early
+    const conditions: {
+      invoice_date?: { gte?: Date; lte?: Date };
+      created_at?: { gte?: Date; lte?: Date };
+      updated_at?: { gte?: Date; lte?: Date };
+      due_date?: { gte?: Date; lte?: Date };
+    } = {};
 
-    if (customer_id) {
-      conditions.customer_id = parseInt(customer_id);
+    // Build conditions dynamically using the helper function
+    const startCondition = buildDateCondition(start_date, "gte");
+    const endCondition = buildDateCondition(end_date, "lte");
+
+    if (startCondition) {
+      conditions.invoice_date = { ...conditions.invoice_date, ...startCondition };
+      conditions.created_at = { ...conditions.created_at, ...startCondition };
+      conditions.updated_at = { ...conditions.updated_at, ...startCondition };
+      conditions.due_date = { ...conditions.due_date, ...startCondition };
     }
 
-    if (startDate) {
-      const start = new Date(startDate);
-      conditions.due_date = { gte: start };
+    if (endCondition) {
+      conditions.invoice_date = { ...conditions.invoice_date, ...endCondition };
+      conditions.created_at = { ...conditions.created_at, ...endCondition };
+      conditions.updated_at = { ...conditions.updated_at, ...endCondition };
+      conditions.due_date = { ...conditions.due_date, ...endCondition };
     }
 
-    if (endDate) {
-      const end = new Date(endDate);
-      conditions.due_date = { ...conditions.due_date, lte: end };
-    }
+    console.log("Generated conditions for the query:", conditions);
 
+    // Fetch the bills based on the conditions
     const bills = await prisma.invoice.findMany({
       where: conditions,
       orderBy: { created_at: "desc" },
@@ -109,3 +131,4 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+

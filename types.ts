@@ -172,9 +172,8 @@ type Bill = {
 };
 
 type GetBillsParams = {
-  search?: string;  
-  startDate?: string;  
-  endDate?: string;   
+  start_date?: string | undefined;  
+  end_date?: string | undefined;   
 };
 
 type FormErrors = {[key in keyof BillingFormData]?: string;
