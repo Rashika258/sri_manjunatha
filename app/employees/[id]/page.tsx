@@ -3,68 +3,67 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
-import { fetchEmployeeData, updateEmployee } from "../(utils)/api-request";
-import EmployeeForm, { EmployeeFormData } from "../(utils)/employee-form";
+import { EmployeeForm, fetchEmployeeData, updateEmployee } from "../(utils)/index";
 import { SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
-import { Employee } from "@/types";
-import { AppFormLoader } from "@/components/common";
+import {  EmployeeFormData } from "@/types";
+import { AppFormLoader, AppTableError } from "@/components/common/index";
 
 const EmployeeEditPage = () => {
   const { id } = useParams();
   const router = useRouter();
-  const employeeId = typeof id === "string" ? id : id?.[0];
+  const employeeId = Array.isArray(id) ? id[0] : id;
   const [isEditingData, setIsEditingData] = React.useState(false);
 
-  const {
-    data: employeeData,
-    error: fetchError,
-    isLoading: isFetching,
-  } = useQuery({
+  const { data, error, isLoading } = useQuery({
     queryKey: ["employee", employeeId],
     queryFn: () => fetchEmployeeData(employeeId),
-    enabled: !!employeeId, // Only fetch if `employeeId` is valid
+    enabled: !!employeeId,
   });
 
-  // Mutation to update employee
-  const { mutate: updateEmployeeData, isLoading: isMutating } = useMutation({
-    mutationFn: (data: Employee) => updateEmployee(employeeId, data),
+  const editMutation = useMutation({
+    mutationFn: (data: EmployeeFormData) => updateEmployee(employeeId, data),
     onSuccess: () => {
       toast.success("Employee updated successfully!");
       setIsEditingData(false);
-      router.back(); 
+      editMutation.reset();
+      router.back();
+    },
+    onMutate: () => {
+      setIsEditingData(true);
+    },
+    onSettled: () => {
+      setIsEditingData(false);
     },
     onError: (error: Error) => {
       console.error("Error updating employee:", error);
       toast.error(`Failed to update employee: ${error.message}`);
     },
-    onSettled: () => setIsEditingData(false),
   });
 
   const onSubmit: SubmitHandler<EmployeeFormData> = (formData) => {
     if (employeeId) {
-      setIsEditingData(true);
-      updateEmployeeData(formData);
+      editMutation.mutate(formData);
     }
   };
 
-  if (isFetching) {
+  if (isLoading) {
     return <AppFormLoader />;
   }
 
-  if (fetchError) {
-    return <div>Error: {fetchError.message}</div>;
+  if (error) {
+    return <AppTableError />;
   }
 
-  if (!employeeData) {
+  if (!data) {
     return <div>No employee data found</div>;
   }
 
   return (
     <EmployeeForm
       onSubmit={onSubmit}
-      data={employeeData}
-      isSubmitBtnLoading={isMutating || isEditingData}
+      data={data}
+      isSubmitBtnLoading={isEditingData}
       headerText="Edit Employee"
     />
   );

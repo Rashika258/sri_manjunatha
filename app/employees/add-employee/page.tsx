@@ -1,11 +1,11 @@
 "use client";
 import { toast } from "@/components/ui/index";
 import { useMutation } from "@tanstack/react-query";
-import React from "react";
+import * as React from "react";
 import { SubmitHandler } from "react-hook-form";
-import EmployeeForm, { EmployeeFormData } from "../(utils)/employee-form";
 import { useRouter } from "next/navigation";
-import { addEmployee } from "../(utils)/api-request";
+import { EmployeeFormData } from "@/types";
+import { addEmployee, EmployeeForm } from "../(utils)/index";
 
 const AddEmployeePage = () => {
   const router = useRouter();

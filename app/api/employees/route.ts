@@ -49,22 +49,16 @@ export async function POST(request: NextRequest) {
 }
 export async function GET(request: Request) {
   try {
-    const { search, startDate, endDate } = Object.fromEntries(
+    const { start_date, end_date } = Object.fromEntries(
       new URL(request.url).searchParams
     );
 
-    const conditions: any = {};
+    const conditions: {
+      created_at?: { gte?: Date; lte?: Date };
+    } = {};
 
-    if (search) {
-      conditions.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { email: { contains: search, mode: "insensitive" } },
-        { phone: { contains: search, mode: "insensitive" } },
-      ];
-    }
-
-    if (startDate) {
-      const start = parseISO(startDate);
+    if (start_date) {
+      const start = parseISO(start_date);
       if (isValid(start)) {
         conditions.created_at = {
           ...(conditions.created_at || {}),
@@ -73,23 +67,23 @@ export async function GET(request: Request) {
       }
     }
 
-    if (endDate) {
-      const end = parseISO(endDate);
+    if (end_date) {
+      const end = parseISO(end_date);
       if (isValid(end)) {
         conditions.created_at = { ...(conditions.created_at || {}), lte: end };
       }
     }
 
-    const customers = await prisma.employees.findMany({
+    const employees = await prisma.employees.findMany({
       where: conditions,
       orderBy: { created_at: "desc" },
     });
 
-    return NextResponse.json(customers);
+    return NextResponse.json(employees);
   } catch (error) {
-    console.error("Error fetching customer(s):", error);
+    console.error("Error fetching employees(s):", error);
     return NextResponse.json(
-      { error: "An unexpected error occurred while fetching customers" },
+      { error: "An unexpected error occurred while fetching employees" },
       { status: 500 }
     );
   }

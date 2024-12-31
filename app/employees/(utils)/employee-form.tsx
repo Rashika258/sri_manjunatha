@@ -16,33 +16,16 @@ import {
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { EmployeeFormProps } from "@/types";
+import { EmployeeFormData, employeeSchema, FormProps } from "@/types";
 
-
-
-const employeeSchema = z.object({
-  first_name: z.string().min(1, { message: "First name is required" }),
-  last_name: z.string().min(1, { message: "Last name is required" }),
-  email: z.string().email({ message: "Please enter a valid email" }).optional(),
-  phone_number: z
-    .string()
-    .min(10, { message: "Phone number must be at least 10 digits" })
-    .optional()
-    .refine((val) => val === undefined || val.length >= 10, {
-      message: "Phone number must be at least 10 digits",
-    }),
-  designation: z.string().optional(),
-  date_of_joining: z.date().optional(),
-  status: z.enum(["Active", "Inactive"]).default("Active"),
-});
-export type EmployeeFormData = z.infer<typeof employeeSchema>;
 
 const EmployeeForm = ({
   onSubmit,
   isSubmitBtnLoading,
   data,
   headerText,
-}: EmployeeFormProps) => {
+}: FormProps<EmployeeFormData>) => {
+
   const updatedData = {
     first_name: data?.first_name || "",
     last_name: data?.last_name || "",

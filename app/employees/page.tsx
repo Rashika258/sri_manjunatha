@@ -9,25 +9,37 @@ import {
   AppDeleteConfirmationPopup,
   AppTooltip,
 } from "@/components/common/index";
-import { toast } from "@/components/ui/index";
+import { convertISTToInstant, toast } from "@/components/ui/index";
 import { format } from "date-fns";
-import { deleteEmployee, useEmployees } from "./(utils)/api-request";
-import { ActionItem, DeleteConfirmationPopupDetails, Employee } from "@/types";
+import { deleteEmployee, useEmployees } from "./(utils)/index";
+import { ActionItem, ApiQueryParams, DeleteConfirmationPopupDetails, Employee } from "@/types";
 import { Pencil, Trash } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import { DateRange } from "react-day-picker";
 
 
 
 const EmployeeTable = () => {
   const router = useRouter();
-  const { data, isLoading, error } = useEmployees();
-  
+  const [date, setDate] = React.useState<DateRange | undefined>(undefined);
+
   const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] = React.useState<DeleteConfirmationPopupDetails>({
     openDeleteConfirmationPopup: false,
     isDeletingEmployee: false,
     rowId: "",
   });
+
+
+  const params: ApiQueryParams | undefined = React.useMemo(() => {
+    if (!date || !date.from || !date.to) return undefined;
+    return {
+      start_date: date.from ? convertISTToInstant(date.from) : undefined,
+      end_date: date.to ? convertISTToInstant(date.to) : undefined,
+    };
+  }, [date]);
+  const { data, isLoading, error, refetch } = useEmployees(params);
+  
 
   const actions: ActionItem[] = React.useMemo(() => [
     {
@@ -101,12 +113,23 @@ const EmployeeTable = () => {
     deleteMutation.mutate(rowId);
   }, [deleteMutation]);
 
+    const applyDateFilter = React.useCallback(
+      (date: DateRange | undefined) => {
+        setDate(date);
+        refetch();
+      },
+      [refetch]
+    );
+
   if (isLoading) return <AppTableSkeleton />;
   if (error) return <AppTableError />;
 
   return (
     <div className="w-full h-full p-4">
-      <AppDataTable columns={columns} data={data!} redirectPath={"/employees/add-employee"} />
+      <AppDataTable<Employee>
+        date={date}
+        setDate={applyDateFilter}
+       columns={columns} data={data!} redirectPath={"/employees/add-employee"} />
       <AppDeleteConfirmationPopup
         description="Do you want to delete this employee?"
         onConfirm={(rowId: string) => {

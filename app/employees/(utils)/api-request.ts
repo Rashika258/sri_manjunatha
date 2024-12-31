@@ -1,4 +1,4 @@
-import { Employee } from "@/types";
+import { ApiQueryParams, Employee, EmployeeFormData } from "@/types";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 const addEmployee = async (employee: Employee): Promise<void> => {
@@ -18,33 +18,22 @@ const addEmployee = async (employee: Employee): Promise<void> => {
   return response.json();
 };
 
-type GetEmployeesParams = {
-  search?: string;
-  startDate?: string; // ISO string
-  endDate?: string;   // ISO string
-};
 
-const getEmployees = async (params?: GetEmployeesParams): Promise<Employee[]> => {
+const getEmployees = async (params?: ApiQueryParams): Promise<Employee[]> => {
   try {
-    // Build query string from parameters
     const query = new URLSearchParams(params as Record<string, string>).toString();
     const url = `/api/employees${query ? `?${query}` : ""}`;
-
-    // Fetch data from the API
     const response = await fetch(url, {
       method: "GET",
     });
 
-    // Handle non-OK responses
     if (!response.ok) {
       throw new Error(`Failed to fetch employees: ${response.status} ${response.statusText}`);
     }
-
-    // Parse and return JSON data
     return await response.json();
   } catch (error) {
     console.error("Error fetching employees:", error);
-    throw error; // Rethrow to handle it in the calling function
+    throw error; 
   }
 };
 
@@ -87,7 +76,7 @@ const deleteEmployee = async (employeeId: string) => {
   }
 };
 
-const fetchEmployeeData = async (id: string): Promise<Employee> => {
+const fetchEmployeeData = async (id: string): Promise<EmployeeFormData> => {
   try {
     const response = await fetch(`/api/employees/${id}`, {
       method: "GET",
@@ -113,7 +102,7 @@ const fetchEmployeeData = async (id: string): Promise<Employee> => {
 };
 
 const useEmployees = (
-    params?: GetEmployeesParams,
+    params?: ApiQueryParams,
     options?: UseQueryOptions<Employee[], Error>
   ) => {
     return useQuery<Employee[], Error>({
