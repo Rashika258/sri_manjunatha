@@ -1,99 +1,105 @@
-export const downloadInvoice = (billId: string) => {
+import { PDFDocument, StandardFonts } from 'pdf-lib';
 
-      // Create the content for the invoice PDF (this could be customized)
-    //   const invoiceContent = () => (
-    //     `<div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
-    //     <div ref={invoiceRef} style={{ padding: "20px", border: "1px solid #000", width: "800px", margin: "0 auto" }}>
-    //       {/* Header */}
-    //       <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Tax Invoice</h2>
+const sampleData = {
+  invoiceNumber: 'INV-1001',
+  invoiceDate: '2024-12-31',
+  supplierName: 'ABC Enterprises',
+  supplierGSTIN: 'GSTIN-12345ABC',
+  customerName: 'XYZ Pvt. Ltd.',
+  customerGSTIN: 'GSTIN-67890XYZ',
+  shippingAddress: '123 Street, City, State, 12345',
+  billingAddress: '456 Avenue, City, State, 67890',
+  placeOfSupply: 'State A',
+  items: [
+    {
+      hsnCode: '1001',
+      name: 'Product A',
+      unitPrice: 100,
+      quantity: 2,
+      cgstRate: 9,
+      sgstRate: 9,
+      igstRate: 0,
+    },
+    {
+      hsnCode: '1002',
+      name: 'Product B',
+      unitPrice: 200,
+      quantity: 1,
+      cgstRate: 9,
+      sgstRate: 9,
+      igstRate: 0,
+    },
+  ],
+};
+export const downloadInvoice = async () => {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([600, 800]); // Customize the size as needed
+  const { width, height } = page.getSize();
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   
-    //       {/* Seller and Buyer Details */}
-    //       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-    //         <div style={{ flex: "0 0 48%" }}>
-    //           <h4>Seller (From):</h4>
-    //           <p>Mahalaxmi Steel Suppliers</p>
-    //           <p>#S-5, Sunder Industrial Estate</p>
-    //           <p>Mysore Road, Bangalore-560026</p>
-    //           <p>GSTIN/UIN: 29BDJPM3718A1ZO</p>
-    //         </div>
-    //         <div style={{ flex: "0 0 48%" }}>
-    //           <h4>Buyer (To):</h4>
-    //           <p>SRI MANJUNATHA ENGINEERING WORKS</p>
-    //           <p>#11/1, 1ST Cross, 2nd Main Road</p>
-    //           <p>Ramachandra Puram, Bangalore-560021</p>
-    //           <p>GSTIN/UIN: 29AEZPC6364C1Z5</p>
-    //         </div>
-    //       </div>
-  
-    //       {/* Invoice Details */}
-    //       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-    //         <div>
-    //           <p><strong>Invoice No:</strong> 394/2024-25</p>
-    //           <p><strong>Date:</strong> 4-Nov-24</p>
-    //         </div>
-    //         <div>
-    //           <p><strong>Dispatch Details:</strong> KA05AG5289</p>
-    //           <p><strong>Mode/Terms of Payment:</strong> 15 Days</p>
-    //         </div>
-    //       </div>
-  
-    //       {/* Item Table */}
-    //       <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "20px" }}>
-    //         <thead>
-    //           <tr>
-    //             <th style={{ border: "1px solid #000", padding: "8px" }}>Sl No.</th>
-    //             <th style={{ border: "1px solid #000", padding: "8px" }}>Description</th>
-    //             <th style={{ border: "1px solid #000", padding: "8px" }}>HSN/SAC</th>
-    //             <th style={{ border: "1px solid #000", padding: "8px" }}>Quantity</th>
-    //             <th style={{ border: "1px solid #000", padding: "8px" }}>Rate</th>
-    //             <th style={{ border: "1px solid #000", padding: "8px" }}>Amount</th>
-    //           </tr>
-    //         </thead>
-    //         <tbody>
-    //           <tr>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>1</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>H.R. Sheets 4.75mm to 10 mm</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>720852</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>1.98 MT</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>53,500</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>1,05,930</td>
-    //           </tr>
-    //           <tr>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>2</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>Loading and Cartages</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>996799</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>1</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>600</td>
-    //             <td style={{ border: "1px solid #000", padding: "8px" }}>600</td>
-    //           </tr>
-    //         </tbody>
-    //       </table>
-  
-    //       {/* Total Section */}
-    //       <p><strong>Total: ₹1,26,390.00</strong></p>
-  
-    //       {/* Footer */}
-    //       <p style={{ marginTop: "20px" }}>Declaration:</p>
-    //       <p>1) Goods once sold cannot be returned.</p>
-    //       <p>2) We are not responsible for damage during transit.</p>
-    //     </div>
-    //     </div>`
-  
-  
-    //   );
+  let yPosition = height - 40;
 
-    //   // Set options for html2pdf.js
-    //   const options = {
-    //     margin: 10,
-    //     filename: `Invoice_${bill.bill_no}.pdf`,
-    //     image: { type: "jpeg", quality: 0.98 },
-    //     html2canvas: { scale: 2 },
-    //     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    //   };
+  // Header Section (Supplier & Customer Details)
+  page.drawText(`Invoice Number: ${sampleData.invoiceNumber}`, { x: 50, y: yPosition, size: 12, font });
+  yPosition -= 20;
+  page.drawText(`Invoice Date: ${sampleData.invoiceDate}`, { x: 50, y: yPosition, size: 12, font });
+  yPosition -= 20;
+  page.drawText(`Customer: ${sampleData.customerName}`, { x: 50, y: yPosition, size: 12, font });
+  yPosition -= 20;
+  page.drawText(`Customer GSTIN: ${sampleData.customerGSTIN}`, { x: 50, y: yPosition, size: 12, font });
+  yPosition -= 40;
 
-    //   // Generate PDF
-    //   html2pdf().set(options).from(invoiceContent).save();
-    // } else {
-    //   console.log("Bill not found");
-    // }
-  };
+  // Shipping & Billing Address
+  page.drawText(`Shipping Address: ${sampleData.shippingAddress}`, { x: 50, y: yPosition, size: 12, font });
+  yPosition -= 20;
+  page.drawText(`Billing Address: ${sampleData.billingAddress}`, { x: 50, y: yPosition, size: 12, font });
+  yPosition -= 40;
+
+  // Place of Supply
+  page.drawText(`Place of Supply: ${sampleData.placeOfSupply}`, { x: 50, y: yPosition, size: 12, font });
+  yPosition -= 20;
+
+  // Table for Item Details
+  page.drawText('HSN Code', { x: 50, y: yPosition, size: 12, font });
+  page.drawText('Item Name', { x: 100, y: yPosition, size: 12, font });
+  page.drawText('Unit Price', { x: 250, y: yPosition, size: 12, font });
+  page.drawText('Quantity', { x: 350, y: yPosition, size: 12, font });
+  page.drawText('CGST', { x: 450, y: yPosition, size: 12, font });
+  page.drawText('SGST', { x: 500, y: yPosition, size: 12, font });
+  page.drawText('IGST', { x: 550, y: yPosition, size: 12, font });
+  yPosition -= 20;
+
+  // Loop through items to add them to the invoice
+  sampleData.items.forEach(item => {
+    page.drawText(item.hsnCode, { x: 50, y: yPosition, size: 12, font });
+    page.drawText(item.name, { x: 100, y: yPosition, size: 12, font });
+    page.drawText(item.unitPrice.toFixed(2), { x: 250, y: yPosition, size: 12, font });
+    page.drawText(item.quantity.toString(), { x: 350, y: yPosition, size: 12, font });
+    page.drawText(item.cgstRate.toFixed(2), { x: 450, y: yPosition, size: 12, font });
+    page.drawText(item.sgstRate.toFixed(2), { x: 500, y: yPosition, size: 12, font });
+    page.drawText(item.igstRate.toFixed(2), { x: 550, y: yPosition, size: 12, font });
+    yPosition -= 20;
+  });
+
+  // Calculate and display total taxes and taxable values
+  const totalTaxableValue = sampleData.items.reduce((sum, item) => sum + (item.unitPrice * item.quantity), 0);
+  const cgstTotal = totalTaxableValue * (sampleData.items[0].cgstRate / 100);
+  const sgstTotal = totalTaxableValue * (sampleData.items[0].sgstRate / 100);
+  const igstTotal = totalTaxableValue * (sampleData.items[0].igstRate / 100);
+
+  page.drawText(`Total Taxable Value: ${totalTaxableValue.toFixed(2)}`, { x: 50, y: yPosition, size: 12, font });
+  yPosition -= 20;
+  page.drawText(`CGST Total: ${cgstTotal.toFixed(2)}`, { x: 50, y: yPosition, size: 12, font });
+  page.drawText(`SGST Total: ${sgstTotal.toFixed(2)}`, { x: 150, y: yPosition, size: 12, font });
+  page.drawText(`IGST Total: ${igstTotal.toFixed(2)}`, { x: 250, y: yPosition, size: 12, font });
+  yPosition -= 40;
+
+  // Total Amount
+  const totalAmount = totalTaxableValue + cgstTotal + sgstTotal + igstTotal;
+  page.drawText(`Total Amount: ${totalAmount.toFixed(2)}`, { x: 50, y: yPosition, size: 12, font });
+
+  // Generate PDF
+  const pdfBytes = await pdfDoc.save();
+  const pdfUrl = URL.createObjectURL(new Blob([pdfBytes], { type: 'application/pdf' }));
+  window.open(pdfUrl);
+};

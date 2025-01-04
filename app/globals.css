@@ -149,3 +149,12 @@ body {
     @apply bg-background text-foreground;
   }
 }
+/* 
+@media print {
+  .page-break {
+    page-break-before: always;  
+    page-break-after: always;  
+    page-break-inside: avoid;  
+  }
+}
+ */

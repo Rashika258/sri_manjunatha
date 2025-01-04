@@ -13,12 +13,12 @@ import { ActionItem, BillingFormData, ApiQueryParams } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { Download, Pencil, Share2, Trash } from "lucide-react";
 import { deleteBill, useBills } from "./(utils)/api-request";
-import { downloadInvoice } from "./(utils)/download-invoice";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { DateRange } from "react-day-picker";
 import { convertInstantToIST, convertISTToInstant } from "@/components/ui/index";
+import Invoice from "./(utils)/invoice";
 
 type ColumnType = ColumnDef<BillingFormData>[];
 
@@ -31,6 +31,7 @@ const BillPage = () => {
     isDeletingCustomer: false,
     rowId: "",
   });
+  const [openDialogPopup, setOpenDialogPopup] = React.useState(false);
 
   const params: ApiQueryParams | undefined = React.useMemo(() => {
     if (!date || !date.from || !date.to) return undefined;
@@ -70,7 +71,7 @@ const BillPage = () => {
       {
         label: "Download",
         icon: <Download />,
-        handler: (id: string) => downloadInvoice(id),
+        handler: (id: string) => setOpenDialogPopup(!openDialogPopup),
         isEnabled: true,
         buttonVariant: "ghost",
       },
@@ -226,14 +227,16 @@ const BillPage = () => {
 
 
   return (
-    <div className={`w-full h-full p-4`}>
-      <AppDataTable<BillingFormData>
+    <div className={`w-full h-full p-4 overflow-auto`}>
+      <Invoice />
+      {/* <AppDataTable<BillingFormData>
         redirectPath={"/daily-bills/add-bill"}
         columns={columns}
         data={data!}
         date={date}
         setDate={applyDateFilter}
       />
+      
       <AppDeleteConfirmationPopup
         description={"Do you want to delete this bill?"}
         onConfirm={(rowId: string) => {
@@ -248,7 +251,7 @@ const BillPage = () => {
         }
         isDeleting={deleteConfirmationPopupDetails?.isDeletingCustomer}
         rowId={deleteConfirmationPopupDetails?.rowId}
-      />
+      /> */}
     </div>
   );
 };
