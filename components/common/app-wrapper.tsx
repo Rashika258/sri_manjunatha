@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSidebar } from '../ui';
 
 const AppWrapper =  ({
@@ -10,6 +10,7 @@ const AppWrapper =  ({
     const { isMobile, open } = useSidebar();
   
     return (
+      <Suspense fallback={<div>Loading...</div>}>
       <div
         className={`${
           isMobile || !open ? "w-screen" : "w-[calc(100vw-16rem)]"
@@ -17,6 +18,7 @@ const AppWrapper =  ({
       >
         {children}
       </div>
+      </Suspense>
     );
 }
 export default AppWrapper;

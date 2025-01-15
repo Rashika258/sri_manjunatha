@@ -39,7 +39,7 @@ const ProductCategoryEditPage = () => {
     },
     onError: (error: Error) => {
       console.error("Error updating product category:", error);
-      toast("Failed to update product category. Please try again.");
+      toast.error("Failed to update product category. Please try again.");
     },
   });
 

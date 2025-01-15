@@ -38,7 +38,7 @@ const CustomerEditPage = () => {
     },
     onError: (error: Error) => {
       console.error("Error updating customer:", error);
-      toast("Failed to update customer. Please try again.");
+      toast.error("Failed to update customer. Please try again.");
     },
   });
 

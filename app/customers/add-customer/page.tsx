@@ -26,7 +26,7 @@ const AddCustomerPage = () => {
     },
     onError: (error: Error) => {
       console.error("Error adding customer:", error);
-      toast("Failed to add customer. Please try again.");
+      toast.error("Failed to add customer. Please try again.");
     },
   });
 

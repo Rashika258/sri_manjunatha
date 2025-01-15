@@ -145,7 +145,7 @@ const ProductTable = () => {
     },
     onError: (error: Error) => {
       console.error("Error deleting product:", error);
-      toast("Failed to delete product. Please try again.");
+      toast.error("Failed to delete product. Please try again.");
     },
   });
 

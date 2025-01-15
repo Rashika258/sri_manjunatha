@@ -26,7 +26,7 @@ const AddProductCategoryPage = () => {
     },
     onError: (error: Error) => {
       console.error("Error adding product category:", error);
-      toast("Failed to add product category. Please try again.");
+      toast.error("Failed to add product category. Please try again.");
     },
   });
 

@@ -125,7 +125,7 @@ const ProductCategoryTable = () => {
     },
     onError: (error: Error) => {
       console.error("Error deleting category:", error);
-      toast("Failed to delete category. Please try again.");
+      toast.error("Failed to delete category. Please try again.");
     },
   });
 

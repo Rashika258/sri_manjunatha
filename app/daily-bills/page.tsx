@@ -205,7 +205,7 @@ const BillPage = () => {
     },
     onError: (error: Error) => {
       console.error("Error adding bill:", error);
-      toast("Failed to add bill. Please try again.");
+      toast.error("Failed to add bill. Please try again.");
     },
   });
 

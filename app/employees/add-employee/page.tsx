@@ -26,7 +26,7 @@ const AddEmployeePage = () => {
     },
     onError: (error: Error) => {
       console.error("Error adding employee:", error);
-      toast("Failed to add employee. Please try again.");
+      toast.error("Failed to add employee. Please try again.");
     },
   });
 

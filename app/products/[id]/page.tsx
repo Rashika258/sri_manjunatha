@@ -38,7 +38,7 @@ const ProductEditPage = () => {
     },
     onError: (error: Error) => {
       console.error("Error updating product:", error);
-      toast("Failed to update product. Please try again.");
+      toast.error("Failed to update product. Please try again.");
     },
   });
 
