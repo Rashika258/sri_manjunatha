@@ -86,6 +86,7 @@ export const generateInvoicePDF = () => {
 
   autoTable(doc, {
     startY: 125,
+    theme: "plain",
 
     head: [["SI No", "Description", "HSN/SAC", "Quantity", "Rate", "Amount"]],
     body: itemData.map((item) => [
