@@ -31,7 +31,7 @@ const BillPage = () => {
     isDeletingCustomer: false,
     rowId: "",
   });
-  const [openDialogPopup, setOpenDialogPopup] = React.useState(false);
+  // const [openDialogPopup, setOpenDialogPopup] = React.useState(false);
 
   const params: ApiQueryParams | undefined = React.useMemo(() => {
     if (!date || !date.from || !date.to) return undefined;
@@ -71,7 +71,7 @@ const BillPage = () => {
       {
         label: "Download",
         icon: <Download />,
-        handler: (id: string) => setOpenDialogPopup(!openDialogPopup),
+        handler: () => {},
         isEnabled: true,
         buttonVariant: "ghost",
       },
@@ -228,8 +228,8 @@ const BillPage = () => {
 
   return (
     <div className={`w-full h-full p-4 overflow-auto`}>
-      <Invoice />
-      {/* <AppDataTable<BillingFormData>
+      {/* <Invoice /> */}
+      <AppDataTable<BillingFormData>
         redirectPath={"/daily-bills/add-bill"}
         columns={columns}
         data={data!}
@@ -251,7 +251,7 @@ const BillPage = () => {
         }
         isDeleting={deleteConfirmationPopupDetails?.isDeletingCustomer}
         rowId={deleteConfirmationPopupDetails?.rowId}
-      /> */}
+      />
     </div>
   );
 };
