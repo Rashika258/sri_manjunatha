@@ -8,7 +8,6 @@ export const generateInvoicePDF = () => {
   });
 
   // Width: 210 mm
-  // 10 + 10
   // Height: 297 mm
   doc.setFontSize(12);
   doc.setFont("helvetica");
@@ -28,14 +27,7 @@ export const generateInvoicePDF = () => {
     doc.text(trimmedValue, valueX, valueY);
   };
 
-  //   190/2 = 95
-
-  // Top content
-  // 1st half
-  //   297-110-10-10
   doc.rect(10, 10, 95, 110);
-
-  // Exporter Details
   renderContent("Exporter:", "Mahalaxmi Steel Suppliers", 12, 15, 33, 15);
 
   const address =
@@ -64,9 +56,6 @@ export const generateInvoicePDF = () => {
     105
   );
 
-  // Invoice Details
-
-  //   2nd half
   doc.rect(105, 10, 95, 110);
   renderContent("Invoice Number:", "1234", 107, 15, 170, 15);
   renderContent("Eway Bill Number:", "213849899", 107, 20, 170, 20);
@@ -74,7 +63,6 @@ export const generateInvoicePDF = () => {
   renderContent("Buyer Order Number:", "213849899", 107, 30, 170, 30);
   renderContent("Dispatch Doc Number:", "213849899", 107, 35, 170, 35);
 
-  //   297-110-10-10-87
   doc.rect(10, 120, 190, 72);
 
   const itemData = [
@@ -96,7 +84,6 @@ export const generateInvoicePDF = () => {
     },
   ];
 
-  // Generate the Table
   autoTable(doc, {
     startY: 125,
 
@@ -111,20 +98,18 @@ export const generateInvoicePDF = () => {
     ]),
   });
 
-  // bottom content
-  //   1st half
-
-  //   297-110-10-10-72
   doc.rect(10, 192, 95, 95);
   const totalAmount = itemData.reduce((sum, item) => sum + item.amount, 0);
-  doc.text(
-    "Total Amount in Words: Two Hundred and Fifty",
-    10,
-    doc.lastAutoTable.finalY + 10
+  renderContent(
+    "Total Amount in Words:",
+    "Two Hundred and Fifty",
+    12,
+    200,
+    60,
+    200
   );
-  doc.text(`Total: ${totalAmount}`, 10, doc.lastAutoTable.finalY + 20);
+  renderContent("Total:", String(totalAmount), 12, 205, 40, 205);
 
-  // Terms and Conditions
   const terms = [
     "We are not responsible for breakage, damage, fines.",
     "Interest will be charged at the rate of 24% per annum for unpaid invoices.",
@@ -132,25 +117,27 @@ export const generateInvoicePDF = () => {
     "Our weight is final.",
     "Payment by A/c payee cheque, RTGS, or LC only.",
   ];
-  doc.text("Terms and Conditions:", 10, doc.lastAutoTable.finalY + 30);
 
-  //   2nd half
+  doc.setFont("helvetica", "bold");
+  doc.text("Terms and Conditions:", 12, 210);
+  doc.setFont("helvetica", "normal");
   doc.rect(105, 192, 95, 95);
-  terms.forEach((term, index) => {
-    doc.text(
-      `${index + 1}. ${term}`,
-      10,
-      doc.lastAutoTable.finalY + 35 + index * 5
-    );
-  });
+    terms.forEach((term, index) => {
+        const trimmedValue = doc.splitTextToSize(term, 70); 
+      doc.text(
+        `${index + 1}. ${trimmedValue}`,
+        12,
+        215 + index * 5
+      );
+    });
 
   // Footer Note
-  doc.text(
-    "Certified that the above-mentioned details are true and correct.",
-    10,
-    doc.lastAutoTable.finalY + 60
-  );
-  doc.text("Authorized Signatory", 10, doc.lastAutoTable.finalY + 70);
+  const trimmedValue = doc.splitTextToSize("Certified that the above-mentioned details are true and correct.", 70);
+    doc.text(trimmedValue,
+      12,
+      260
+    );
+    doc.text("Authorized Signatory", 12, 270);
 
   return doc.output("datauristring");
 };
