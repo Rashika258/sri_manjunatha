@@ -8,6 +8,8 @@ import {
   fetchBillDataAsInvoice,
 } from "./api-request";
 
+import {generateInvoicePDF} from "./download-utils";
+
 export {
   addBill,
   getBills,
@@ -16,4 +18,5 @@ export {
   useBills,
   fetchBillData,
   fetchBillDataAsInvoice,
+  generateInvoicePDF
 };

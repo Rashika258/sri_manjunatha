@@ -2,14 +2,16 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { fetchBillDataAsInvoice } from "../../(utils)";
+import { useParams } from "next/navigation";
 
 const InvoicePage = () => {
+  const { id } = useParams();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadInvoice = useCallback(async () => {
     try {
-      const pdfBase64 = await fetchBillDataAsInvoice("1");
+      const pdfBase64 = await fetchBillDataAsInvoice(id as string);
       setPdfUrl(pdfBase64);
     } catch (error) {
       console.error("Error loading invoice:", error);
@@ -24,8 +26,11 @@ const InvoicePage = () => {
     loadInvoice();
   }, []);
 
+  console.log("pdfUrl", pdfUrl);
+  
+
   return (
-    <div>
+    <div className="p-4 w-full h-full">
       <h1>Invoice Page</h1>
       {loading ? (
         <p>Loading...</p>
