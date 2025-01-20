@@ -1,6 +1,67 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
+function numberToWords(amount: number) {
+  const belowTwenty = [
+      "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", 
+      "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", 
+      "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+  ];
+  const tens = [
+      "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+  ];
+  const thousands = ["", "Thousand", "Million", "Billion"];
+
+  function convertChunk(num: number) {
+      let words = "";
+
+      if (num >= 100) {
+          words += belowTwenty[Math.floor(num / 100)] + " Hundred ";
+          num %= 100;
+      }
+
+      if (num >= 20) {
+          words += tens[Math.floor(num / 10)] + " ";
+          num %= 10;
+      }
+
+      if (num > 0) {
+          words += belowTwenty[num] + " ";
+      }
+
+      return words.trim();
+  }
+
+  function convertToWords(num: number) {
+      if (num === 0) return "Zero";
+
+      let words = "";
+      let chunkCount = 0;
+
+      while (num > 0) {
+          const chunk = num % 1000;
+
+          if (chunk > 0) {
+              words = convertChunk(chunk) + (thousands[chunkCount] ? " " + thousands[chunkCount] : "") + " " + words;
+          }
+
+          num = Math.floor(num / 1000);
+          chunkCount++;
+      }
+
+      return words.trim();
+  }
+
+  const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+
+  let words = convertToWords(parseInt(integerPart));
+  if (decimalPart && parseInt(decimalPart) > 0) {
+      words += ` and ${convertToWords(parseInt(decimalPart))} Cents`;
+  }
+
+  return words + " Only";
+}
+
 export const generateInvoicePDF = () => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -28,10 +89,17 @@ export const generateInvoicePDF = () => {
   };
 
   doc.rect(10, 10, 95, 110);
-  renderContent("Exporter:", "Mahalaxmi Steel Suppliers", 12, 15, 33, 15);
+  renderContent(
+    "Exporter:",
+    "Sri Manjunatha Engineering Works",
+    12,
+    15,
+    33,
+    15
+  );
 
   const address =
-    "#S-5, Sunder Industrial Estate, New TimberYard Layout, Mysore Road, Bangalore-560026";
+    "#11/1, 1st cross, 2nd main, Ramchandrapuram, Bangalore - 560021";
   const addressLines = doc.splitTextToSize(address, 70);
   doc.text(addressLines, 12, 20);
 
@@ -100,45 +168,63 @@ export const generateInvoicePDF = () => {
   });
 
   doc.rect(10, 192, 95, 95);
-  const totalAmount = itemData.reduce((sum, item) => sum + item.amount, 0);
   renderContent(
     "Total Amount in Words:",
-    "Two Hundred and Fifty",
+    numberToWords(728337),
     12,
     200,
     60,
     200
   );
-  renderContent("Total:", String(totalAmount), 12, 205, 40, 205);
-
-  const terms = [
-    "We are not responsible for breakage, damage, fines.",
-    "Interest will be charged at the rate of 24% per annum for unpaid invoices.",
-    "Goods once sold cannot be returned or exchanged.",
-    "Our weight is final.",
-    "Payment by A/c payee cheque, RTGS, or LC only.",
-  ];
 
   doc.setFont("helvetica", "bold");
   doc.text("Terms and Conditions:", 12, 210);
   doc.setFont("helvetica", "normal");
-  doc.rect(105, 192, 95, 95);
-    terms.forEach((term, index) => {
-        const trimmedValue = doc.splitTextToSize(term, 70); 
-      doc.text(
-        `${index + 1}. ${trimmedValue}`,
-        12,
-        215 + index * 5
-      );
-    });
+
+  const t1trimmedValue = doc.splitTextToSize(
+    "Interest at 18% per annum will be charged on all invoices not paid within due date",
+    90
+  );
+  doc.text(t1trimmedValue, 12, 215);
 
   // Footer Note
-  const trimmedValue = doc.splitTextToSize("Certified that the above-mentioned details are true and correct.", 70);
-    doc.text(trimmedValue,
-      12,
-      260
-    );
-    doc.text("Authorized Signatory", 12, 270);
+  const trimmedValue = doc.splitTextToSize(
+    "Certified that the above-mentioned details are true and correct.",
+    90
+  );
+  doc.text(trimmedValue, 12, 260);
+  doc.text("Receiver's Signature", 12, 270);
+
+  doc.rect(105, 192, 95, 95);
+
+  doc.rect(105, 192, 95, 10);
+  doc.rect(150, 192, 0, 10);
+  doc.rect(150, 200, 0, 10);
+  renderContent("Total:", "1234", 107, 200, 170, 200);
+  doc.rect(105, 210, 95, 10);
+  doc.rect(150, 210, 0, 10);
+
+
+  renderContent("CGST @9%", "213849899", 107, 208, 155, 208);
+  doc.rect(105, 220, 95, 10);
+  doc.rect(150, 220, 0, 10);
+  renderContent("SGST @9%", "213849899", 107, 218, 155, 218);
+  doc.rect(105, 230, 95, 10);
+  doc.rect(150, 230, 0, 10);
+  renderContent("IGST", "213849899", 107, 228, 155, 228);
+  renderContent("Grand Total", "213849899", 107, 238, 155, 238);
+  doc.setFont("helvetica", "bold");
+  doc.text("For Sri Manjunatha Engineering Works", 107, 245);
+
+  doc.setFont("helvetica", "normal");
+  doc.text("Authorised Signatory", 107, 270);
+  doc.setFont("helvetica", "italic");
+  doc.setFontSize(10);
+  const trimmedValue12 = doc.splitTextToSize(
+    "We undertake all type of precision job work and turning components",
+    90
+  );
+  doc.text(trimmedValue12, 107, 275);
 
   return doc.output("datauristring");
 };
