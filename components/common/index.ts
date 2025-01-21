@@ -15,8 +15,10 @@ import { AppSidebar } from "./app-sidebar";
 import AppDeleteConfirmationPopup from './app-delete-confirmation-popup';
 import AppWrapper from "./app-wrapper";
 import AppFormLoader from "./app-form-loader";
+import AppBillTable from './app-bill-table';
 
 export {
+    AppBillTable,
     AppActionCell,
     AppBillingForm,
     AppDataTable,

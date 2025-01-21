@@ -30,9 +30,9 @@ import { useCustomers } from "@/app/customers/(utils)/api-request";
 import { useProducts } from "@/app/products/(utils)/api-request";
 
 const paymentStatusOptions: AppDropdownOption[] = [
-  { value: "1", label: "Paid" },
-  { value: "2", label: "Overdue" },
-  { value: "3", label: "Pending" },
+  { value: "Paid", label: "Paid" },
+  { value: "Overdue", label: "Overdue" },
+  { value: "Pending", label: "Pending" },
 ];
 
 const defaultFormData = (data?: BillingFormData): BillingFormData => ({
