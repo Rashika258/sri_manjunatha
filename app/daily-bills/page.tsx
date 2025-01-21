@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { DateRange } from "react-day-picker";
 import { convertInstantToIST, convertISTToInstant } from "@/components/ui/index";
-import Invoice from "./(utils)/invoice";
 
 type ColumnType = ColumnDef<BillingFormData>[];
 
@@ -55,6 +54,23 @@ const BillPage = () => {
         isEnabled: true,
         buttonVariant: "secondary",
       },
+ 
+      {
+        label: "Download",
+        icon: <Download />,
+        handler: (rowId: string) => {
+          router.push(`/daily-bills/invoice/${rowId}`);
+        },
+        isEnabled: true,
+        buttonVariant: "default",
+      },
+      {
+        label: "Share",
+        icon: <Share2 />,
+        handler: () => console.log("Share clicked"),
+        isEnabled: true,
+        buttonVariant: "secondary",
+      },
       {
         label: "Delete",
         icon: <Trash />,
@@ -67,20 +83,6 @@ const BillPage = () => {
         },
         isEnabled: true,
         buttonVariant: "destructive",
-      },
-      {
-        label: "Download",
-        icon: <Download />,
-        handler: () => {},
-        isEnabled: true,
-        buttonVariant: "ghost",
-      },
-      {
-        label: "Share",
-        icon: <Share2 />,
-        handler: () => console.log("Share clicked"),
-        isEnabled: true,
-        buttonVariant: "secondary",
       },
     ],
     [router]

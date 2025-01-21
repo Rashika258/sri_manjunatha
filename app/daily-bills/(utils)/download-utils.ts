@@ -490,16 +490,8 @@ export const generateInvoicePDF = () => {
       item.rate,
       item.amount,
     ]),
-    didDrawPage: (data) => {
-      // Render header and footer for each page
-      const pageHeight = doc.internal.pageSize.height;
-      const footerHeight = 30;
-      const contentBottom = data?.cursor?.y;
-  
-      // Ensure content does not overflow into the footer
-      if (contentBottom + footerHeight > pageHeight) {
-        doc.addPage();
-      }
+    didDrawPage: () => {
+
       renderHeader();
       renderFooter();
     },

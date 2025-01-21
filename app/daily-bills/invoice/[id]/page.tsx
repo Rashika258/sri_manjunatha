@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { fetchBillDataAsInvoice } from "../../(utils)";
 import { useParams } from "next/navigation";
+import { AppFormHeader, AppFormLoader, AppTableError } from "@/components/common/index";
 
 const InvoicePage = () => {
   const { id } = useParams();
@@ -31,9 +32,9 @@ const InvoicePage = () => {
 
   return (
     <div className="p-4 w-full h-full">
-      <h1>Invoice Page</h1>
+      <AppFormHeader headerText="Invoice" />
       {loading ? (
-        <p>Loading...</p>
+        <AppFormLoader />
       ) : pdfUrl ? (
         <iframe
           src={pdfUrl}
@@ -41,7 +42,7 @@ const InvoicePage = () => {
           style={{ width: "100%", height: "600px", border: "none" }}
         ></iframe>
       ) : (
-        <p>Failed to load the invoice.</p>
+        <AppTableError errorText="Failed to load the invoice" />
       )}
     </div>
   );
