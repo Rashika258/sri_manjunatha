@@ -71,7 +71,7 @@ model employees {
 
 model invoice {
   invoice_id       Int           @id @default(autoincrement())
-  invoice_number   String        @unique
+  invoice_number   Int           
   customer_id      String
   gstin            String
   customer_name    String
@@ -80,13 +80,16 @@ model invoice {
   customer_phone   String?
   payment_status   String
   is_gst_bill      Boolean
+  invoice_type     InvoiceType   @default(DAILY)
   tax_amount       Float?
   total_amount     Float
   invoice_date     DateTime
   due_date         DateTime
   created_at       DateTime      @default(now())
   updated_at       DateTime      @updatedAt
-  invoiceitem      invoiceitem[] @relation("InvoiceItems")
+  invoice_items    invoiceitem[] @relation("InvoiceItems")
+
+  @@unique([invoice_type, invoice_number]) 
 }
 
 model invoiceitem {
@@ -102,6 +105,17 @@ model invoiceitem {
   invoice      invoice @relation("InvoiceItems", fields: [invoice_id], references: [invoice_id], onDelete: Cascade)
 
   @@index([invoice_id])
+}
+
+enum InvoiceType {
+  MONTHLY
+  DAILY
+}
+
+enum PaymentStatus {
+  PAID
+  UNPAID
+  OVERDUE
 }
 
 model leaves {

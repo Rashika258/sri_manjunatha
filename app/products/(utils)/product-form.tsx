@@ -19,11 +19,8 @@ import {
 } from "@/components/ui/index";
 import { useForm } from "react-hook-form";
 import { AppDropdownOption, FormProps,ProductFormData, productSchema } from "@/types";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getProductCategories } from "@/app/product-category/(utils)/api-request";
-
-
 
 
 const ProductForm = ({
@@ -129,7 +126,7 @@ const ProductForm = ({
                         }}
                       >
                         <SelectTrigger>
-                          <SelectValue>
+                          <SelectValue placeholder="Select a product category"  >
                             {field.value
                               ? categories.find(
                                   (category) => category.value === field.value
@@ -139,7 +136,7 @@ const ProductForm = ({
                         </SelectTrigger>
                         <SelectGroup>
                           <SelectContent>
-                            {categories.length > 0 &&
+                            {categories.length > 0 ?
                               categories.map((category) => (
                                 <SelectItem
                                   key={category.value}
@@ -147,7 +144,7 @@ const ProductForm = ({
                                 >
                                   {category.label}
                                 </SelectItem>
-                              ))}
+                              )) : "No Data"}
                           </SelectContent>
                         </SelectGroup>
                       </Select>

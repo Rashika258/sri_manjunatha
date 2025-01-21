@@ -35,7 +35,7 @@ const AppDropdown = ({
   isLoading,
 }: AppDropdownProps) => {
   return (
-    <Select onValueChange={(value)=> field.onChange(value, options?.find((option) => option.value === value)?.label as string)} defaultValue={field.value}>
+    <Select  onValueChange={(value)=> field.onChange(value, options?.find((option) => option.value === value)?.label as string)} defaultValue={field.value}>
       <SelectTrigger>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
@@ -43,12 +43,13 @@ const AppDropdown = ({
         {isLoading ? (
           <AppDropdownLoader />
         ) : (
+          options?.length > 0 ?  
           options?.map((option, index) => (
             <SelectItem key={index} value={option.value!}>
               {option.label}
             </SelectItem>
-          ))
-        )}
+          )) : <SelectItem value={""} className="text-center p-4 flex items-center justify-center">{placeholder}</SelectItem>)
+        }
       </SelectContent>
     </Select>
   );
