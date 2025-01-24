@@ -4,7 +4,7 @@ import { generateInvoicePDF } from "./download-utils";
 
 
 const addBill = async (bill: BillingFormData): Promise<void> => {
-  const response = await fetch("/api/daily-bills", {
+  const response = await fetch("/api/bills", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -23,7 +23,7 @@ const addBill = async (bill: BillingFormData): Promise<void> => {
 const getBills = async (params?: ApiQueryParams | undefined): Promise<BillingFormData[]> => {
   try {
     const query = new URLSearchParams(params as Record<string, string>).toString();
-    const url = `/api/daily-bills${query ? `?${query}` : ""}`;
+    const url = `/api/bills${query ? `?${query}` : ""}`;
     const response = await fetch(url, { method: "GET" });
 
     if (!response.ok) {
@@ -39,7 +39,7 @@ const getBills = async (params?: ApiQueryParams | undefined): Promise<BillingFor
 
 const updateBill = async (billId: string, billData: BillingFormData) => {
   try {
-    const response = await fetch(`/api/daily-bills/${billId}`, {
+    const response = await fetch(`/api/bills/${billId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -60,7 +60,7 @@ const updateBill = async (billId: string, billData: BillingFormData) => {
 
 const deleteBill = async (billId: string) => {
   try {
-    const response = await fetch(`/api/daily-bills/${billId}`, {
+    const response = await fetch(`/api/bills/${billId}`, {
       method: "DELETE",
     });
 
@@ -77,7 +77,7 @@ const deleteBill = async (billId: string) => {
 
 const fetchBillData = async (id: string): Promise<BillingFormData> => {
   try {
-    const response = await fetch(`/api/daily-bills/${id}`, {
+    const response = await fetch(`/api/bills/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -103,7 +103,7 @@ const fetchBillData = async (id: string): Promise<BillingFormData> => {
 
 const fetchBillDataAsInvoice = async (id: string) => {
   try {
-    const response = await fetch(`/api/daily-bills/${id}`, {
+    const response = await fetch(`/api/bills/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

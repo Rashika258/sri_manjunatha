@@ -31,6 +31,10 @@ const AddBillPage = () => {
   });
 
   const onSubmit = (data: BillingFormData) => {
+
+    console.log("data=====", data);
+    
+
     mutation.mutate(data);
   };
 

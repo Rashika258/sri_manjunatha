@@ -48,7 +48,7 @@ const AppDropdown = ({
             <SelectItem key={index} value={option.value!}>
               {option.label}
             </SelectItem>
-          )) : <SelectItem value={""} className="text-center p-4 flex items-center justify-center">{placeholder}</SelectItem>)
+          )) : null)
         }
       </SelectContent>
     </Select>

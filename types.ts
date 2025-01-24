@@ -15,6 +15,7 @@ type InvoiceItem = {
 type BillingFormData = {
   invoice_number: string | undefined;
   invoice_id?: string | undefined;
+  invoice_type:"MONTHLY" | "DAILY"
   gstin: string | undefined;
   customer_name: string | undefined;
   customer_id: number | undefined;
