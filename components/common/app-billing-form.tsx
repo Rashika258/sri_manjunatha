@@ -35,7 +35,7 @@ const paymentStatusOptions: AppDropdownOption[] = [
   { value: "Pending", label: "Pending" },
 ];
 
-const defaultFormData = (data?: BillingFormData): BillingFormData => ({
+const defaultFormData = ( invoiceType: string, data?: BillingFormData): BillingFormData => ({
   invoice_number: data?.invoice_number || undefined,
   customer_id: data?.customer_id || undefined,
   gstin: data?.gstin || undefined,
@@ -49,6 +49,7 @@ const defaultFormData = (data?: BillingFormData): BillingFormData => ({
   total_amount: data?.total_amount || 0,
   due_date: data?.due_date || new Date(),
   invoice_date: data?.invoice_date || new Date(),
+  invoice_type: invoiceType,
   invoiceitem: data?.invoiceitem || [
     {
       product_id: undefined,
@@ -73,17 +74,19 @@ const AppBillingForm = ({
   headerText,
   isSubmitBtnLoading,
   handleSubmit,
-  data
+  data,
+  invoiceType
 }: {
   headerText: string;
   isSubmitBtnLoading: boolean;
   handleSubmit: (data: BillingFormData) => void;
-  data?: BillingFormData
+  data?: BillingFormData;
+  invoiceType : string
 }) => {
   const customerData = useCustomers();
   const productData = useProducts();
   const [formData, setFormData] =
-    React.useState<BillingFormData>(defaultFormData(data));
+    React.useState<BillingFormData>(defaultFormData( invoiceType, data));
   const [errors, setErrors] = React.useState<FormErrors>({});
 
   const productOptions = React.useMemo(() => {
@@ -263,6 +266,7 @@ const AppBillingForm = ({
         label: "Invoice Number",
         type: "input",
         value: formData.invoice_number,
+        inputType:"number"
       },
       {
         name: "gstin",
@@ -571,7 +575,7 @@ const AppBillingForm = ({
             <Button
               type="button"
               variant="secondary"
-              onClick={() => setFormData(defaultFormData())}
+              onClick={() => setFormData(defaultFormData(invoiceType, undefined))}
             >
               Reset
             </Button>

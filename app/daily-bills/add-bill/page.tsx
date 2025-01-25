@@ -2,7 +2,7 @@
 import * as React from "react";
 import { AppBillingForm } from "@/components/common";
 import { toast } from "@/components/ui/index";
-import { BillingFormData } from "@/types";
+import { BillingFormData, InvoiceType } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { addBill } from "../(utils)/index";
@@ -38,9 +38,11 @@ const AddBillPage = () => {
     mutation.mutate(data);
   };
 
+
+
   return (
     <div className="w-full h-full flex items-center flex-col">
-      <AppBillingForm headerText="Add Daily Bill" handleSubmit={onSubmit} isSubmitBtnLoading={isAddingData} />
+      <AppBillingForm invoiceType={"DAILY"} headerText="Add Daily Bill" handleSubmit={onSubmit} isSubmitBtnLoading={isAddingData} />
     </div>
   );
 };
