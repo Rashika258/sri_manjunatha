@@ -25,8 +25,6 @@ const InvoicePage = () => {
 
     loadInvoice();
   }, []);
-
-  console.log("pdfUrl", pdfUrl);
   
 
   return (

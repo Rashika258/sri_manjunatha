@@ -83,9 +83,6 @@ export async function DELETE(
       where: { invoice_id: invoiceId },
     });
 
-    console.log("invoiceId================", invoiceId, existingInvoice);
-
-
     if (!existingInvoice) {
       return NextResponse.json(
         { error: "Invoice not found" },

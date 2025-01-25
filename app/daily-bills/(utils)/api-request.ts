@@ -20,9 +20,7 @@ const addBill = async (bill: BillingFormData): Promise<void> => {
 
 const getBills = async (params?: ApiQueryParams | undefined): Promise<BillingFormData[]> => {
   try {
-    const query = new URLSearchParams(params as Record<string, string>).toString();
-    console.log("query========", query);
-    
+    const query = new URLSearchParams(params as Record<string, string>).toString();    
     const url = `/api/bills${query ? `?${query}` : ""}`;
     const response = await fetch(url, { method: "GET" });
 
@@ -105,8 +103,6 @@ const useBills = (
   params: ApiQueryParams | undefined,
   options?: UseQueryOptions<BillingFormData[], Error>
 ) => {
-
-  console.log("params", params);
   
   return useQuery<BillingFormData[], Error>({
     queryKey: ["bills", params],

@@ -99,9 +99,6 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     unit: "mm",
   });
 
-  console.log("invoiceData", invoiceData);
-  
-
   // Width: 210 mm
   // Height: 297 mm
   doc.setFontSize(12);

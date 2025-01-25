@@ -12,9 +12,7 @@ const InvoicePage = () => {
 
   const loadInvoice = useCallback(async () => {
     try {
-      const data = await fetchBillData(id as string);
-      console.log("data", data);
-      
+      const data = await fetchBillData(id as string);      
       const pdfBase64 = generateInvoicePDF(data);
       setPdfUrl(pdfBase64);
     } catch (error) {
