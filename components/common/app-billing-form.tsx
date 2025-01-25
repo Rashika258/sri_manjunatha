@@ -106,7 +106,7 @@ const defaultFormData = (
   sgst: data?.sgst || undefined,
   igst: data?.igst || undefined,
   grand_total: data?.grand_total || undefined,
-  invoiceitem: data?.invoiceitem || [
+  invoice_items: data?.invoice_items || [
     {
       product_id: undefined,
       product_name: undefined,
@@ -146,6 +146,9 @@ const AppBillingForm = ({
   );
   const [errors, setErrors] = React.useState<FormErrors>({});
 
+  console.log("formData===========", formData, data);
+  
+
   const productOptions = React.useMemo(() => {
     return productData?.data?.map((product) => {
       return {
@@ -182,28 +185,29 @@ const AppBillingForm = ({
     if (!formData.customer_name || !formData?.customer_id) {
       formErrors.customer_id = "Customer name is required";
     }
-    if (!formData.invoiceitem || formData.invoiceitem.length === 0) {
-      formErrors.invoiceitem = "At least one item is required";
+    if (!formData.invoice_items || formData.invoice_items.length === 0) {
+      formErrors.invoice_items = "At least one item is required";
     }
 
-    // Validate invoice items
-    formData.invoiceitem.forEach((item, index) => {
+    formData.invoice_items.forEach((item, index) => {
       if (!item.product_name || !item.product_id) {
-        formErrors[`invoiceitem[${index}].product_id`] =
+        formErrors[`invoice_items[${index}].product_id`] =
           "Product name is required";
       }
       if (item.quantity === undefined || item.quantity <= 0) {
-        formErrors[`invoiceitem[${index}].quantity`] =
+        formErrors[`invoice_items[${index}].quantity`] =
           "Quantity must be greater than 0";
       }
       if (item.unit_price === undefined || item.unit_price <= 0) {
-        formErrors[`invoiceitem[${index}].unit_price`] =
+        formErrors[`invoice_items[${index}].unit_price`] =
           "Price must be greater than 0";
       }
     });
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
     } else {
+      console.log("Form data:", formData);
+      
       handleSubmit(formData);
     }
   }, [formData, handleSubmit]);
@@ -211,8 +215,8 @@ const AppBillingForm = ({
   const addItem = React.useCallback(() => {
     setFormData((prev) => ({
       ...prev,
-      invoiceitem: [
-        ...prev.invoiceitem,
+      invoice_items: [
+        ...prev.invoice_items,
         {
           product_id: undefined,
           product_name: undefined,
@@ -233,13 +237,13 @@ const AppBillingForm = ({
       value: string | number | Date | undefined,
       itemName: keyof InvoiceItem
     ) => {
-      const prefix = "invoiceitem";
+      const prefix = "invoice_items";
       const itemProductId = generateFieldName(prefix, index, "product_id");
       const itemQuantity = generateFieldName(prefix, index, "quantity");
       const itemUnitPrice = generateFieldName(prefix, index, "unit_price");
 
       setFormData((prev) => {
-        const updatedItems = [...prev.invoiceitem];
+        const updatedItems = [...prev.invoice_items];
         updatedItems[index] = {
           ...updatedItems[index],
           [itemName]: value,
@@ -260,7 +264,7 @@ const AppBillingForm = ({
               updatedItems[index]?.quantity * updatedItems[index]?.unit_price;
           }
         }
-        return { ...prev, invoiceitem: updatedItems };
+        return { ...prev, invoice_items: updatedItems };
       });
     },
     [productOptions]
@@ -269,18 +273,18 @@ const AppBillingForm = ({
   const removeItem = React.useCallback((index: number) => {
     setFormData((prev) => ({
       ...prev,
-      invoiceitem: prev.invoiceitem.filter((_, i) => i !== index),
+      invoice_items: prev.invoice_items.filter((_, i) => i !== index),
     }));
   }, []);
 
   const calculateTotalBill = React.useCallback(() => {
-    if (formData?.invoiceitem) {
-      return formData?.invoiceitem.reduce(
+    if (formData?.invoice_items) {
+      return formData?.invoice_items.reduce(
         (total, item) => total + (item.total_price || 0),
         0
       );
     }
-  }, [formData.invoiceitem]);
+  }, [formData.invoice_items]);
 
   const updateFormField = React.useCallback(
     (
@@ -399,73 +403,64 @@ const AppBillingForm = ({
         label: "PO Number",
         type: "input",
         value: formData.po_num,
+        inputType: "number",
       },
       {
         name: "po_date",
         label: "PO Date",
-        type: "input",
+        type: "date",
         value: formData.po_date,
-        inputType: "date",
+        
       },
       {
         name: "dc_date",
         label: "DC Date",
-        type: "input",
+        type: "date",
         value: formData.dc_date,
-        inputType: "date",
       },
       {
         name: "dc_num",
         label: "DC Number",
         type: "input",
         value: formData.dc_num,
+        inputType:"number",
+      },
+      {
+        name: "igst",
+        label: "IGST",
+        type: "input",
+        inputType:"number",
+        value: formData.igst,
       },
       {
         name: "cgst",
         label: "CGST",
         type: "input",
+        inputType:"number",
         value: formData.cgst,
+
       },
       {
         name: "sgst",
         label: "DC Number",
         type: "input",
         value: formData.sgst,
+        inputType:"number",
       },
       {
         name: "grand_total",
         label: "Grand Total",
         type: "input",
         value: formData.grand_total,
+        inputType:"number",
       },
     ],
-    [
-      customerOptions,
-      formData.cgst,
-      formData.customer_address,
-      formData.customer_email,
-      formData.customer_name,
-      formData.customer_phone,
-      formData.dc_date,
-      formData.dc_num,
-      formData.due_date,
-      formData.e_way_bill_num,
-      formData.grand_total,
-      formData.gstin,
-      formData.invoice_date,
-      formData.invoice_number,
-      formData.payment_status,
-      formData.po_date,
-      formData.po_num,
-      formData.sgst,
-      formData.state,
-      formData.tax_amount,
-    ]
+    [customerOptions, formData.cgst, formData.customer_address, formData.customer_email, formData.customer_name, formData.customer_phone, formData.dc_date, formData.dc_num, formData.due_date, formData.e_way_bill_num, formData.grand_total, formData.gstin, formData.igst, formData.invoice_date, formData.invoice_number, formData.payment_status, formData.po_date, formData.po_num, formData.sgst, formData.state, formData.tax_amount]
   );
 
   const tableFields = React.useCallback(
     (item: InvoiceItem, index: number): ItemField[] => {
-      const prefix = "invoiceitem";
+      const prefix = "invoice_items";
 
       return [
         {
@@ -647,7 +642,7 @@ const AppBillingForm = ({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {formData?.invoiceitem.map((item, index) => (
+                {formData?.invoice_items.map((item, index) => (
                   <TableRow key={index}>
                     {tableFields(item, index).map((field, idx) => {
                       return (

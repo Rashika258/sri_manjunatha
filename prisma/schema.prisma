@@ -70,7 +70,7 @@ model employees {
 }
 
 model invoice {
-  invoice_id       Int           @id @default(autoincrement())
+  invoice_id       Int       @unique    @id @default(autoincrement())
   invoice_number   Int
   customer_id      String
   gstin            String
@@ -103,7 +103,7 @@ model invoice {
 }
 
 model invoiceitem {
-  item_id      Int     @id @default(autoincrement())
+  item_id      Int  @unique   @id @default(autoincrement())
   product_id   String
   product_name String
   quantity     Int

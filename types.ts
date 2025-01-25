@@ -28,7 +28,7 @@ type BillingFormData = {
   is_gst_bill: boolean;
   tax_amount?: number;
   payment_status: string | undefined;
-  invoiceitem: InvoiceItem[]; 
+  invoice_items: InvoiceItem[]; 
   state?: string | undefined;
   e_way_bill_num?: string | undefined;
   po_num?: string | undefined;

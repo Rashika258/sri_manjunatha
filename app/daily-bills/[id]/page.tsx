@@ -61,6 +61,7 @@ const EditBillPage = () => {
     <AppBillingForm
       handleSubmit={onSubmit}
       data={data}
+      invoiceType="DAILY"
       isSubmitBtnLoading={isEditing}
       headerText="Edit Bill"
     />

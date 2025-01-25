@@ -25,9 +25,19 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         total_amount: data.total_amount,
         invoice_date: new Date(data.invoice_date),
         due_date: new Date(data.due_date),
+        e_way_bill_num: data.e_way_bill_num,
+        po_num: data.po_num,
+        invoice_type: data.invoice_type,
+        dc_date: data.dc_date ? new Date(data.dc_date) : undefined,
+        po_date: data.po_date ? new Date(data.po_date) : undefined,
+        dc_num: data.dc_num,
+        cgst: data.cgst,
+        sgst: data.sgst,
+        igst: data.igst,
+        grand_total: data.grand_total,
         invoice_items: {
           upsert: invoiceItems.map((item: InvoiceItem) => ({
-            where: { item_id: item.item_id || 0 }, // Use `item_id` for `upsert` lookup
+            where: { item_id: item.item_id || 0 },
             update: {
               product_id: item.product_id,
               product_name: item.product_name,
@@ -45,13 +55,14 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
               unit_price: item.unit_price,
               total_price: item.total_price,
               hsn: item.hsn,
-              invoice: { connect: { invoice_id: invoiceId } },
+              invoice_id: invoiceId, 
             },
           })),
         },
       },
       include: { invoice_items: true },
     });
+    
 
     return NextResponse.json(updatedInvoice);
   } catch (error) {
