@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { AppFormHeader, AppFormLoader, AppTableError } from "@/components/common/index";
+import { fetchBillData, generateInvoicePDF } from "@/app/daily-bills/(utils)";
 
 const InvoicePage = () => {
   const { id } = useParams();
@@ -11,18 +12,17 @@ const InvoicePage = () => {
 
   const loadInvoice = useCallback(async () => {
     try {
-      const pdfBase64 = await fetchBillDataAsInvoice(id as string);
+      const data = await fetchBillData(id as string);      
+      const pdfBase64 = generateInvoicePDF(data);
       setPdfUrl(pdfBase64);
     } catch (error) {
       console.error("Error loading invoice:", error);
     } finally {
       setLoading(false);
     }
-  },[]);
+  },[id]);
 
   useEffect(() => {
-
-
     loadInvoice();
   }, []);
   

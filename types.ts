@@ -28,7 +28,17 @@ type BillingFormData = {
   is_gst_bill: boolean;
   tax_amount?: number;
   payment_status: string | undefined;
-  invoiceitem: InvoiceItem[];
+  invoiceitem: InvoiceItem[]; 
+  state?: string | undefined;
+  e_way_bill_num?: string | undefined;
+  po_num?: string | undefined;
+  dc_date?: Date | undefined;
+  po_date?: Date | undefined;
+  dc_num?: string | undefined;
+  cgst?:number | undefined;
+  sgst?:number | undefined;
+  igst?:number | undefined;
+  grand_total?: number | undefined;
 };
 
 type Customer = {

@@ -24,8 +24,6 @@ export async function POST(req: NextRequest) {
       invoice_type
     } = data;
 
-    console.log("data", data);
-
     const invoice = await prisma.invoice.create({
       data: {
         invoice_number,
@@ -44,8 +42,6 @@ export async function POST(req: NextRequest) {
         invoice_type       
       },
     });
-    console.log("invoice", invoice);
-
 
     if (invoiceitem && invoiceitem.length > 0) {
       await prisma.invoiceitem.createMany({
@@ -61,8 +57,6 @@ export async function POST(req: NextRequest) {
         })),
       });
     }
-    console.log("invoice", invoice);
-
 
     return NextResponse.json({ success: true, invoice }, { status: 201 });
   } catch (error) {
@@ -73,8 +67,6 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
-
 
 const buildDateCondition = (date: string | undefined, operator: "gte" | "lte") => {
   if (date) {
@@ -90,12 +82,6 @@ export async function GET(req: NextRequest) {
   try {
     const { start_date, end_date, invoice_type } = Object.fromEntries(new URL(req.url).searchParams);
 
-    debugger
-
-    console.log("aa==========", invoice_type);
-    
-
-    // Validate and create conditions early
     const conditions: {
       invoice_date?: { gte?: Date; lte?: Date };
       created_at?: { gte?: Date; lte?: Date };
@@ -104,7 +90,6 @@ export async function GET(req: NextRequest) {
       invoice_type?: string;
     } = {};
 
-    // Build conditions dynamically using the helper function
     const startCondition = buildDateCondition(start_date, "gte");
     const endCondition = buildDateCondition(end_date, "lte");
 
@@ -126,10 +111,6 @@ export async function GET(req: NextRequest) {
       conditions.invoice_type = invoice_type;
     }
 
-
-    console.log("Generated conditions for the query:", conditions);
-
-    // Fetch the bills based on the conditions
     const bills = await prisma.invoice.findMany({
       where: conditions,
       orderBy: { created_at: "desc" },

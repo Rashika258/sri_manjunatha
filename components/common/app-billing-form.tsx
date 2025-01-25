@@ -35,7 +35,53 @@ const paymentStatusOptions: AppDropdownOption[] = [
   { value: "Pending", label: "Pending" },
 ];
 
-const defaultFormData = ( invoiceType: string, data?: BillingFormData): BillingFormData => ({
+const indianStateOptions: AppDropdownOption[] = [
+  { value: "Andhra Pradesh", label: "Andhra Pradesh" },
+  { value: "Arunachal Pradesh", label: "Arunachal Pradesh" },
+  { value: "Assam", label: "Assam" },
+  { value: "Bihar", label: "Bihar" },
+  { value: "Chhattisgarh", label: "Chhattisgarh" },
+  { value: "Goa", label: "Goa" },
+  { value: "Gujarat", label: "Gujarat" },
+  { value: "Haryana", label: "Haryana" },
+  { value: "Himachal Pradesh", label: "Himachal Pradesh" },
+  { value: "Jharkhand", label: "Jharkhand" },
+  { value: "Karnataka", label: "Karnataka" },
+  { value: "Kerala", label: "Kerala" },
+  { value: "Madhya Pradesh", label: "Madhya Pradesh" },
+  { value: "Maharashtra", label: "Maharashtra" },
+  { value: "Manipur", label: "Manipur" },
+  { value: "Meghalaya", label: "Meghalaya" },
+  { value: "Mizoram", label: "Mizoram" },
+  { value: "Nagaland", label: "Nagaland" },
+  { value: "Odisha", label: "Odisha" },
+  { value: "Punjab", label: "Punjab" },
+  { value: "Rajasthan", label: "Rajasthan" },
+  { value: "Sikkim", label: "Sikkim" },
+  { value: "Tamil Nadu", label: "Tamil Nadu" },
+  { value: "Telangana", label: "Telangana" },
+  { value: "Tripura", label: "Tripura" },
+  { value: "Uttar Pradesh", label: "Uttar Pradesh" },
+  { value: "Uttarakhand", label: "Uttarakhand" },
+  { value: "West Bengal", label: "West Bengal" },
+  {
+    value: "Andaman and Nicobar Islands",
+    label: "Andaman and Nicobar Islands",
+  },
+  { value: "Chandigarh", label: "Chandigarh" },
+  {
+    value: "Dadra and Nagar Haveli and Daman and Diu",
+    label: "Dadra and Nagar Haveli and Daman and Diu",
+  },
+  { value: "Lakshadweep", label: "Lakshadweep" },
+  { value: "Delhi", label: "Delhi" },
+  { value: "Puducherry", label: "Puducherry" },
+];
+
+const defaultFormData = (
+  invoiceType: string,
+  data?: BillingFormData
+): BillingFormData => ({
   invoice_number: data?.invoice_number || undefined,
   customer_id: data?.customer_id || undefined,
   gstin: data?.gstin || undefined,
@@ -50,6 +96,16 @@ const defaultFormData = ( invoiceType: string, data?: BillingFormData): BillingF
   due_date: data?.due_date || new Date(),
   invoice_date: data?.invoice_date || new Date(),
   invoice_type: invoiceType,
+  state: data?.state || undefined,
+  e_way_bill_num: data?.e_way_bill_num || undefined,
+  po_num: data?.po_num || undefined,
+  dc_date: data?.dc_date || undefined,
+  po_date: data?.po_date || undefined,
+  dc_num: data?.dc_num || undefined,
+  cgst: data?.cgst || undefined,
+  sgst: data?.sgst || undefined,
+  igst: data?.igst || undefined,
+  grand_total: data?.grand_total || undefined,
   invoiceitem: data?.invoiceitem || [
     {
       product_id: undefined,
@@ -75,20 +131,19 @@ const AppBillingForm = ({
   isSubmitBtnLoading,
   handleSubmit,
   data,
-  invoiceType
+  invoiceType,
 }: {
   headerText: string;
   isSubmitBtnLoading: boolean;
   handleSubmit: (data: BillingFormData) => void;
   data?: BillingFormData;
-  invoiceType : string;
+  invoiceType: string;
 }) => {
-
-  console.log("invoiceType678========", invoiceType);
-  
   const customerData = useCustomers();
   const productData = useProducts();
-  const [formData, setFormData] = React.useState<BillingFormData>(defaultFormData( invoiceType, data));
+  const [formData, setFormData] = React.useState<BillingFormData>(
+    defaultFormData(invoiceType, data)
+  );
   const [errors, setErrors] = React.useState<FormErrors>({});
 
   const productOptions = React.useMemo(() => {
@@ -268,7 +323,7 @@ const AppBillingForm = ({
         label: "Invoice Number",
         type: "input",
         value: formData.invoice_number,
-        inputType:"number"
+        inputType: "number",
       },
       {
         name: "gstin",
@@ -326,18 +381,84 @@ const AppBillingForm = ({
         type: "input",
         value: formData.tax_amount,
       },
+      {
+        name: "state",
+        label: "State",
+        type: "dropdown",
+        value: formData.state,
+        options: indianStateOptions,
+      },
+      {
+        name: "e_way_bill_num",
+        label: "E Way Bill Number",
+        type: "input",
+        value: formData.e_way_bill_num,
+      },
+      {
+        name: "po_num",
+        label: "PO Number",
+        type: "input",
+        value: formData.po_num,
+      },
+      {
+        name: "po_date",
+        label: "PO Date",
+        type: "input",
+        value: formData.po_date,
+        inputType: "date",
+      },
+      {
+        name: "dc_date",
+        label: "DC Date",
+        type: "input",
+        value: formData.dc_date,
+        inputType: "date",
+      },
+      {
+        name: "dc_num",
+        label: "DC Number",
+        type: "input",
+        value: formData.dc_num,
+      },
+      {
+        name: "cgst",
+        label: "CGST",
+        type: "input",
+        value: formData.cgst,
+      },
+      {
+        name: "sgst",
+        label: "DC Number",
+        type: "input",
+        value: formData.sgst,
+      },
+      {
+        name: "grand_total",
+        label: "Grand Total",
+        type: "input",
+        value: formData.grand_total,
+      },
     ],
     [
       customerOptions,
+      formData.cgst,
       formData.customer_address,
       formData.customer_email,
       formData.customer_name,
       formData.customer_phone,
+      formData.dc_date,
+      formData.dc_num,
       formData.due_date,
+      formData.e_way_bill_num,
+      formData.grand_total,
       formData.gstin,
       formData.invoice_date,
       formData.invoice_number,
       formData.payment_status,
+      formData.po_date,
+      formData.po_num,
+      formData.sgst,
+      formData.state,
       formData.tax_amount,
     ]
   );
@@ -577,7 +698,9 @@ const AppBillingForm = ({
             <Button
               type="button"
               variant="secondary"
-              onClick={() => setFormData(defaultFormData(invoiceType, undefined))}
+              onClick={() =>
+                setFormData(defaultFormData(invoiceType, undefined))
+              }
             >
               Reset
             </Button>

@@ -5,7 +5,6 @@ import {
   deleteBill,
   useBills,
   fetchBillData,
-  fetchBillDataAsInvoice,
 } from "./api-request";
 
 import {generateInvoicePDF} from "./download-utils";
@@ -17,6 +16,5 @@ export {
   deleteBill,
   useBills,
   fetchBillData,
-  fetchBillDataAsInvoice,
   generateInvoicePDF
 };

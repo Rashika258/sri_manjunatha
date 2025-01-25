@@ -31,14 +31,8 @@ const AppBillTable = ({apiRoute, invoiceType}: {apiRoute: string, invoiceType: s
     rowId: "",
   });
 
-  console.log("invoiceType", invoiceType);
-
   const params: ApiQueryParams | undefined = React.useMemo(() => {
     if (!date || !date.from || !date.to) return undefined;
-
-    debugger
-
-    console.log("invoiceType2", invoiceType);
     
     return {
       start_date: date.from ? convertISTToInstant(date.from) : undefined,
@@ -77,7 +71,7 @@ const AppBillTable = ({apiRoute, invoiceType}: {apiRoute: string, invoiceType: s
       {
         label: "Share",
         icon: <Share2 />,
-        handler: () => console.log("Share clicked"),
+        handler: () => {},
         isEnabled: true,
         buttonVariant: "secondary",
       },

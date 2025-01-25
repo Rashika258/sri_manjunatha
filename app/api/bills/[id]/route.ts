@@ -8,7 +8,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     const invoiceId = parseInt(params.id);
     const data = await req.json();
 
-    // Ensure invoice_items is an array or default to an empty array
     const invoiceItems = Array.isArray(data.invoice_items) ? data.invoice_items : [];
 
     const updatedInvoice = await prisma.invoice.update({
@@ -69,16 +68,13 @@ export async function DELETE(
   try {
     const invoiceId = parseInt(params.id, 10);
 
-    // Validate invoiceId
     if (isNaN(invoiceId)) {
       return NextResponse.json(
         { error: "Invalid invoice ID" },
         { status: 400 }
       );
     }
-
-    
-    // Check if the invoice exists
+  
     const existingInvoice = await prisma.invoice.findUnique({
       where: { invoice_id: invoiceId },
     });
@@ -90,7 +86,6 @@ export async function DELETE(
       );
     }
 
-    // Delete the invoice
     const deletedInvoice = await prisma.invoice.delete({
       where: { invoice_id: invoiceId },
       include:{invoice_items: true}

@@ -146,6 +146,7 @@ const CustomerTable = () => {
     },
     [deleteMutation]
   );
+  
   const applyDateFilter = React.useCallback(
     (date: DateRange | undefined) => {
       setDate(date);
