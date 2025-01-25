@@ -20,7 +20,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  Button
+  Button,
 } from "@/components/ui/index";
 import AppFilter from "./app-filter";
 import { DateRange } from "react-day-picker";
@@ -29,17 +29,15 @@ export type TableData = {
   [key: string]: string | number | boolean;
 };
 
-
 interface DataTableProps<T> {
   columns: ColumnDef<T>[];
   data: T[];
   redirectPath: string;
-  date:DateRange | undefined;
+  date: DateRange | undefined;
   setDate: (date: DateRange | undefined) => void;
 }
 
-
-const AppDataTable =<T, > ({
+const AppDataTable = <T,>({
   columns,
   data,
   redirectPath,
@@ -47,8 +45,11 @@ const AppDataTable =<T, > ({
   setDate,
 }: DataTableProps<T>) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
   const [mounted, setMounted] = React.useState(false);
 
@@ -79,14 +80,13 @@ const AppDataTable =<T, > ({
 
   return (
     <div className="w-full h-full">
-
       <AppFilter
         searchQuery=""
         handleSearch={(val) => table.setGlobalFilter(val)}
         date={date}
         setDate={setDate}
         redirectPath={redirectPath}
-        table={table} 
+        table={table}
       />
 
       <div className="overflow-auto w-full rounded-md border">
@@ -165,7 +165,6 @@ const AppDataTable =<T, > ({
       </div>
     </div>
   );
-}
+};
 
-export default AppDataTable
-
+export default AppDataTable;

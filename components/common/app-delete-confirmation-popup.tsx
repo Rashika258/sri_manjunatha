@@ -44,9 +44,14 @@ const AppDeleteConfirmationPopup: React.FC<AppDeleteConfirmationPopupProps> = ({
           <AlertDialogCancel onClick={handleCloseDialog}>
             Cancel
           </AlertDialogCancel>
-        <AlertDialogAction className="button__with__loader" disabled={isDeleting} loading={isDeleting}  onClick={()=>onConfirm(rowId)}>
+          <AlertDialogAction
+            className="button__with__loader"
+            disabled={isDeleting}
+            loading={isDeleting}
+            onClick={() => onConfirm(rowId)}
+          >
             Continue
-            </AlertDialogAction>
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

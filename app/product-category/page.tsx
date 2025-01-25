@@ -141,7 +141,7 @@ const ProductCategoryTable = () => {
 
   return (
     <div className="w-full h-full p-4">
-      <AppDataTable
+      <AppDataTable<ProductCategory>
         columns={columns}
         data={data!}
         redirectPath={"/product-category/add-product-category"}

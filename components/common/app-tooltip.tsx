@@ -36,10 +36,7 @@ const AppTooltip = ({ text }: { text: string }) => {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div
-            ref={textRef}
-            className=" flex w-full items-center"
-          >
+          <div ref={textRef} className=" flex w-full items-center">
             <p className="overflow-hidden text-ellipsis">
               {text ? text : <NoData />}
             </p>

@@ -28,30 +28,25 @@ body {
   }
 }
 
-/* Styling for the entire scrollbar */
 ::-webkit-scrollbar {
-  width: 6px; /* Width of the vertical scrollbar */
-  height: 6px; /* Height of the horizontal scrollbar */
+  width: 6px; 
+  height: 6px; 
 }
 
-/* Styling the track (the background of the scrollbar) */
 ::-webkit-scrollbar-track {
-  background-color: #f1f1f1; /* Light gray background */
-  border-radius: 10px; /* Optional: Rounded corners for the scrollbar track */
+  background-color: #f1f1f1; 
+  border-radius: 10px; 
 }
 
-/* Styling the draggable part (the thumb) */
 ::-webkit-scrollbar-thumb {
-  background-color: #888; /* Darker color for the thumb */
-  border-radius: 10px; /* Rounded corners for the thumb */
+  background-color: #888; 
+  border-radius: 10px; 
 }
 
-/* Styling the thumb on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #555; /* Darker color when hovered */
+  background-color: #555;
 }
 
-/* Styling the corner of the scrollbar where horizontal and vertical meet */
 ::-webkit-scrollbar-corner {
   background-color: #f1f1f1;
 }
@@ -167,13 +162,3 @@ body {
     --chart-5: 340 75% 55%;
   }
 }
-
-/* 
-@media print {
-  .page-break {
-    page-break-before: always;  
-    page-break-after: always;  
-    page-break-inside: avoid;  
-  }
-}
- */

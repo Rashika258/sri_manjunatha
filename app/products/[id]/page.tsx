@@ -1,9 +1,8 @@
 "use client";
 
+import * as React from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import * as React from "react";
-
 import { AppFormLoader, AppTableError } from "@/components/common/index";
 import { ProductFormData } from "@/types";
 import { toast } from "sonner";

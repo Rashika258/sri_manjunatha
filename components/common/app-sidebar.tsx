@@ -80,7 +80,7 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarHeader className="caveat__font text-slate-600 text-lg">
-            Sri Manjunatha Engineering Works
+          Sri Manjunatha Engineering Works
         </SidebarHeader>
         <SidebarGroup>
           <SidebarGroupContent>

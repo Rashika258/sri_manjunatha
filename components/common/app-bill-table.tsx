@@ -1,4 +1,3 @@
-
 "use client";
 import * as React from "react";
 import {
@@ -17,33 +16,42 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 import { DateRange } from "react-day-picker";
-import { convertInstantToIST, convertISTToInstant } from "@/components/ui/index";
+import {
+  convertInstantToIST,
+  convertISTToInstant,
+} from "@/components/ui/index";
 import { deleteBill, useBills } from "@/app/daily-bills/(utils)";
 type ColumnType = ColumnDef<BillingFormData>[];
 
-const AppBillTable = ({apiRoute, invoiceType}: {apiRoute: string, invoiceType: string}) => {
+const AppBillTable = ({
+  apiRoute,
+  invoiceType,
+}: {
+  apiRoute: string;
+  invoiceType: string;
+}) => {
   const router = useRouter();
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
   const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
-  React.useState({
-    openDeleteConfirmationPopup: false,
-    isDeletingCustomer: false,
-    rowId: "",
-  });
+    React.useState({
+      openDeleteConfirmationPopup: false,
+      isDeletingCustomer: false,
+      rowId: "",
+    });
 
   const params: ApiQueryParams | undefined = React.useMemo(() => {
     if (!date || !date.from || !date.to) return undefined;
-    
+
     return {
       start_date: date.from ? convertISTToInstant(date.from) : undefined,
       end_date: date.to ? convertISTToInstant(date.to) : undefined,
-      invoice_type: invoiceType
+      invoice_type: invoiceType,
     };
   }, [date, invoiceType]);
 
   const { data, isLoading, error, refetch } = useBills({
     invoice_type: invoiceType,
-    ...params
+    ...params,
   });
 
   const actions: ActionItem[] = React.useMemo(
@@ -58,7 +66,7 @@ const AppBillTable = ({apiRoute, invoiceType}: {apiRoute: string, invoiceType: s
         isEnabled: true,
         buttonVariant: "secondary",
       },
- 
+
       {
         label: "Download",
         icon: <Download />,
@@ -137,14 +145,20 @@ const AppBillTable = ({apiRoute, invoiceType}: {apiRoute: string, invoiceType: s
       accessorKey: "invoice_date",
       header: "Invoice Date",
       cell: ({ row }) => {
-        return <AppTooltip text={convertInstantToIST(row.getValue("invoice_date"))} />;
+        return (
+          <AppTooltip
+            text={convertInstantToIST(row.getValue("invoice_date"))}
+          />
+        );
       },
     },
     {
       accessorKey: "due_date",
       header: "Due Date",
       cell: ({ row }) => {
-          return <AppTooltip text={convertInstantToIST(row.getValue("due_date"))} />;
+        return (
+          <AppTooltip text={convertInstantToIST(row.getValue("due_date"))} />
+        );
       },
     },
 
@@ -152,17 +166,18 @@ const AppBillTable = ({apiRoute, invoiceType}: {apiRoute: string, invoiceType: s
       accessorKey: "created_at",
       header: "Created At",
       cell: ({ row }) => {
-        return <AppTooltip text={convertInstantToIST(row.getValue("created_at"))} />;
-
+        return (
+          <AppTooltip text={convertInstantToIST(row.getValue("created_at"))} />
+        );
       },
     },
     {
       accessorKey: "updated_at",
       header: "Updated At",
       cell: ({ row }) => {
-
-        return <AppTooltip text={convertInstantToIST(row.getValue("updated_at"))} />;
-
+        return (
+          <AppTooltip text={convertInstantToIST(row.getValue("updated_at"))} />
+        );
       },
     },
     {
@@ -224,8 +239,7 @@ const AppBillTable = ({apiRoute, invoiceType}: {apiRoute: string, invoiceType: s
   const applyDateFilter = (date: DateRange | undefined) => {
     setDate(date);
     refetch();
-    
-  }
+  };
 
   if (isLoading) return <AppTableSkeleton />;
   if (error) return <AppTableError />;
@@ -240,7 +254,7 @@ const AppBillTable = ({apiRoute, invoiceType}: {apiRoute: string, invoiceType: s
         date={date}
         setDate={applyDateFilter}
       />
-      
+
       <AppDeleteConfirmationPopup
         description={"Do you want to delete this bill?"}
         onConfirm={(rowId: string) => {

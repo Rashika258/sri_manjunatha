@@ -6,7 +6,6 @@ import React from "react";
 const HomePage = () => {
   const { isMobile, open } = useSidebar();
 
-
   return (
     <div  className={`${
       isMobile || !open ? "w-full" : "w-[calc(100vw-16rem)]"

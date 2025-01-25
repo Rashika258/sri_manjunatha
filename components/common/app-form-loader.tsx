@@ -20,7 +20,9 @@ const AppFormLoader = () => {
         radius="12.5"
         ariaLabel="mutating-dots-loading"
       />
-      <p>This may take a few seconds, Please do not close or refresh this page</p>
+      <p>
+        This may take a few seconds, Please do not close or refresh this page
+      </p>
     </div>
   );
 };

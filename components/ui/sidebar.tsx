@@ -7,7 +7,18 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { Button, Input, Separator, Sheet, SheetContent, Skeleton, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/index'
+import {
+  Button,
+  Input,
+  Separator,
+  Sheet,
+  SheetContent,
+  Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/index";
 const SIDEBAR_COOKIE_NAME = "sidebar:state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "16rem";
@@ -347,7 +358,7 @@ const SidebarHeader = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="header"
-      className={cn("flex flex-col gap-2 px-4 pt-4 pb-2" , className)}
+      className={cn("flex flex-col gap-2 px-4 pt-4 pb-2", className)}
       {...props}
     />
   );

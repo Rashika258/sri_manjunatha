@@ -66,7 +66,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={loading}
         {...props}
       >
-        {loading ? <><RotatingLines/> {children}</> : children}
+        {loading ? (
+          <>
+            <RotatingLines /> {children}
+          </>
+        ) : (
+          children
+        )}
       </Comp>
     );
   }

@@ -1,4 +1,4 @@
-import {  ApiQueryParams, Product, ProductFormData } from "@/types";
+import { ApiQueryParams, Product, ProductFormData } from "@/types";
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 
 const addProduct = async (product: ProductFormData): Promise<void> => {
@@ -42,7 +42,10 @@ const getProducts = async (params?: ApiQueryParams): Promise<Product[]> => {
   }
 };
 
-const updateProduct = async (productId: string, productData: ProductFormData) => {
+const updateProduct = async (
+  productId: string,
+  productData: ProductFormData
+) => {
   try {
     const response = await fetch(`/api/products/${productId}`, {
       method: "PUT",
@@ -89,7 +92,6 @@ const fetchProductData = async (id: string): Promise<ProductFormData> => {
       },
     });
 
-    
     if (!response.ok) {
       const errorDetails = await response.json();
       throw new Error(
