@@ -21,7 +21,7 @@ import { convertInstantToIST, convertISTToInstant } from "@/components/ui/index"
 import { deleteBill, useBills } from "@/app/daily-bills/(utils)";
 type ColumnType = ColumnDef<BillingFormData>[];
 
-const AppBillTable = ({apiRoute}: {apiRoute: string}) => {
+const AppBillTable = ({apiRoute, invoiceType}: {apiRoute: string, invoiceType: string}) => {
   const router = useRouter();
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
   const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
@@ -31,15 +31,26 @@ const AppBillTable = ({apiRoute}: {apiRoute: string}) => {
     rowId: "",
   });
 
+  console.log("invoiceType", invoiceType);
+
   const params: ApiQueryParams | undefined = React.useMemo(() => {
     if (!date || !date.from || !date.to) return undefined;
+
+    debugger
+
+    console.log("invoiceType2", invoiceType);
+    
     return {
       start_date: date.from ? convertISTToInstant(date.from) : undefined,
       end_date: date.to ? convertISTToInstant(date.to) : undefined,
+      invoice_type: invoiceType
     };
-  }, [date]);
+  }, [date, invoiceType]);
 
-  const { data, isLoading, error, refetch } = useBills(params);
+  const { data, isLoading, error, refetch } = useBills({
+    invoice_type: invoiceType,
+    ...params
+  });
 
   const actions: ActionItem[] = React.useMemo(
     () => [

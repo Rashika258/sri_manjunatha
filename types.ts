@@ -113,6 +113,7 @@ type AppDropdownProps = {
 type ApiQueryParams = {
   start_date?: string | undefined;
   end_date?: string | undefined;
+  invoice_type?: string | undefined;
 };
 
 type FormErrors = {

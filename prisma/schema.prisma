@@ -71,7 +71,7 @@ model employees {
 
 model invoice {
   invoice_id       Int           @id @default(autoincrement())
-  invoice_number   Int           
+  invoice_number   Int
   customer_id      String
   gstin            String
   customer_name    String
@@ -87,9 +87,19 @@ model invoice {
   due_date         DateTime
   created_at       DateTime      @default(now())
   updated_at       DateTime      @updatedAt
+  state            String?
+  e_way_bill_num   String?
+  dc_num           String?
+  dc_date          DateTime?
+  po_num           String?
+  po_date          DateTime?
+  cgst             Float?
+  sgst             Float?
+  igst             Float?
+  grand_total      Float?
   invoice_items    invoiceitem[] @relation("InvoiceItems")
 
-  @@unique([invoice_type, invoice_number]) 
+  @@unique([invoice_type, invoice_number])
 }
 
 model invoiceitem {

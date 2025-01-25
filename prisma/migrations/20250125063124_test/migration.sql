@@ -1,0 +1,11 @@
+-- AlterTable
+ALTER TABLE `invoice` ADD COLUMN `cgst` DOUBLE NULL,
+    ADD COLUMN `dc_date` DATETIME(3) NULL,
+    ADD COLUMN `dc_num` VARCHAR(191) NULL,
+    ADD COLUMN `e_way_bill_num` VARCHAR(191) NULL,
+    ADD COLUMN `grand_total` DOUBLE NULL,
+    ADD COLUMN `igst` DOUBLE NULL,
+    ADD COLUMN `po_date` DATETIME(3) NULL,
+    ADD COLUMN `po_num` VARCHAR(191) NULL,
+    ADD COLUMN `sgst` DOUBLE NULL,
+    ADD COLUMN `state` VARCHAR(191) NULL;

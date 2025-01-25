@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       invoice_date,
       due_date,
       invoiceitem,
+      invoice_type
     } = data;
 
     console.log("data", data);
@@ -39,7 +40,8 @@ export async function POST(req: NextRequest) {
         tax_amount,
         total_amount,
         invoice_date: new Date(invoice_date),
-        due_date: new Date(due_date),         
+        due_date: new Date(due_date),  
+        invoice_type       
       },
     });
     console.log("invoice", invoice);
@@ -86,7 +88,12 @@ const buildDateCondition = (date: string | undefined, operator: "gte" | "lte") =
 
 export async function GET(req: NextRequest) {
   try {
-    const { start_date, end_date } = Object.fromEntries(new URL(req.url).searchParams);
+    const { start_date, end_date, invoice_type } = Object.fromEntries(new URL(req.url).searchParams);
+
+    debugger
+
+    console.log("aa==========", invoice_type);
+    
 
     // Validate and create conditions early
     const conditions: {
@@ -94,6 +101,7 @@ export async function GET(req: NextRequest) {
       created_at?: { gte?: Date; lte?: Date };
       updated_at?: { gte?: Date; lte?: Date };
       due_date?: { gte?: Date; lte?: Date };
+      invoice_type?: string;
     } = {};
 
     // Build conditions dynamically using the helper function
@@ -113,6 +121,11 @@ export async function GET(req: NextRequest) {
       conditions.updated_at = { ...conditions.updated_at, ...endCondition };
       conditions.due_date = { ...conditions.due_date, ...endCondition };
     }
+
+    if (invoice_type) {
+      conditions.invoice_type = invoice_type;
+    }
+
 
     console.log("Generated conditions for the query:", conditions);
 

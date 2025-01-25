@@ -81,12 +81,14 @@ const AppBillingForm = ({
   isSubmitBtnLoading: boolean;
   handleSubmit: (data: BillingFormData) => void;
   data?: BillingFormData;
-  invoiceType : string
+  invoiceType : string;
 }) => {
+
+  console.log("invoiceType678========", invoiceType);
+  
   const customerData = useCustomers();
   const productData = useProducts();
-  const [formData, setFormData] =
-    React.useState<BillingFormData>(defaultFormData( invoiceType, data));
+  const [formData, setFormData] = React.useState<BillingFormData>(defaultFormData( invoiceType, data));
   const [errors, setErrors] = React.useState<FormErrors>({});
 
   const productOptions = React.useMemo(() => {

@@ -26,7 +26,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         total_amount: data.total_amount,
         invoice_date: new Date(data.invoice_date),
         due_date: new Date(data.due_date),
-        invoiceitem: {
+        invoice_items: {
           upsert: invoiceItems.map((item: InvoiceItem) => ({
             where: { item_id: item.item_id || 0 }, // Use `item_id` for `upsert` lookup
             update: {
@@ -51,7 +51,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
           })),
         },
       },
-      include: { invoiceitem: true },
+      include: { invoice_items: true },
     });
 
     return NextResponse.json(updatedInvoice);
@@ -96,7 +96,7 @@ export async function DELETE(
     // Delete the invoice
     const deletedInvoice = await prisma.invoice.delete({
       where: { invoice_id: invoiceId },
-      include:{invoiceitem: true}
+      include:{invoice_items: true}
     });
 
 
@@ -123,7 +123,7 @@ export async function GET(
 
     const invoice = await prisma.invoice.findUnique({
       where: { invoice_id: invoiceId },
-      include: { invoiceitem: true },
+      include: { invoice_items: true },
     });
 
 

@@ -2,7 +2,7 @@
 import * as React from "react";
 import { AppBillingForm } from "@/components/common";
 import { toast } from "@/components/ui/index";
-import { BillingFormData, InvoiceType } from "@/types";
+import { BillingFormData } from "@/types";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { addBill } from "../(utils)/index";

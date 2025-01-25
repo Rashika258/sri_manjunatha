@@ -1,3 +1,4 @@
+import { BillingFormData } from "@/types";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -92,11 +93,14 @@ function numberToWords(amount: number) {
   return words + " Only";
 }
 
-export const generateInvoicePDF = () => {
+export const generateInvoicePDF = (invoiceData: BillingFormData) => {
   const doc = new jsPDF({
     orientation: "portrait",
     unit: "mm",
   });
+
+  console.log("invoiceData", invoiceData);
+  
 
   // Width: 210 mm
   // Height: 297 mm
@@ -145,16 +149,49 @@ export const generateInvoicePDF = () => {
       33,
       55
     );
-    renderContent("Purchaser:", "Mahalaxmi Steel Suppliers", 12, 65, 33, 65);
+    renderContent("Purchaser:", invoiceData?.customer_name || "", 12, 65, 33, 65);
 
-    doc.text(addressLines, 12, 70);
+  //   {
+  //     "invoice_id": 6,
+  //     "invoice_number": 12,
+  //     "customer_id": "4",
+  //     "gstin": "55DDDDD3333D4Z8",
+  //     "customer_name": "Emily Davis",
+  //     "customer_address": "101 Pine Lane, Smallville, Country",
+  //     "customer_email": "emilydavis@example.com",
+  //     "customer_phone": "6543210987",
+  //     "payment_status": "Pending",
+  //     "is_gst_bill": false,
+  //     "invoice_type": "DAILY",
+  //     "tax_amount": 0,
+  //     "total_amount": 0,
+  //     "invoice_date": "2025-01-25T05:20:17.561Z",
+  //     "due_date": "2025-01-25T05:20:17.561Z",
+  //     "created_at": "2025-01-25T05:21:31.725Z",
+  //     "updated_at": "2025-01-25T05:21:31.725Z",
+  //     "invoice_items": [
+  //         {
+  //             "item_id": 6,
+  //             "product_id": "51",
+  //             "product_name": "1 * 5 Hinges",
+  //             "quantity": 23,
+  //             "bags": 12,
+  //             "unit_price": 89,
+  //             "total_price": 2047,
+  //             "hsn": 6767,
+  //             "invoice_id": 6
+  //         }
+  //     ]
+  // }
 
-    renderContent("GSTIN:", "29BDJPM3718A1ZO", 12, 90, 33, 90);
+    doc.text(invoiceData?.customer_address || "", 12, 70);
+
+    renderContent("GSTIN:", invoiceData?.gstin || "", 12, 90, 33, 90);
     renderContent("State Name:", "Karnataka", 12, 95, 40, 95);
-    renderContent("Contact:", "08026756931, +91-9844036779", 12, 100, 33, 100);
+    renderContent("Contact:", invoiceData?.customer_phone || "", 12, 100, 33, 100);
     renderContent(
       "Email:",
-      "mahalaxmisteelsuppliers@gmail.com",
+      invoiceData?.customer_email || "",
       12,
       105,
       33,
@@ -164,7 +201,7 @@ export const generateInvoicePDF = () => {
     doc.rect(105, 10, 95, 110);
     doc.rect(105, 10, 95, 10);
     doc.rect(155, 10, 0, 10);
-    renderContent("Invoice Number:", "1234", 107, 18, 170, 18);
+    renderContent("Invoice Number:", invoiceData?.invoice_number || "", 107, 18, 170, 18);
     doc.rect(105, 20, 95, 10);
     doc.rect(155, 20, 0, 10);
 
@@ -239,7 +276,7 @@ export const generateInvoicePDF = () => {
     doc.rect(105, 188, 95, 10);
     doc.rect(150, 188, 0, 14);
     doc.rect(150, 200, 0, 10);
-    renderContent("Total:", "1234", 107, 196, 155, 196);
+    renderContent("Total:", String(invoiceData?.total_amount), 107, 196, 155, 196);
     doc.rect(105, 210, 95, 10);
     doc.rect(150, 210, 0, 10);
 

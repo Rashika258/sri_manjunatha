@@ -1,7 +1,5 @@
 import {  BillingFormData, ApiQueryParams } from "@/types";  
 import { useQuery, UseQueryOptions } from "@tanstack/react-query";
-import { generateInvoicePDF } from "./download-utils";
-
 
 const addBill = async (bill: BillingFormData): Promise<void> => {
   const response = await fetch("/api/bills", {
@@ -23,6 +21,8 @@ const addBill = async (bill: BillingFormData): Promise<void> => {
 const getBills = async (params?: ApiQueryParams | undefined): Promise<BillingFormData[]> => {
   try {
     const query = new URLSearchParams(params as Record<string, string>).toString();
+    console.log("query========", query);
+    
     const url = `/api/bills${query ? `?${query}` : ""}`;
     const response = await fetch(url, { method: "GET" });
 
@@ -101,39 +101,13 @@ const fetchBillData = async (id: string): Promise<BillingFormData> => {
 };
 
 
-const fetchBillDataAsInvoice = async (id: string) => {
-  try {
-    const response = await fetch(`/api/bills/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      const errorDetails = await response.json();
-      throw new Error(
-        `Failed to fetch data. Status: ${response.status}, Message: ${
-          errorDetails.message || "Unknown error"
-        }`
-      );
-    }
-
-    const pdfBase64 = generateInvoicePDF();
-    return pdfBase64;
-  } catch (error) {
-    console.error("Error in fetchBillData:", error);
-    throw new Error(
-      error instanceof Error ? error.message : "An unexpected error occurred"
-    );
-  }
-};
-
-
 const useBills = (
   params: ApiQueryParams | undefined,
   options?: UseQueryOptions<BillingFormData[], Error>
 ) => {
+
+  console.log("params", params);
+  
   return useQuery<BillingFormData[], Error>({
     queryKey: ["bills", params],
     queryFn: () => getBills(params),
@@ -148,5 +122,4 @@ export {
   deleteBill,
   useBills,
   fetchBillData,
-  fetchBillDataAsInvoice
 };
