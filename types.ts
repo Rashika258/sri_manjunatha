@@ -153,6 +153,12 @@ type ItemField = {
   inputType?: "number" | "text";
   itemName: keyof InvoiceItem;
 };
+
+type AllowedActions = 'EDIT' | 'DELETE' | 'SHARE' | 'DOWNLOAD';
+
+type AllowedActionType = Partial<Record<AllowedActions, boolean>>
+
+
 const productSchema = z.object({
   name: z.string().min(1, { message: "Product name is required" }),
   product_category_id: z
@@ -252,4 +258,5 @@ export type {
   FormProps,
   CustomerFormSchemaData,
   EmployeeFormData,
+  AllowedActionType
 };

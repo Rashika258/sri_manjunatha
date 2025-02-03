@@ -6,27 +6,16 @@ import {
   AppDataTable,
   AppTableError,
   AppTableSkeleton,
-  AppDeleteConfirmationPopup,
   AppTooltip,
 } from "@/components/common/index";
-import { convertISTToInstant, toast } from "@/components/ui/index";
+import { convertISTToInstant } from "@/components/ui/index";
 import { format } from "date-fns";
 import { deleteCustomer, useCustomers } from "./(utils)/index";
-import { ActionItem, ApiQueryParams, Customer } from "@/types";
-import { Pencil, Trash } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { ApiQueryParams, Customer } from "@/types";
 import { DateRange } from "react-day-picker";
 
 const CustomerTable = () => {
-  const router = useRouter();
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
-  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
-    React.useState({
-      openDeleteConfirmationPopup: false,
-      isDeletingCustomer: false,
-      rowId: "",
-    });
 
   const params: ApiQueryParams | undefined = React.useMemo(() => {
     if (!date || !date.from || !date.to) return undefined;
@@ -36,35 +25,6 @@ const CustomerTable = () => {
     };
   }, [date]);
   const { data, isLoading, error, refetch } = useCustomers(params);
-
-  const actions: ActionItem[] = React.useMemo(
-    () => [
-      {
-        label: "Edit",
-        icon: <Pencil />,
-        handler: (rowId: string) => {
-          router.push(`/customers/${rowId}`);
-        },
-        buttonVariant: "secondary",
-
-        isEnabled: true,
-      },
-      {
-        label: "Delete",
-        icon: <Trash />,
-        buttonVariant: "destructive",
-        handler: (id: string) => {
-          setDeleteConfirmationPopupDetails((prev) => ({
-            ...prev,
-            openDeleteConfirmationPopup: true,
-            rowId: id,
-          }));
-        },
-        isEnabled: true,
-      },
-    ],
-    [router]
-  );
 
   const columns: ColumnDef<Customer>[] = React.useMemo(
     () => [
@@ -104,49 +64,17 @@ const CustomerTable = () => {
         header: "Actions",
         cell: ({ row }) => (
           <AppActionCell
-            actions={actions}
+            title="customers"
+            deleteHandler={(customerId: string) => deleteCustomer(customerId)}
+            enabledActions={{ EDIT: true, DELETE: true }}
             id={row.original.customer_id?.toString() as string}
           />
         ),
       },
     ],
-    [actions]
+    []
   );
 
-  const deleteMutation = useMutation({
-    mutationFn: (customerId: string) => deleteCustomer(customerId),
-    onSuccess: () => {
-      toast.success("Customer deleted successfully!");
-      setDeleteConfirmationPopupDetails((prev) => ({
-        ...prev,
-        openDeleteConfirmationPopup: false,
-      }));
-    },
-    onMutate: () => {
-      setDeleteConfirmationPopupDetails((prev) => ({
-        ...prev,
-        isDeletingCustomer: true,
-      }));
-    },
-    onSettled: () => {
-      setDeleteConfirmationPopupDetails((prev) => ({
-        ...prev,
-        isDeletingCustomer: false,
-      }));
-    },
-    onError: (error: Error) => {
-      console.error("Error adding customer:", error);
-      toast.error("Failed to add customer. Please try again.");
-    },
-  });
-
-  const handleConfirm = React.useCallback(
-    (rowId: string) => {
-      deleteMutation.mutate(rowId);
-    },
-    [deleteMutation]
-  );
-  
   const applyDateFilter = React.useCallback(
     (date: DateRange | undefined) => {
       setDate(date);
@@ -166,21 +94,6 @@ const CustomerTable = () => {
         redirectPath={"/customers/add-customer"}
         date={date}
         setDate={applyDateFilter}
-      />
-      <AppDeleteConfirmationPopup
-        description={"Do you want to delete this customer?"}
-        onConfirm={(rowId: string) => {
-          handleConfirm(rowId);
-        }}
-        isOpen={deleteConfirmationPopupDetails?.openDeleteConfirmationPopup}
-        setIsOpen={(value: boolean) =>
-          setDeleteConfirmationPopupDetails((prev) => ({
-            ...prev,
-            openDeleteConfirmationPopup: value,
-          }))
-        }
-        isDeleting={deleteConfirmationPopupDetails?.isDeletingCustomer}
-        rowId={deleteConfirmationPopupDetails?.rowId}
       />
     </div>
   );

@@ -3,18 +3,13 @@ import * as React from "react";
 import {
   AppActionCell,
   AppDataTable,
-  AppDeleteConfirmationPopup,
   AppPaymentStatus,
   AppTableError,
   AppTableSkeleton,
   AppTooltip,
 } from "@/components/common/index";
-import { ActionItem, BillingFormData, ApiQueryParams } from "@/types";
+import { BillingFormData, ApiQueryParams } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
-import { Download, Pencil, Share2, Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useMutation } from "@tanstack/react-query";
 import { DateRange } from "react-day-picker";
 import {
   convertInstantToIST,
@@ -30,14 +25,8 @@ const AppBillTable = ({
   apiRoute: string;
   invoiceType: string;
 }) => {
-  const router = useRouter();
+
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
-  const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
-    React.useState({
-      openDeleteConfirmationPopup: false,
-      isDeletingCustomer: false,
-      rowId: "",
-    });
 
   const params: ApiQueryParams | undefined = React.useMemo(() => {
     if (!date || !date.from || !date.to) return undefined;
@@ -53,52 +42,6 @@ const AppBillTable = ({
     invoice_type: invoiceType,
     ...params,
   });
-
-  const actions: ActionItem[] = React.useMemo(
-    () => [
-      {
-        label: "Edit",
-        icon: <Pencil />,
-        handler: (rowId: string) => {
-          router.push(`/${apiRoute}/${rowId}`);
-        },
-
-        isEnabled: true,
-        buttonVariant: "secondary",
-      },
-
-      {
-        label: "Download",
-        icon: <Download />,
-        handler: (rowId: string) => {
-          router.push(`/${apiRoute}/invoice/${rowId}`);
-        },
-        isEnabled: true,
-        buttonVariant: "default",
-      },
-      {
-        label: "Share",
-        icon: <Share2 />,
-        handler: () => {},
-        isEnabled: true,
-        buttonVariant: "secondary",
-      },
-      {
-        label: "Delete",
-        icon: <Trash />,
-        handler: (id: string) => {
-          setDeleteConfirmationPopupDetails((prev) => ({
-            ...prev,
-            openDeleteConfirmationPopup: true,
-            rowId: id,
-          }));
-        },
-        isEnabled: true,
-        buttonVariant: "destructive",
-      },
-    ],
-    [apiRoute, router]
-  );
 
   const columns: ColumnType = [
     {
@@ -195,7 +138,9 @@ const AppBillTable = ({
       cell: (info) => {
         return (
           <AppActionCell
-            actions={actions}
+          title={apiRoute}
+          deleteHandler={(invoiceId: string) => deleteBill(invoiceId)}
+          enabledActions={ {"EDIT": true, "DELETE": true, "DOWNLOAD": true, "SHARE": true}}
             id={info.row.original?.invoice_id?.toString() as string}
           />
         );
@@ -203,39 +148,6 @@ const AppBillTable = ({
     },
   ];
 
-  const deleteMutation = useMutation({
-    mutationFn: (invoiceId: string) => deleteBill(invoiceId),
-    onSuccess: () => {
-      toast.success("Bill deleted successfully!");
-      setDeleteConfirmationPopupDetails((prev) => ({
-        ...prev,
-        openDeleteConfirmationPopup: false,
-      }));
-    },
-    onMutate: () => {
-      setDeleteConfirmationPopupDetails((prev) => ({
-        ...prev,
-        isDeletingCustomer: true,
-      }));
-    },
-    onSettled: () => {
-      setDeleteConfirmationPopupDetails((prev) => ({
-        ...prev,
-        isDeletingCustomer: false,
-      }));
-    },
-    onError: (error: Error) => {
-      console.error("Error adding bill:", error);
-      toast.error("Failed to add bill. Please try again.");
-    },
-  });
-
-  const handleConfirm = React.useCallback(
-    (rowId: string) => {
-      deleteMutation.mutate(rowId);
-    },
-    [deleteMutation]
-  );
   const applyDateFilter = (date: DateRange | undefined) => {
     setDate(date);
     refetch();
@@ -255,21 +167,6 @@ const AppBillTable = ({
         setDate={applyDateFilter}
       />
 
-      <AppDeleteConfirmationPopup
-        description={"Do you want to delete this bill?"}
-        onConfirm={(rowId: string) => {
-          handleConfirm(rowId);
-        }}
-        isOpen={deleteConfirmationPopupDetails?.openDeleteConfirmationPopup}
-        setIsOpen={(value: boolean) =>
-          setDeleteConfirmationPopupDetails((prev) => ({
-            ...prev,
-            openDeleteConfirmationPopup: value,
-          }))
-        }
-        isDeleting={deleteConfirmationPopupDetails?.isDeletingCustomer}
-        rowId={deleteConfirmationPopupDetails?.rowId}
-      />
     </div>
   );
 };

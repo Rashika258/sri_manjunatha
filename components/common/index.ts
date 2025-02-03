@@ -16,6 +16,7 @@ import AppDeleteConfirmationPopup from "./app-delete-confirmation-popup";
 import AppWrapper from "./app-wrapper";
 import AppFormLoader from "./app-form-loader";
 import AppBillTable from "./app-bill-table";
+import { capitalizeFirstLetter } from "./app-utils";
 
 export {
   AppBillTable,
@@ -36,4 +37,5 @@ export {
   AppDeleteConfirmationPopup,
   AppWrapper,
   AppFormLoader,
+  capitalizeFirstLetter
 };
