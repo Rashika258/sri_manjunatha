@@ -7,7 +7,6 @@ import { AppNavbar, AppSidebar, AppWrapper } from "@/components/common/index";
 import { ReactQueryClientProvider } from "@/components/react-query-client-provider";
 import "./globals.css";
 
-
 export const metadata: Metadata = {
   title: "Sri Manjunatha",
   description: "Sri Manjunatha Engineering Works",

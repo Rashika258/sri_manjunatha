@@ -16,8 +16,6 @@ export async function POST(request: NextRequest) {
       product_category_id,
     } = body;
 
-    console.log("aaa==================", body);
-
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
@@ -59,7 +57,6 @@ export async function GET(request: NextRequest) {
       created_at?: { gte?: Date; lte?: Date };
     } = {};
 
-    // Filter by start_date
     if (start_date) {
       const start = parseISO(start_date);
       if (isValid(start)) {

@@ -30,9 +30,9 @@ import { useCustomers } from "@/app/customers/(utils)/api-request";
 import { useProducts } from "@/app/products/(utils)/api-request";
 
 const paymentStatusOptions: AppDropdownOption[] = [
-  { value: "Paid", label: "Paid" },
-  { value: "Overdue", label: "Overdue" },
-  { value: "Pending", label: "Pending" },
+  { value: "PAID", label: "PAID" },
+  { value: "UNPAID", label: "UNPAID" },
+  { value: "OVERDUE", label: "OVERDUE" },
 ];
 
 const indianStateOptions: AppDropdownOption[] = [

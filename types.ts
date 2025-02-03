@@ -1,3 +1,4 @@
+import { InvoiceType } from "@prisma/client";
 import { FieldValues, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 
@@ -123,7 +124,7 @@ type AppDropdownProps = {
 type ApiQueryParams = {
   start_date?: string | undefined;
   end_date?: string | undefined;
-  invoice_type?: string | undefined;
+  invoice_type?: InvoiceType;
 };
 
 type FormErrors = {

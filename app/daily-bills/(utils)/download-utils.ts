@@ -135,12 +135,12 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     const addressLines = doc.splitTextToSize(address, 70);
     doc.text(addressLines, 12, 20);
 
-    renderContent("GSTIN:", "29BDJPM3718A1ZO", 12, 40, 33, 40);
+    renderContent("GSTIN:", process.env.REACT_APP_GSTIN!, 12, 40, 33, 40);
     renderContent("State Name:", "Karnataka", 12, 45, 40, 45);
-    renderContent("Contact:", "08026756931, +91-9844036779", 12, 50, 33, 50);
+    renderContent("Contact:", process.env.REACT_APP_CONTACT!, 12, 50, 33, 50);
     renderContent(
       "Email:",
-      "mahalaxmisteelsuppliers@gmail.com",
+      "sri.manjunatha.eng.333@gmail.com",
       12,
       55,
       33,
@@ -148,38 +148,6 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     );
     renderContent("Purchaser:", invoiceData?.customer_name || "", 12, 65, 33, 65);
 
-  //   {
-  //     "invoice_id": 6,
-  //     "invoice_number": 12,
-  //     "customer_id": "4",
-  //     "gstin": "55DDDDD3333D4Z8",
-  //     "customer_name": "Emily Davis",
-  //     "customer_address": "101 Pine Lane, Smallville, Country",
-  //     "customer_email": "emilydavis@example.com",
-  //     "customer_phone": "6543210987",
-  //     "payment_status": "Pending",
-  //     "is_gst_bill": false,
-  //     "invoice_type": "DAILY",
-  //     "tax_amount": 0,
-  //     "total_amount": 0,
-  //     "invoice_date": "2025-01-25T05:20:17.561Z",
-  //     "due_date": "2025-01-25T05:20:17.561Z",
-  //     "created_at": "2025-01-25T05:21:31.725Z",
-  //     "updated_at": "2025-01-25T05:21:31.725Z",
-  //     "invoice_items": [
-  //         {
-  //             "item_id": 6,
-  //             "product_id": "51",
-  //             "product_name": "1 * 5 Hinges",
-  //             "quantity": 23,
-  //             "bags": 12,
-  //             "unit_price": 89,
-  //             "total_price": 2047,
-  //             "hsn": 6767,
-  //             "invoice_id": 6
-  //         }
-  //     ]
-  // }
 
     doc.text(invoiceData?.customer_address || "", 12, 70);
 
@@ -202,23 +170,23 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     doc.rect(105, 20, 95, 10);
     doc.rect(155, 20, 0, 10);
 
-    renderContent("Eway Bill Number:", "213849899", 107, 28, 170, 28);
+    renderContent("Eway Bill Number:", invoiceData?.e_way_bill_num || "", 107, 28, 170, 28);
     doc.rect(105, 30, 95, 10);
     doc.rect(155, 30, 0, 10);
 
-    renderContent("D.C Number:", "213849899", 107, 38, 170, 38);
+    renderContent("Invoice Number:", invoiceData?.invoice_number || "", 107, 38, 170, 38);
     doc.rect(105, 40, 95, 10);
     doc.rect(155, 40, 0, 10);
 
-    renderContent("D.C Date:", "213849899", 107, 48, 170, 48);
+    renderContent("D.C Number & Date:",`${invoiceData?.dc_num} ${invoiceData?.dc_date ?new Date(invoiceData?.dc_date).toISOString() :""}` , 107, 48, 170, 48);
     doc.rect(105, 50, 95, 10);
     doc.rect(155, 50, 0, 10);
 
-    renderContent("Party's Order Number:", "213849899", 107, 58, 170, 58);
+    renderContent("Party's Order Number:", invoiceData?.po_num || "", 107, 58, 170, 58);
     doc.rect(105, 60, 95, 10);
     doc.rect(155, 60, 0, 10);
 
-    renderContent("Party's Order Date:", "213849899", 107, 68, 170, 68);
+    renderContent("Party's Order Date:", invoiceData?.po_date ?new Date(invoiceData?.po_date).toISOString() :"", 107, 68, 170, 68);
     doc.rect(105, 70, 95, 10);
     doc.rect(155, 70, 0, 10);
 
@@ -241,7 +209,7 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     doc.setFont("helvetica", "bold");
     doc.text("Total Amount in Words:", 12, 200);
     doc.setFont("helvetica", "italic");
-    const t67trimmedValue = doc.splitTextToSize(numberToWords(728337), 90);
+    const t67trimmedValue = doc.splitTextToSize(numberToWords(invoiceData?.total_amount), 90);
     doc.text(t67trimmedValue, 12, 205);
 
     doc.rect(10, 232, 95, 20);
@@ -277,14 +245,14 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     doc.rect(105, 210, 95, 10);
     doc.rect(150, 210, 0, 10);
 
-    renderContent("CGST @9%", "213849899", 107, 208, 155, 208);
+    renderContent("CGST @9%", invoiceData?.cgst ? String(invoiceData?.cgst) : "", 107, 208, 155, 208);
     doc.rect(105, 220, 95, 10);
     doc.rect(150, 220, 0, 10);
-    renderContent("SGST @9%", "213849899", 107, 218, 155, 218);
+    renderContent("SGST @9%", invoiceData?.sgst ? String(invoiceData?.sgst) : "", 107, 218, 155, 218);
     doc.rect(105, 230, 95, 10);
     doc.rect(150, 230, 0, 10);
-    renderContent("IGST", "213849899", 107, 228, 155, 228);
-    renderContent("Grand Total", "213849899", 107, 238, 155, 238);
+    renderContent("IGST", invoiceData?.igst ? String(invoiceData?.igst) : "", 107, 228, 155, 228);
+    renderContent("Grand Total", invoiceData?.grand_total ? String(invoiceData?.grand_total) : "", 107, 238, 155, 238);
     doc.setFont("helvetica", "bold");
     doc.text("For Sri Manjunatha Engineering Works", 107, 245);
 
@@ -300,202 +268,6 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
   };
 
   // doc.rect(10, 120, 190, 72);
-
-  const itemData = [
-    {
-      siNo: 1,
-      description: "Product A",
-      hsnSac: "1234",
-      quantity: 2,
-      rate: 100,
-      amount: 200,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-    {
-      siNo: 2,
-      description: "Product B",
-      hsnSac: "5678",
-      quantity: 1,
-      rate: 150,
-      amount: 150,
-    },
-
-  ];
 
   autoTable(doc, {
     startY: 120,
@@ -516,16 +288,17 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     },
 
     head: [["SI No", "Description", "HSN/SAC", "Quantity", "Rate", "Amount"]],
-    body: itemData.map((item) => [
-      item.siNo,
-      item.description,
-      item.hsnSac,
-      item.quantity,
-      item.rate,
-      item.amount,
-    ]),
+    body: invoiceData?.invoice_items?.length
+    ? invoiceData.invoice_items.map((item, idx) => [
+        idx + 1, // Ensuring SI No starts from 1
+        item.product_name,
+        item.hsn,
+        item.quantity,
+        item.unit_price,
+        item.total_price,
+      ])
+    : [],
     didDrawPage: () => {
-
       renderHeader();
       renderFooter();
     },

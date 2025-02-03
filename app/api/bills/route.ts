@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { InvoiceItem } from "@/types";
+import { InvoiceType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -87,7 +88,7 @@ export async function GET(req: NextRequest) {
       created_at?: { gte?: Date; lte?: Date };
       updated_at?: { gte?: Date; lte?: Date };
       due_date?: { gte?: Date; lte?: Date };
-      invoice_type?: string;
+      invoice_type?: { equals: InvoiceType };
     } = {};
 
     const startCondition = buildDateCondition(start_date, "gte");
@@ -108,9 +109,16 @@ export async function GET(req: NextRequest) {
     }
 
     if (invoice_type) {
-      conditions.invoice_type = invoice_type;
+      const validInvoiceTypes: InvoiceType[] = ["DAILY", "MONTHLY"]; 
+      if (validInvoiceTypes.includes(invoice_type as InvoiceType)) {
+        conditions.invoice_type = { equals: invoice_type as InvoiceType };
+      } else {
+        return NextResponse.json(
+          { error: `Invalid invoice_type: ${invoice_type}` },
+          { status: 400 }
+        );
+      }
     }
-
     const bills = await prisma.invoice.findMany({
       where: conditions,
       orderBy: { created_at: "desc" },

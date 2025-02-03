@@ -12,17 +12,15 @@ import { AppFormLoader } from "@/components/common";
 const ProductCategoryEditPage = () => {
   const { id } = useParams();
   const router = useRouter();
-  const categoryId = Array.isArray(id) ? id[0] : id; // Ensure categoryId is a string or undefined
+  const categoryId = Array.isArray(id) ? id[0] : id; 
   const [isEditingData, setIsEditingData] = React.useState(false);
 
-  // Fetch the product category data
   const { data, error, isLoading } = useQuery({
     queryKey: ["productCategory", categoryId],
     queryFn: () => fetchProductCategoryData(categoryId),
-    enabled: !!categoryId, // Ensure the query runs only when categoryId is available
+    enabled: !!categoryId, 
   });
 
-  // Mutation to update the product category
   const editMutation = useMutation({
     mutationFn: (data: ProductCategory) => updateProductCategory(categoryId, data),
     onSuccess: () => {
@@ -43,14 +41,12 @@ const ProductCategoryEditPage = () => {
     },
   });
 
-  // Submit handler for the form
   const onSubmit: SubmitHandler<ProductCategoryFormData> = (formData) => {
     if (categoryId) {
       editMutation.mutate(formData);
     }
   };
 
-  // Loading and error handling
   if (isLoading) {
     return <AppFormLoader />;
   }

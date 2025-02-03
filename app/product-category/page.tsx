@@ -145,6 +145,8 @@ const ProductCategoryTable = () => {
         columns={columns}
         data={data!}
         redirectPath={"/product-category/add-product-category"}
+        date={undefined}
+        setDate={()=>{}}
       />
       <AppDeleteConfirmationPopup
         description={"Do you want to delete this category?"}

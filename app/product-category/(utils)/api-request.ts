@@ -91,14 +91,12 @@ const fetchProductCategoryData = async (categoryId: string) => {
       },
     });
 
-    // Check if the request was successful
     if (!response.ok) {
       throw new Error(
         `Failed to fetch product category: ${response.statusText}`
       );
     }
 
-    // Parse the response body
     const data = await response.json();
     return data;
   } catch (error) {
