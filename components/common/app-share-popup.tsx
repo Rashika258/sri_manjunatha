@@ -1,30 +1,83 @@
-import React from 'react';
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/index';
+import { 
+  Button, 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogHeader, 
+  DialogTitle 
+} from '../ui/index';
+import { Mail, Send } from 'lucide-react'; 
+import { BillingFormData } from '@/types';
+import * as React from "react";
+import { generateInvoicePDF } from '@/app/daily-bills/(utils)';
 
-const AppSharePopup = () => {
+const AppSharePopup = ({
+  isOpen,
+  setIsOpen,
+  shareMessage = "Check out this awesome content!",
+  emailSubject = "Interesting Content to Share",
+  rowId,
+  data
+} :{
+  isOpen: boolean,
+  setIsOpen: (value: boolean) => void,
+  shareMessage?: string,
+  emailSubject?: string,
+  rowId: string,
+  data: BillingFormData
+}) => {
+
+  const invoicePdf = React.useMemo(()=>{
+    const response = generateInvoicePDF(data);
+    const pdfBlob = response.output("blob");
+    return pdfBlob;
+
+  },[data, shareMessage])
+
+  const handleCloseDialog = (open: boolean) => {
+    if (!open) setIsOpen(false);
+  };
+
+  const handleWhatsAppShare = React.useCallback(() => {
+    const pdfUrl = URL.createObjectURL(invoicePdf); 
+    
+    const whatsappMessage = `${shareMessage}\nDownload the invoice here: ${pdfUrl}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappMessage)}`;
+
+    window.open(whatsappUrl, "_blank");
+  },[invoicePdf, shareMessage])
+
+  const handleEmailShare = () => {
+    const emailURL = `mailto:?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(shareMessage)}`;
+    window.open(emailURL, '_blank');
+  };
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Edit Profile</Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={handleCloseDialog}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
+          <DialogTitle>Share This Content</DialogTitle>
           <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
+            You can share this content via WhatsApp or Email.
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
 
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-
-          </div>
+        <div className="flex gap-2 items-center justify-center">
+          <Button 
+            className="w-12 h-12 rounded-full"
+            onClick={handleWhatsAppShare}
+            variant={"secondary"}
+          >
+            <Send  />
+          </Button>
+          <Button 
+            className="w-12 h-12 rounded-full "
+            onClick={handleEmailShare}
+            variant={"secondary"}
+          >
+            <Mail  />
+          </Button>
         </div>
-        <DialogFooter>
-          <Button type="submit">Save changes</Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

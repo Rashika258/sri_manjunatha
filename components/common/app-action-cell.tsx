@@ -1,20 +1,40 @@
 "use client";
 import { Button, toast } from "@/components/ui/index";
-import { ActionItem, AllowedActionType } from "@/types";
+import { ActionItem, AllowedActionType, BillingFormData } from "@/types";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import AppDeleteConfirmationPopup from "./app-delete-confirmation-popup";
 import { useMutation } from "@tanstack/react-query";
 import { Download, Pencil, Share2, Trash } from "lucide-react";
 import { capitalizeFirstLetter } from "./app-utils";
+import AppSharePopup from "./app-share-popup";
 
-const AppActionCell = ({ id, enabledActions , title, deleteHandler}: { id: string, enabledActions: AllowedActionType, title: string,   deleteHandler:(id: string) => Promise<void> }) => {
+const AppActionCell = ({
+  id,
+  enabledActions,
+  title,
+  deleteHandler,
+  data
+}: {
+  id: string;
+  enabledActions: AllowedActionType;
+  title: string;
+  deleteHandler: (id: string) => Promise<void>;
+  data?: BillingFormData;
+}) => {
   const router = useRouter();
 
   const [deleteConfirmationPopupDetails, setDeleteConfirmationPopupDetails] =
     React.useState({
       openDeleteConfirmationPopup: false,
       isDeletingProduct: false,
+      rowId: "",
+    });
+
+  const [shareConfirmationPopupDetails, setShareConfirmationPopupDetails] =
+    React.useState({
+      openShareConfirmationPopup: false,
+      isSharingProduct: false,
       rowId: "",
     });
 
@@ -35,13 +55,19 @@ const AppActionCell = ({ id, enabledActions , title, deleteHandler}: { id: strin
         handler: (rowId: string) => {
           router.push(`/${title}/invoice/${rowId}`);
         },
-        isEnabled:  Boolean(enabledActions.DOWNLOAD),
+        isEnabled: Boolean(enabledActions.DOWNLOAD),
         buttonVariant: "default",
       },
       {
         label: "Share",
         icon: <Share2 />,
-        handler: () => {},
+        handler: (id: string) => {
+          setShareConfirmationPopupDetails((prev) => ({
+            ...prev,
+            openShareConfirmationPopup: true,
+            rowId: id,
+          }));
+        },
         isEnabled: Boolean(enabledActions.SHARE),
         buttonVariant: "secondary",
       },
@@ -59,9 +85,20 @@ const AppActionCell = ({ id, enabledActions , title, deleteHandler}: { id: strin
         isEnabled: Boolean(enabledActions.DELETE),
       },
     ],
-    [enabledActions.DELETE, enabledActions.EDIT, router, title]
+    [
+      enabledActions.DELETE,
+      enabledActions.DOWNLOAD,
+      enabledActions.EDIT,
+      enabledActions.SHARE,
+      router,
+      title,
+    ]
   );
-const updatedTitle = React.useMemo(() => capitalizeFirstLetter(title), [title]);
+
+  const updatedTitle = React.useMemo(
+    () => capitalizeFirstLetter(title),
+    [title]
+  );
 
   const deleteMutation = useMutation({
     mutationFn: deleteHandler,
@@ -124,6 +161,18 @@ const updatedTitle = React.useMemo(() => capitalizeFirstLetter(title), [title]);
         }
         isDeleting={deleteConfirmationPopupDetails?.isDeletingProduct}
         rowId={deleteConfirmationPopupDetails?.rowId}
+      />
+
+      <AppSharePopup
+        data={data}
+        isOpen={shareConfirmationPopupDetails?.openShareConfirmationPopup}
+        setIsOpen={(value: boolean) =>
+          setShareConfirmationPopupDetails((prev) => ({
+            ...prev,
+            openShareConfirmationPopup: value,
+          }))
+        }
+        rowId={shareConfirmationPopupDetails?.rowId}
       />
     </div>
   );

@@ -16,7 +16,7 @@ const InvoicePage = () => {
       console.log("data=====", data);
       
       const pdfBase64 = generateInvoicePDF(data);
-      setPdfUrl(pdfBase64);
+      setPdfUrl(pdfBase64?.output("datauristring"));
     } catch (error) {
       console.error("Error loading invoice:", error);
     } finally {

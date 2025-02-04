@@ -267,7 +267,7 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     doc.text(trimmedValue12, 107, 275);
   };
 
-  // doc.rect(10, 120, 190, 72);
+  doc.rect(10, 120, 190, 68);
 
   autoTable(doc, {
     startY: 120,
@@ -288,14 +288,14 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     },
 
     head: [["SI No", "Description", "HSN/SAC", "Quantity", "Rate", "Amount"]],
-    body: invoiceData?.invoice_items?.length
+    body:invoiceData?.invoice_items && invoiceData?.invoice_items?.length
     ? invoiceData.invoice_items.map((item, idx) => [
-        idx + 1, // Ensuring SI No starts from 1
-        item.product_name,
-        item.hsn,
-        item.quantity,
-        item.unit_price,
-        item.total_price,
+        idx + 1, 
+        item.product_name || "",
+        item.hsn || "",
+        item.quantity ?? 0,
+        item.unit_price ?? 0,
+        item.total_price ?? 0,
       ])
     : [],
     didDrawPage: () => {
@@ -304,5 +304,5 @@ export const generateInvoicePDF = (invoiceData: BillingFormData) => {
     },
   });
 
-  return doc.output("datauristring");
+  return doc
 };

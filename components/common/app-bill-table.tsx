@@ -16,6 +16,7 @@ import {
   convertISTToInstant,
 } from "@/components/ui/index";
 import { deleteBill, useBills } from "@/app/daily-bills/(utils)";
+import { InvoiceType } from "@prisma/client";
 type ColumnType = ColumnDef<BillingFormData>[];
 
 const AppBillTable = ({
@@ -23,7 +24,7 @@ const AppBillTable = ({
   invoiceType,
 }: {
   apiRoute: string;
-  invoiceType: string;
+  invoiceType: InvoiceType;
 }) => {
 
   const [date, setDate] = React.useState<DateRange | undefined>(undefined);
@@ -128,7 +129,7 @@ const AppBillTable = ({
       header: "Payment Status",
       cell: (info) => (
         <AppPaymentStatus
-          payment_status={info.getValue() as "PAID" | "UNPAID" | "INPROGRESS"}
+          payment_status={info.getValue() as "PAID" | "UNPAID" | "OVERDUE"}
         />
       ),
     },
@@ -139,6 +140,7 @@ const AppBillTable = ({
         return (
           <AppActionCell
           title={apiRoute}
+          data={info.row.original}
           deleteHandler={(invoiceId: string) => deleteBill(invoiceId)}
           enabledActions={ {"EDIT": true, "DELETE": true, "DOWNLOAD": true, "SHARE": true}}
             id={info.row.original?.invoice_id?.toString() as string}
@@ -158,7 +160,6 @@ const AppBillTable = ({
 
   return (
     <div className={`w-full h-full p-4 overflow-auto`}>
-      {/* <Invoice /> */}
       <AppDataTable<BillingFormData>
         redirectPath={`/${apiRoute}/add-bill`}
         columns={columns}
