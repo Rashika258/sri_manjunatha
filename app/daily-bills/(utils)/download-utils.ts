@@ -83,7 +83,7 @@ function numberToWords(amount: number) {
     return words.trim();
   }
 
-  const [integerPart, decimalPart] = amount.toFixed(2).split(".");
+  const [integerPart, decimalPart] = amount?.toFixed(2).split(".");
 
   let words = convertToWords(parseInt(integerPart));
   if (decimalPart && parseInt(decimalPart) > 0) {
